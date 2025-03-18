@@ -1,0 +1,47 @@
+export const modules = {
+    toolbar: {
+        container: [
+            [{ font: [] }],
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            [{ size: ['huge', 'large', false, 'small'] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ color: [] }, { background: [] }],
+            ['blockquote', 'code-block'],
+            ['link', 'image', 'video', 'formula'],
+            [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+            [{ align: [] }],
+            [{ indent: '-1' }, { indent: '+1' }],
+            [{ script: 'sub' }, { script: 'super' }],
+            [{ direction: 'rtl' }],
+            ['clean'],
+        ],
+    },
+    clipboard: {
+        matchVisual: false,
+    },
+};
+
+export const formats = [
+    'font',
+    'header',
+    'size',
+    'bold',
+    'italic',
+    'underline',
+    'strike',
+    'color',
+    'background',
+    'blockquote',
+    'code-block',
+    'link',
+    'image',
+    'formula',
+    'video',
+    'list',
+    'bullet',
+    'check',
+    'align',
+    'indent',
+    'script',
+    'direction',
+];
