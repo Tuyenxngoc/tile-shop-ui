@@ -1,6 +1,6 @@
 :root {
-    --primary-color: #77b748;
-    --text-color: #161823;
+    --primary-color: #fcb415;
+    --text-color: #212529;
 }
 
 * {
@@ -10,13 +10,13 @@
 }
 
 body {
-    font-family: 'Times New Roman', Helvetica, Arial, sans-serif;
+    font-family: 'Roboto', Arial, sans-serif;
     color: var(--text-color);
 }
 
 a {
-    color: var(--text-color);
     text-decoration: none;
+    color: inherit;
 }
 
 ul,
