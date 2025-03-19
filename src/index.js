@@ -8,11 +8,7 @@ import viVN from 'antd/es/locale/vi_VN';
 
 import { AuthProvider } from '~/contexts/AuthProvider';
 
-import 'normalize.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/Global.scss';
-
-import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
