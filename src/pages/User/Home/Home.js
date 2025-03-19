@@ -1,5 +1,11 @@
+import Carousel from '~/components/Carousel';
+
 function Home() {
-    return <>xin chao</>;
+    return (
+        <div className="container">
+            <Carousel />
+        </div>
+    );
 }
 
 export default Home;
