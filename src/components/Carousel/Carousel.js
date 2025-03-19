@@ -13,52 +13,52 @@ import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 const slides = [
     {
         id: 1,
-        description: 'Hình ảnh thiên nhiên 1',
+        description: 'Máy rửa bát Midea 13 bộ Giá sốc chỉ 8990k',
         image: 'https://nshpos.com/Web/Resources/Uploaded/18/images/Slide%20Banner-Inax.jpg',
     },
     {
         id: 2,
-        description: 'Hình ảnh thiên nhiên 2',
+        description: 'Máy rửa bát Midea 13 bộ Giá sốc chỉ 8990k',
         image: 'https://nshpos.com/Web/Resources/Uploaded/18/images/Slide%20Banner-Inax.jpg',
     },
     {
         id: 3,
-        description: 'Hình ảnh thiên nhiên 3',
+        description: 'Máy rửa bát Midea 13 bộ Giá sốc chỉ 8990k',
         image: 'https://nshpos.com/Web/Resources/Uploaded/18/images/Slide%20Banner-Inax.jpg',
     },
     {
         id: 4,
-        description: 'Hình ảnh thiên nhiên 4',
+        description: 'Máy rửa bát Midea 13 bộ Giá sốc chỉ 8990k',
         image: 'https://nshpos.com/Web/Resources/Uploaded/18/images/Slide%20Banner-Inax.jpg',
     },
     {
         id: 5,
-        description: 'Hình ảnh thiên nhiên 5',
+        description: 'Máy rửa bát Midea 13 bộ Giá sốc chỉ 8990k',
         image: 'https://nshpos.com/Web/Resources/Uploaded/18/images/Slide%20Banner-Inax.jpg',
     },
     {
         id: 6,
-        description: 'Hình ảnh thiên nhiên 6',
+        description: 'Máy rửa bát Midea 13 bộ Giá sốc chỉ 8990k',
         image: 'https://nshpos.com/Web/Resources/Uploaded/18/images/Slide%20Banner-Inax.jpg',
     },
     {
         id: 7,
-        description: 'Hình ảnh thiên nhiên 7',
+        description: 'Máy rửa bát Midea 13 bộ Giá sốc chỉ 8990k',
         image: 'https://nshpos.com/Web/Resources/Uploaded/18/images/Slide%20Banner-Inax.jpg',
     },
     {
         id: 8,
-        description: 'Hình ảnh thiên nhiên 8',
+        description: 'Máy rửa bát Midea 13 bộ Giá sốc chỉ 8990k',
         image: 'https://nshpos.com/Web/Resources/Uploaded/18/images/Slide%20Banner-Inax.jpg',
     },
     {
         id: 9,
-        description: 'Hình ảnh thiên nhiên 9',
+        description: 'Máy rửa bát Midea 13 bộ Giá sốc chỉ 8990k',
         image: 'https://nshpos.com/Web/Resources/Uploaded/18/images/Slide%20Banner-Inax.jpg',
     },
     {
         id: 10,
-        description: 'Hình ảnh thiên nhiên 10',
+        description: 'Máy rửa bát Midea 13 bộ Giá sốc chỉ 8990k',
         image: 'https://nshpos.com/Web/Resources/Uploaded/18/images/Slide%20Banner-Inax.jpg',
     },
 ];
@@ -67,17 +67,15 @@ function Carousel() {
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
     return (
-        <>
+        <div className="carousel-wrapper">
             <Swiper
                 style={{
                     '--swiper-navigation-color': '#333',
                     '--swiper-pagination-color': '#333',
                 }}
-                spaceBetween={10}
                 navigation={true}
                 thumbs={{ swiper: thumbsSwiper }}
                 modules={[FreeMode, Navigation, Thumbs]}
-                className=""
             >
                 {slides.map((slide) => (
                     <SwiperSlide key={slide.id}>
@@ -88,8 +86,8 @@ function Carousel() {
 
             <Swiper
                 onSwiper={setThumbsSwiper}
-                spaceBetween={10}
-                slidesPerView={4}
+                spaceBetween={4}
+                slidesPerView={5}
                 freeMode={true}
                 watchSlidesProgress={true}
                 modules={[FreeMode, Navigation, Thumbs]}
@@ -101,7 +99,7 @@ function Carousel() {
                     </SwiperSlide>
                 ))}
             </Swiper>
-        </>
+        </div>
     );
 }
 
