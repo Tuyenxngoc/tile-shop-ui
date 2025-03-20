@@ -8,7 +8,7 @@ import 'swiper/css/thumbs';
 
 import './Carousel.scss';
 
-import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
+import { FreeMode, Navigation, Thumbs, Autoplay } from 'swiper/modules';
 
 const slides = [
     {
@@ -75,7 +75,11 @@ function Carousel() {
                 }}
                 navigation={true}
                 thumbs={{ swiper: thumbsSwiper }}
-                modules={[FreeMode, Navigation, Thumbs]}
+                modules={[FreeMode, Navigation, Thumbs, Autoplay]}
+                autoplay={{
+                    delay: 3000,
+                    disableOnInteraction: false,
+                }}
             >
                 {slides.map((slide) => (
                     <SwiperSlide key={slide.id}>
