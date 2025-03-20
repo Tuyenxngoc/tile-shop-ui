@@ -9,3 +9,27 @@
 .products {
     background-color: #d53637;
 }
+
+.popular-item {
+    display: block;
+    padding: 15px;
+    height: 100%;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: white;
+    transition: all 0.3s ease-in-out;
+
+    img {
+        width: 50%;
+    }
+
+    p {
+        margin-bottom: 0;
+    }
+}
+
+.popular-item:hover {
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 20px rgb(0 0 0 / 20%), 0 4px 8px rgb(0 0 0 / 10%);
+    transform: translateY(-2px);
+}

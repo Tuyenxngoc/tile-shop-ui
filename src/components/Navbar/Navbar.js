@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 
+import { FaBars } from 'react-icons/fa';
+
 import classNames from 'classnames/bind';
 import styles from './Navbar.module.scss';
 
@@ -25,7 +27,9 @@ function Navbar() {
                 <ul className="nav">
                     <li className="nav-item active">
                         <Link to="#">
-                            <i className="fa fa-bars" aria-hidden="true" />
+                            <i>
+                                <FaBars />
+                            </i>
                             <span className="mobile-hide">&nbsp;Tất cả danh mục |</span>
                         </Link>
                     </li>
