@@ -14,6 +14,8 @@ const images = {
 
     facebook: require('./images/Fb.png'),
     youtube: require('./images/Youtube.png'),
+    zalo: require('./images/zalo.png'),
+    phone: require('./images/phone.png'),
 
     visa: require('./images/visa.png'),
     mastercard: require('./images/mastercard.png'),

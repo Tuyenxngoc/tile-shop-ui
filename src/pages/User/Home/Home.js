@@ -3,8 +3,10 @@ import Carousel from '~/components/Carousel';
 
 import classNames from 'classnames/bind';
 import styles from './Home.module.scss';
-import images from '~/assets';
+
 import SlideProduct from '~/components/SlideProduct';
+import Policy from '~/components/Policy';
+import Contact from '~/components/Contact/Contact';
 
 const cx = classNames.bind(styles);
 
@@ -86,22 +88,7 @@ function Home() {
             </div>
 
             <div className={cx('products')}>
-                <div className="container pb-3">
-                    <div className="row">
-                        <div className="col-md-3">
-                            <img className="img-fluid" src={images.group5} alt="Chính sách khách hàng" />
-                        </div>
-                        <div className="col-md-3">
-                            <img className="img-fluid" src={images.group6} alt="Chính sách khách hàng" />
-                        </div>
-                        <div className="col-md-3">
-                            <img className="img-fluid" src={images.group7} alt="Chính sách khách hàng" />
-                        </div>
-                        <div className="col-md-3">
-                            <img className="img-fluid" src={images.group8} alt="Chính sách khách hàng" />
-                        </div>
-                    </div>
-                </div>
+                <Policy />
 
                 <div className="container pb-3">
                     <div className="row g-0">
@@ -118,6 +105,8 @@ function Home() {
 
                 <SlideProduct />
             </div>
+
+            <Contact contactNumber="0984176999" />
         </>
     );
 }
