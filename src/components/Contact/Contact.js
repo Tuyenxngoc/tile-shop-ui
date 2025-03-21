@@ -1,24 +1,27 @@
+import classNames from 'classnames/bind';
+import styles from './Contact.module.scss';
 import images from '~/assets';
-import './test.css';
+
+const cx = classNames.bind(styles);
 
 function Contact({ contactNumber }) {
     return (
-        <div id="button-contact-vr" className="">
-            <div id="gom-all-in-one">
-                <div id="zalo-vr" className="button-contact">
-                    <div className="phone-vr">
-                        <div className="phone-vr-circle-fill" />
-                        <div className="phone-vr-img-circle">
+        <div className={cx('button-contact-vr')}>
+            <div className={cx('gom-all-in-one')}>
+                <div className={cx('button-contact', 'zalo-vr')}>
+                    <div className={cx('phone-vr')}>
+                        <div className={cx('phone-vr-circle-fill')} />
+                        <div className={cx('phone-vr-img-circle')}>
                             <a target="_blank" rel="noreferrer" href={`https://zalo.me/${contactNumber}`}>
                                 <img src={images.zalo} alt="zalo" />
                             </a>
                         </div>
                     </div>
                 </div>
-                <div id="phone-vr" className="button-contact">
-                    <div className="phone-vr">
-                        <div className="phone-vr-circle-fill" />
-                        <div className="phone-vr-img-circle">
+                <div className={cx('button-contact', 'phone-vr')}>
+                    <div className={cx('phone-vr')}>
+                        <div className={cx('phone-vr-circle-fill')} />
+                        <div className={cx('phone-vr-img-circle')}>
                             <a href={`tel:${contactNumber}`}>
                                 <img src={images.phone} alt="phone" />
                             </a>

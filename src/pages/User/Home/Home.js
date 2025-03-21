@@ -6,7 +6,6 @@ import styles from './Home.module.scss';
 
 import SlideProduct from '~/components/SlideProduct';
 import Policy from '~/components/Policy';
-import Contact from '~/components/Contact/Contact';
 
 const cx = classNames.bind(styles);
 
@@ -105,8 +104,6 @@ function Home() {
 
                 <SlideProduct />
             </div>
-
-            <Contact contactNumber="0984176999" />
         </>
     );
 }
