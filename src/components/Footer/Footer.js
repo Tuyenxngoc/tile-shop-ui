@@ -46,7 +46,7 @@ function Footer() {
     return (
         <footer className={cx('wrapper')}>
             <div className="container">
-                <div className="row">
+                <div className="row mt-3">
                     <div className="col col-12">
                         <a href="/">
                             <img src={images.logo} width={252} className="img-fluid" alt="logo" />

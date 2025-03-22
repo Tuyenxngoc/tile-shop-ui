@@ -92,8 +92,8 @@ function Home() {
                 <div className="container pb-3">
                     <div className="row g-0">
                         {categories.map((item, index) => (
-                            <div className="col-md-2 col-3">
-                                <a key={index} href={item.href} className={cx('popular-item')}>
+                            <div key={index} className="col-md-2 col-3">
+                                <a href={item.href} className={cx('popular-item')}>
                                     <img src={item.imgSrc} alt={item.title} className="img-fluid" />
                                     <p className="link-none link-black">{item.title}</p>
                                 </a>
