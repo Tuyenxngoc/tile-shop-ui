@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import Product from '../Product';
 
 const products = [
@@ -54,7 +55,14 @@ const products = [
 ];
 
 function SlideProduct() {
-    const handleAddToCart = () => {};
+    const handleAddToCart = () => {
+        Swal.fire({
+            title: 'Thành công!',
+            text: 'Sản phẩm đã được thêm vào giỏ hàng.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+        });
+    };
 
     return (
         <>

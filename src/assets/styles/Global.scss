@@ -58,6 +58,7 @@ ol {
     list-style: none;
 }
 
+// Custom scrollbar styles
 ::-webkit-scrollbar {
     width: 10px;
 }
@@ -72,4 +73,13 @@ ol {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+// Custom styles for SweetAlert2 confirm button
+.swal2-confirm {
+    background-color: var(--primary-color) !important;
+
+    &:focus {
+        box-shadow: 0 0 0 3px rgba(252, 180, 21, 0.5) !important;
+    }
 }
