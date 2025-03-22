@@ -1,286 +1,184 @@
+import { FaRegCopyright } from 'react-icons/fa';
+
+import classNames from 'classnames/bind';
+import styles from './Footer.module.scss';
+
 import images from '~/assets';
-import './Footer.scss';
+
+const cx = classNames.bind(styles);
+
+const contactInfo = {
+    phoneSales: '0812.888.999',
+    phoneSupport: '19000.55555',
+    email: 'cskh@com.vn',
+};
+
+const companyInfo = {
+    name: 'Công ty TNHH TM Solution',
+    address: '14/120 Định Công, P. Phương Liệt, Q. Thanh Xuân, Tp. Hà Nội, Việt Nam',
+    copyrightYear: 2023,
+};
+
+const socialLinks = [
+    { href: 'https://www.facebook.com/shomesolution', img: images.facebook, alt: 'facebook' },
+    { href: 'https://www.youtube.com/@Shomesolution', img: images.youtube, alt: 'youtube' },
+];
+
+const newsLinks = [{ label: 'Tuyển dụng', link: 'https://shome.vn/tin-tuc/tuyen-dung', external: true }];
+
+const supportLinks = [
+    { label: 'Chính sách đổi trả hàng và hoàn tiền', link: '/ho-tro-khach-hang/chinh-sach-doi-tra-hang-va-hoan-tien' },
+    { label: 'Chính sách kiểm hàng', link: '/ho-tro-khach-hang/chinh-sach-kiem-hang' },
+    { label: 'Chính sách lắp đặt', link: '/ho-tro-khach-hang/chinh-sach-lap-dat' },
+    { label: 'Chính sách vận chuyển và giao hàng', link: '/ho-tro-khach-hang/chinh-sach-van-chuyen-va-giao-hang' },
+    {
+        label: 'Thông tin về điều kiện giao dịch chung',
+        link: '/ho-tro-khach-hang/thong-tin-ve-dieu-kien-giao-dich-chung',
+    },
+    { label: 'Quy định bảo mật', link: '/ho-tro-khach-hang/quy-dinh-bao-mat-tai-shome-solution' },
+    { label: 'Quy định hình thức thanh toán', link: '/ho-tro-khach-hang/quy-dinh-hinh-thuc-thanh-toan' },
+    { label: 'Chính sách bảo hành sản phẩm', link: '/ho-tro-khach-hang/chinh-sach-bao-hanh-san-pham' },
+    { label: 'Điều khoản mua bán hàng hóa', link: '/ho-tro-khach-hang/dieu-khoan-mua-ban-hang-hoa' },
+    { label: 'Kích hoạt và tra cứu bảo hành', link: 'https://baohanh.shome.vn', external: true },
+];
 
 function Footer() {
     return (
-        <footer className="background-white">
-            <div className="container" style={{ paddingRight: '15px!important', paddingLeft: '15px!important' }}>
+        <footer className={cx('wrapper')}>
+            <div className="container">
                 <div className="row">
                     <div className="col col-12">
-                        <a href="/" className="link-none">
-                            <img src={images.logo} style={{ width: 252 }} className="img-fluid" alt="logo" />
+                        <a href="/">
+                            <img src={images.logo} width={252} className="img-fluid" alt="logo" />
                         </a>
                     </div>
                 </div>
-                <div className="row" style={{ marginBottom: 70 }}>
+
+                <div className="row mb-5">
                     <div className="col col-md-3 col-12">
-                        <div className="row">
-                            <div className="col col-12 footer-title">
+                        <div className="row g-0 mb-3">
+                            <div className={cx('col', 'col-12', 'title')}>
                                 <strong>Tổng đài</strong>
                             </div>
-                            <div className="col-md-6 col-5" style={{ paddingRight: 0 }}>
-                                <p className="footer-link-none link-black">
-                                    <img
-                                        src={images.PhoneCall}
-                                        className="img-fluid"
-                                        style={{ width: 20 }}
-                                        alt="phone"
-                                    />
+                            <div className="col-md-6 col-5">
+                                <p className="mb-0">
+                                    <img src={images.PhoneCall} className="img-fluid" width={20} alt="phone" />
                                     &nbsp;&nbsp;&nbsp;Mua hàng:
                                 </p>
                             </div>
-                            <div className="col-md-6 col-7" style={{ paddingLeft: 0 }}>
-                                <p className="footer-link-none link-black">
-                                    <a className="footer-link-none link-black" href="tel:0812.882.992">
-                                        0812.882.992
-                                    </a>
+                            <div className="col-md-6 col-7">
+                                <p className="mb-0">
+                                    <a href={`tel:${contactInfo.phoneSales}`}>{contactInfo.phoneSales}</a>
                                 </p>
                             </div>
-                            <div className="col-md-6 col-5" style={{ paddingRight: 0 }}>
-                                <p className="footer-link-none link-black">
-                                    <img
-                                        src={images.Headphones}
-                                        className="img-fluid"
-                                        style={{ width: 20 }}
-                                        alt="cskh"
-                                    />
+                            <div className="col-md-6 col-5">
+                                <p className="mb-0">
+                                    <img src={images.Headphones} className="img-fluid" width={20} alt="cskh" />
                                     &nbsp;&nbsp;&nbsp;CSKH:
                                 </p>
                             </div>
-                            <div className="col-md-6 col-7" style={{ paddingLeft: 0 }}>
-                                <p className="footer-link-none link-black">
-                                    <a className="footer-link-none link-black" href="tel:19000.55536">
-                                        19000.55536
-                                    </a>
+                            <div className="col-md-6 col-7">
+                                <p className="mb-0">
+                                    <a href={`tel:${contactInfo.phoneSupport}`}>{contactInfo.phoneSupport}</a>
                                 </p>
                             </div>
-                            <div className="col-md-6 col-5" style={{ paddingRight: 0 }}>
-                                <p className="footer-link-none link-black">
-                                    <img
-                                        src={images.Envelope}
-                                        className="img-fluid"
-                                        style={{ width: 20 }}
-                                        alt="email"
-                                    />
+                            <div className="col-md-6 col-5">
+                                <p className="mb-0">
+                                    <img src={images.Envelope} className="img-fluid" width={20} alt="email" />
                                     &nbsp;&nbsp;&nbsp;Email:
                                 </p>
                             </div>
-                            <div className="col-md-6 col-7" style={{ paddingLeft: 0 }}>
-                                <p className="footer-link-none link-black">
-                                    <a className="footer-link-none link-black" href="mailto:cskh@shome.vn">
-                                        cskh@shome.vn
-                                    </a>
+                            <div className="col-md-6 col-7">
+                                <p className="mb-0">
+                                    <a href={`mailto:${contactInfo.email}`}>{contactInfo.email}</a>
                                 </p>
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-12" style={{ paddingTop: 30 }}>
-                                <p className="footer-link-none link-black">Kết nối với chúng tôi:</p>
+                            <div className={cx('col', 'col-12', 'title')}>
+                                <strong>Kết nối với chúng tôi:</strong>
                             </div>
-                            <div className="col-12" style={{ padding: '15px 15px 30px 15px' }}>
-                                <a href="https://www.facebook.com/shomesolution" target="_blank" rel="noreferrer">
-                                    <img
-                                        className="img-fluid"
-                                        style={{ width: 35, marginRight: 10 }}
-                                        alt="facebook"
-                                        title=""
-                                        src={images.facebook}
-                                    />
-                                </a>
-                                <a href="https://www.youtube.com/@Shomesolution" target="_blank" rel="noreferrer">
-                                    <img
-                                        className="img-fluid"
-                                        style={{ width: 35 }}
-                                        alt="youtube"
-                                        title=""
-                                        src={images.youtube}
-                                    />
-                                </a>
+                            <div className="col col-12">
+                                {socialLinks.map(({ href, img, alt }, index) => (
+                                    <a key={index} href={href} target="_blank" rel="noreferrer">
+                                        <img className="img-fluid me-3" width={35} alt={alt} src={img} />
+                                    </a>
+                                ))}
                             </div>
                         </div>
                     </div>
                     <div className="col col-md-3">
                         <div className="row">
-                            <div className="col col-12 footer-title">
+                            <div className={cx('col', 'col-12', 'title')}>
                                 <strong>Thông tin công ty</strong>
                             </div>
                             <div className="col col-12">
-                                <a className="footer-link-none link-black" href="/he-thong-cua-hang">
-                                    Xem hệ thống cửa hàng
-                                </a>
+                                <a href="/he-thong-cua-hang">Xem hệ thống cửa hàng</a>
                             </div>
                             <div className="col col-12">
-                                <a className="footer-link-none link-black" href="/thong-tin-cong-ty/gioi-thieu-cong-ty">
-                                    Giới thiệu công ty
-                                </a>
+                                <a href="/thong-tin-cong-ty/gioi-thieu-cong-ty">Giới thiệu công ty</a>
                             </div>
                         </div>
                     </div>
                     <div className="col col-md-3">
                         <div className="row">
-                            <div className="col col-12 footer-title">
+                            <div className={cx('col', 'col-12', 'title')}>
                                 <strong>Tin tức</strong>
                             </div>
-                            <div className="col col-12">
-                                <a
-                                    className="footer-link-none link-black"
-                                    target="_blank"
-                                    href="https://shome.vn/tin-tuc/tuyen-dung"
-                                    rel="noreferrer"
-                                >
-                                    Tuyển dụng S.HOME
-                                </a>
-                            </div>
+                            {newsLinks.map(({ label, link, external }, index) => (
+                                <div key={index} className="col col-12">
+                                    <a href={link} target={external ? '_blank' : '_self'} rel="noreferrer">
+                                        {label}
+                                    </a>
+                                </div>
+                            ))}
                         </div>
                     </div>
                     <div className="col col-md-3 col-12">
                         <div className="row">
-                            <div className="col col-12 footer-title">
+                            <div className={cx('col', 'col-12', 'title')}>
                                 <strong>Hỗ trợ</strong>
                             </div>
-                            <div className="col col-12">
-                                <a
-                                    className="footer-link-none link-black"
-                                    href="/ho-tro-khach-hang/chinh-sach-doi-tra-hang-va-hoan-tien"
-                                    rel="nofollow"
-                                >
-                                    Chính sách đổi trả hàng và hoàn tiền
-                                </a>
-                            </div>
-                            <div className="col col-12">
-                                <a
-                                    className="footer-link-none link-black"
-                                    href="/ho-tro-khach-hang/chinh-sach-kiem-hang"
-                                    rel="nofollow"
-                                >
-                                    Chính sách kiểm hàng
-                                </a>
-                            </div>
-                            <div className="col col-12">
-                                <a
-                                    className="footer-link-none link-black"
-                                    href="/ho-tro-khach-hang/chinh-sach-lap-dat"
-                                    rel="nofollow"
-                                >
-                                    Chính sách lắp đặt
-                                </a>
-                            </div>
-                            <div className="col col-12">
-                                <a
-                                    className="footer-link-none link-black"
-                                    href="/ho-tro-khach-hang/chinh-sach-van-chuyen-va-giao-hang"
-                                    rel="nofollow"
-                                >
-                                    Chính sách vận chuyển và giao hàng
-                                </a>
-                            </div>
-                            <div className="col col-12">
-                                <a
-                                    className="footer-link-none link-black"
-                                    href="/ho-tro-khach-hang/thong-tin-ve-dieu-kien-giao-dich-chung"
-                                    rel="nofollow"
-                                >
-                                    Thông tin về điều kiện giao dịch chung
-                                </a>
-                            </div>
-                            <div className="col col-12">
-                                <a
-                                    className="footer-link-none link-black"
-                                    href="/ho-tro-khach-hang/quy-dinh-bao-mat-tai-shome-solution"
-                                    rel="nofollow"
-                                >
-                                    Quy định bảo mật tại S.Home Solution
-                                </a>
-                            </div>
-                            <div className="col col-12">
-                                <a
-                                    className="footer-link-none link-black"
-                                    href="/ho-tro-khach-hang/quy-dinh-hinh-thuc-thanh-toan"
-                                    rel="nofollow"
-                                >
-                                    Quy định hình thức thanh toán
-                                </a>
-                            </div>
-                            <div className="col col-12">
-                                <a
-                                    className="footer-link-none link-black"
-                                    href="/ho-tro-khach-hang/chinh-sach-bao-hanh-san-pham"
-                                    rel="nofollow"
-                                >
-                                    Chính sách bảo hành sản phẩm
-                                </a>
-                            </div>
-                            <div className="col col-12">
-                                <a
-                                    className="footer-link-none link-black"
-                                    href="/ho-tro-khach-hang/dieu-khoan-mua-ban-hang-hoa"
-                                    rel="nofollow"
-                                >
-                                    Điều khoản mua bán hàng hóa
-                                </a>
-                            </div>
-                            <div className="col col-12">
-                                <a
-                                    className="footer-link-none link-black"
-                                    target="_blank"
-                                    href="https://baohanh.shome.vn"
-                                    rel="noreferrer"
-                                >
-                                    Kích hoạt và tra cứu bảo hành
-                                </a>
-                            </div>
+
+                            {supportLinks.map((item, index) => (
+                                <div className="col col-12" key={index}>
+                                    <a href={item.link}>{item.label}</a>
+                                </div>
+                            ))}
                         </div>
                         <div className="row">
-                            <div className="col-12" style={{ paddingTop: 30 }}>
-                                <p className="footer-link-none link-black">
-                                    <b>Hỗ trợ thanh toán</b>
-                                </p>
+                            <div className={cx('col', 'col-12', 'title')}>
+                                <strong>Hỗ trợ thanh toán</strong>
                             </div>
-                            <div className="col-12 pt-2">
-                                <img
-                                    className="img-fluid"
-                                    style={{ width: 50 }}
-                                    alt="visa"
-                                    title=""
-                                    src={images.visa}
-                                />
-                                <img className="img-fluid" style={{ width: 50 }} alt="jcb" title="" src={images.jcb} />
-                                <img
-                                    className="img-fluid"
-                                    style={{ width: 50 }}
-                                    alt="mastercard"
-                                    title=""
-                                    src={images.mastercard}
-                                />
+                            <div className="col col-12">
+                                <img className="img-fluid" width={50} alt="visa" src={images.visa} />
+                                <img className="img-fluid mx-3" width={50} alt="jcb" src={images.jcb} />
+                                <img className="img-fluid" width={50} alt="mastercard" src={images.mastercard} />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="col-12" style={{ backgroundColor: '#f6f6f6' }}>
+            <div className={cx('copyright')}>
                 <div className="container">
                     <div className="row">
                         <div className="col-md-9 col-12">
-                            <p style={{ margin: '10px 0 0 0' }}>
-                                <span className="footer-infor">
-                                    <i className="fa fa-copyright" aria-hidden="true" />
-                                    Copyright 2023. Công ty TNHH TM S.Home Solution
+                            <p className="mb-0 mt-3">
+                                <span className={cx('infor')}>
+                                    <FaRegCopyright /> Copyright {companyInfo.copyrightYear}. {companyInfo.name}
                                 </span>
                             </p>
-                            <p>
-                                <span className="footer-infor">
-                                    Địa chỉ: 14/120 Định Công, P. Phương Liệt, Q. Thanh Xuân, Tp. Hà Nội, Việt Nam
-                                </span>
+                            <p className="mb-0">
+                                <span className={cx('infor')}>Địa chỉ: {companyInfo.address}</span>
                             </p>
                         </div>
                         <div className="col-md-3 col-12">
                             <a target="_blank" rel="noreferrer" href="http://online.gov.vn/Home/WebDetails/88404">
                                 <img
-                                    className="img-fluid"
-                                    style={{ width: 150, paddingTop: 10 }}
+                                    className="img-fluid my-3"
+                                    width={150}
                                     alt="logo bộ công thương"
-                                    title=""
                                     src={images.logoSaleNoti}
                                 />
                             </a>

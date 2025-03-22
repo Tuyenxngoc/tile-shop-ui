@@ -1,0 +1,25 @@
+.wrapper {
+    .title {
+        font-size: 18px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .copyright {
+        background-color: #f6f6f6;
+    }
+
+    .infor {
+        font-size: 13px;
+        color: #62666b;
+    }
+
+    a {
+        font-weight: 500;
+        font-size: 15px;
+
+        &:hover {
+            color: #fdca5b;
+        }
+    }
+}
