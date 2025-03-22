@@ -1,6 +1,96 @@
 .wrapper {
-    background-color: #fcb415;
+    background-color: var(--primary-color);
     position: sticky;
     top: 0;
     z-index: 99;
+
+    .item {
+        flex: 1 1 auto;
+        text-align: center;
+        height: 60px;
+        line-height: 60px;
+
+        > a {
+            font-weight: 450;
+            font-size: 14px;
+
+            &:hover {
+                color: #fff;
+            }
+        }
+    }
+}
+
+.active {
+    position: relative;
+
+    &:hover .list-group {
+        display: block;
+    }
+}
+
+.list-group {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: 99;
+    background-color: #fff;
+
+    .list-group-item {
+        text-align: left;
+        width: 250px;
+        height: 37px;
+        line-height: 37px;
+        font-size: 14px;
+        padding: 0 5px;
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        border-left: 5px solid #fff;
+
+        .row-menu-category {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        &:hover {
+            border-left: 5px solid var(--primary-color);
+            background-color: #f6f6f6;
+
+            .row-menu-category:after {
+                content: '';
+                border-right: 15px solid transparent;
+                border-top: 17.5px solid transparent;
+                border-left: 15px solid #f6f6f6;
+                border-bottom: 17.5px solid transparent;
+                right: -30px;
+                position: absolute;
+                z-index: 9999;
+            }
+
+            .right {
+                visibility: hidden;
+            }
+        }
+    }
+
+    .list-master-group-item {
+        background-color: #f6f6f6;
+        border-left: 5px solid #f6f6f6;
+
+        &:hover {
+            background-color: var(--primary-color);
+
+            .row-menu-category:after {
+                content: '';
+                border-right: 15px solid transparent;
+                border-top: 17.5px solid transparent;
+                border-left: 15px solid var(--primary-color);
+                border-bottom: 17.5px solid transparent;
+                right: -30px;
+                position: absolute;
+                z-index: 9999;
+            }
+        }
+    }
 }
