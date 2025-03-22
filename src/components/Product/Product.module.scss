@@ -1,0 +1,132 @@
+.wrapper {
+    padding: 5px 5px 15px;
+    margin-bottom: 20px;
+    background: #ffffff;
+    border-radius: 3px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+    display: grid;
+}
+
+.hover-mask {
+    width: 100%;
+
+    a {
+        display: block;
+        position: relative;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: auto;
+            transition: all 0.5s ease-in-out;
+        }
+
+        div {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.4);
+            transition: all 0.5s linear;
+            opacity: 0;
+            padding: 45% 20px;
+        }
+    }
+
+    &:hover {
+        img {
+            transform: scale(1.2);
+        }
+
+        a div {
+            opacity: 1;
+        }
+
+        i {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    i {
+        transform: scale(0);
+        color: #fff;
+        transition: all 0.5s linear;
+        opacity: 0;
+    }
+}
+
+.content {
+    overflow: hidden;
+    padding: 14px 0;
+
+    a {
+        height: 65px;
+        font-weight: 400;
+        font-size: 15px;
+        line-height: 24px;
+        padding: 14px 0;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+
+        &:hover h3 {
+            color: var(--primary-color);
+        }
+
+        h3 {
+            font-size: 15px;
+            font-weight: 500;
+            color: #000;
+            margin-bottom: 0;
+        }
+    }
+}
+
+.base-price {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 13px;
+    display: flex;
+    align-items: center;
+    color: #62666b;
+
+    .original-price {
+        text-decoration-line: line-through;
+    }
+
+    .sale-off-ratio {
+        color: #d0021c;
+    }
+}
+
+.sale-price {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 30px;
+    color: #d0021c;
+}
+
+.actions {
+    padding-top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .vote {
+        display: flex;
+        align-items: center;
+    }
+
+    .cart {
+        cursor: pointer;
+        font-size: 20px;
+    }
+}
