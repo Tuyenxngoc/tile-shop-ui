@@ -7,6 +7,7 @@ import { ConfigProvider } from 'antd';
 import viVN from 'antd/es/locale/vi_VN';
 
 import { AuthProvider } from '~/contexts/AuthProvider';
+import { StoreProvider } from '~/contexts/StoreProvider';
 
 import './assets/styles/Global.scss';
 
@@ -26,9 +27,11 @@ root.render(
                 },
             }}
         >
-            <AuthProvider>
-                <App />
-            </AuthProvider>
+            <StoreProvider>
+                <AuthProvider>
+                    <App />
+                </AuthProvider>
+            </StoreProvider>
         </ConfigProvider>
     </React.StrictMode>,
 );

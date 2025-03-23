@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { FaPhoneAlt, FaBullhorn, FaSearch, FaShoppingBasket } from 'react-icons/fa';
+import { FaPhoneAlt, FaBullhorn, FaSearch, FaShoppingBasket, FaRegUserCircle } from 'react-icons/fa';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { FaRegFlag } from 'react-icons/fa6';
 
@@ -8,28 +8,31 @@ import classNames from 'classnames/bind';
 import styles from './Header.module.scss';
 
 import images from '~/assets';
+import useStore from '~/hooks/useStore';
 
 const cx = classNames.bind(styles);
 
 function Header() {
+    const { phone } = useStore();
+
     return (
         <header>
             <div className={cx('top')}>
                 <div className="container">
                     <div className="d-flex justify-content-between align-items-center">
                         <div>
-                            <Link to="tel:0812.882.992" className={cx('link-none')}>
-                                <FaPhoneAlt /> <span>Hotline: 0812.882.992</span>
-                            </Link>
-                            <Link to="/he-thong-cua-hang" className={cx('link-none')}>
+                            <a href={`tel:${phone}`}>
+                                <FaPhoneAlt /> <span>Hotline: {phone}</span>
+                            </a>
+                            <Link to="/he-thong-cua-hang">
                                 <FaMapMarkerAlt /> <span>Hệ thống Showroom</span>
                             </Link>
                         </div>
                         <div>
-                            <Link to="/tin-tuc" className={cx('link-none')}>
+                            <Link to="/tin-tuc">
                                 <FaRegFlag /> Tin tức
                             </Link>
-                            <Link to="/tin-tuc/tuyen-dung" className={cx('link-none')}>
+                            <Link to="/tin-tuc/tuyen-dung">
                                 <FaBullhorn /> Cơ hội việc làm
                             </Link>
                         </div>
@@ -41,7 +44,7 @@ function Header() {
                 <div className="container">
                     <div className="row">
                         <div className="col col-3">
-                            <Link to="/" className="link-none">
+                            <Link to="/">
                                 <img src={images.logo} className="img-fluid" alt="logo" style={{ maxWidth: 220 }} />
                             </Link>
                         </div>
