@@ -1,6 +1,6 @@
 import httpRequest, { axiosPrivate } from '~/utils/httpRequest.js';
 
-export const login = (values) => {
+export const loginAPI = (values) => {
     return httpRequest.post('auth/login', values);
 };
 

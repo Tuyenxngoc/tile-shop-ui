@@ -140,7 +140,7 @@ function Header() {
                                             <i className={cx('icon')}>
                                                 <FaRegUserCircle />
                                             </i>
-                                            <span>{user.name}</span>
+                                            <span>{user.username}</span>
                                         </div>
                                     </Dropdown>
                                 ) : (

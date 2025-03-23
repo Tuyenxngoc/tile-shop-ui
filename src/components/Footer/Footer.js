@@ -1,30 +1,22 @@
+import { Link } from 'react-router-dom';
+
+import dayjs from 'dayjs';
 import { FaRegCopyright } from 'react-icons/fa';
 
 import classNames from 'classnames/bind';
 import styles from './Footer.module.scss';
 
 import images from '~/assets';
+import useStore from '~/hooks/useStore';
 
 const cx = classNames.bind(styles);
 
-const contactInfo = {
-    phoneSales: '0812.888.999',
-    phoneSupport: '19000.55555',
-    email: 'cskh@com.vn',
-};
-
-const companyInfo = {
-    name: 'Công ty TNHH TM Solution',
-    address: '14/120 Định Công, P. Phương Liệt, Q. Thanh Xuân, Tp. Hà Nội, Việt Nam',
-    copyrightYear: 2023,
-};
-
 const socialLinks = [
-    { href: 'https://www.facebook.com/shomesolution', img: images.facebook, alt: 'facebook' },
-    { href: 'https://www.youtube.com/@Shomesolution', img: images.youtube, alt: 'youtube' },
+    { href: 'https://www.facebook.com/hunghuong', img: images.facebook, alt: 'facebook' },
+    { href: 'https://www.youtube.com/@hunghuong', img: images.youtube, alt: 'youtube' },
 ];
 
-const newsLinks = [{ label: 'Tuyển dụng', link: 'https://shome.vn/tin-tuc/tuyen-dung', external: true }];
+const newsLinks = [{ id: 1, name: 'Tuyển dụng', nameSlug: '/tin-tuc/tuyen-dung' }];
 
 const supportLinks = [
     { label: 'Chính sách đổi trả hàng và hoàn tiền', link: '/ho-tro-khach-hang/chinh-sach-doi-tra-hang-va-hoan-tien' },
@@ -39,14 +31,16 @@ const supportLinks = [
     { label: 'Quy định hình thức thanh toán', link: '/ho-tro-khach-hang/quy-dinh-hinh-thuc-thanh-toan' },
     { label: 'Chính sách bảo hành sản phẩm', link: '/ho-tro-khach-hang/chinh-sach-bao-hanh-san-pham' },
     { label: 'Điều khoản mua bán hàng hóa', link: '/ho-tro-khach-hang/dieu-khoan-mua-ban-hang-hoa' },
-    { label: 'Kích hoạt và tra cứu bảo hành', link: 'https://baohanh.shome.vn', external: true },
+    { label: 'Kích hoạt và tra cứu bảo hành', link: '/bao-hanh' },
 ];
 
 function Footer() {
+    const { name, address, phone, phoneSupport, email } = useStore();
+
     return (
         <footer className={cx('wrapper')}>
-            <div className="container">
-                <div className="row mt-3">
+            <div className="container pt-3 pb-5">
+                <div className="row">
                     <div className="col col-12">
                         <a href="/">
                             <img src={images.logo} width={252} className="img-fluid" alt="logo" />
@@ -54,44 +48,32 @@ function Footer() {
                     </div>
                 </div>
 
-                <div className="row mb-5">
+                <div className="row">
                     <div className="col col-md-3 col-12">
                         <div className="row g-0 mb-3">
                             <div className={cx('col', 'col-12', 'title')}>
                                 <strong>Tổng đài</strong>
                             </div>
                             <div className="col-md-6 col-5">
-                                <p className="mb-0">
-                                    <img src={images.PhoneCall} className="img-fluid" width={20} alt="phone" />
-                                    &nbsp;&nbsp;&nbsp;Mua hàng:
-                                </p>
+                                <img src={images.PhoneCall} className="img-fluid" width={20} alt="phone" />
+                                &nbsp;&nbsp;&nbsp;Mua hàng:
                             </div>
                             <div className="col-md-6 col-7">
-                                <p className="mb-0">
-                                    <a href={`tel:${contactInfo.phoneSales}`}>{contactInfo.phoneSales}</a>
-                                </p>
+                                <a href={`tel:${phone}`}>{phone}</a>
                             </div>
                             <div className="col-md-6 col-5">
-                                <p className="mb-0">
-                                    <img src={images.Headphones} className="img-fluid" width={20} alt="cskh" />
-                                    &nbsp;&nbsp;&nbsp;CSKH:
-                                </p>
+                                <img src={images.Headphones} className="img-fluid" width={20} alt="cskh" />
+                                &nbsp;&nbsp;&nbsp;CSKH:
                             </div>
                             <div className="col-md-6 col-7">
-                                <p className="mb-0">
-                                    <a href={`tel:${contactInfo.phoneSupport}`}>{contactInfo.phoneSupport}</a>
-                                </p>
+                                <a href={`tel:${phoneSupport}`}>{phoneSupport}</a>
                             </div>
                             <div className="col-md-6 col-5">
-                                <p className="mb-0">
-                                    <img src={images.Envelope} className="img-fluid" width={20} alt="email" />
-                                    &nbsp;&nbsp;&nbsp;Email:
-                                </p>
+                                <img src={images.Envelope} className="img-fluid" width={20} alt="email" />
+                                &nbsp;&nbsp;&nbsp;Email:
                             </div>
                             <div className="col-md-6 col-7">
-                                <p className="mb-0">
-                                    <a href={`mailto:${contactInfo.email}`}>{contactInfo.email}</a>
-                                </p>
+                                <a href={`mailto:${email}`}>{email}</a>
                             </div>
                         </div>
                         <div className="row">
@@ -125,11 +107,9 @@ function Footer() {
                             <div className={cx('col', 'col-12', 'title')}>
                                 <strong>Tin tức</strong>
                             </div>
-                            {newsLinks.map(({ label, link, external }, index) => (
+                            {newsLinks.map((el, index) => (
                                 <div key={index} className="col col-12">
-                                    <a href={link} target={external ? '_blank' : '_self'} rel="noreferrer">
-                                        {label}
-                                    </a>
+                                    <Link to={el.nameSlug}>{el.name}</Link>
                                 </div>
                             ))}
                         </div>
@@ -166,15 +146,15 @@ function Footer() {
                         <div className="col-md-9 col-12">
                             <p className="mb-0 mt-3">
                                 <span className={cx('infor')}>
-                                    <FaRegCopyright /> Copyright {companyInfo.copyrightYear}. {companyInfo.name}
+                                    <FaRegCopyright /> Copyright {dayjs().year()}. {name}
                                 </span>
                             </p>
                             <p className="mb-0">
-                                <span className={cx('infor')}>Địa chỉ: {companyInfo.address}</span>
+                                <span className={cx('infor')}>Địa chỉ: {address}</span>
                             </p>
                         </div>
                         <div className="col-md-3 col-12">
-                            <a target="_blank" rel="noreferrer" href="http://online.gov.vn/Home/WebDetails/88404">
+                            <a target="_blank" rel="noreferrer" href="http://online.gov.vn">
                                 <img
                                     className="img-fluid my-3"
                                     width={150}

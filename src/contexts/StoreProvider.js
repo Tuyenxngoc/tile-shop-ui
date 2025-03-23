@@ -8,6 +8,7 @@ const defaultStore = {
     name: '',
     address: '',
     phone: '',
+    phoneSupport: '',
     email: '',
     openingHours: '',
 };
@@ -21,7 +22,8 @@ const StoreProvider = ({ children }) => {
                 name: 'Cửa hàng Hùng Hương',
                 address: '308 Tây Tựu, Quận Bắc Từ Liêm, Thành Phố Hà Nội, Xuân Phương, Hà Nội',
                 phone: '0988 027 222',
-                email: 'contact@hunghuong.com',
+                phoneSupport: '19000.55555',
+                email: 'contact@hhuong.com',
                 openingHours: '8:00 AM - 10:00 PM',
             });
         };

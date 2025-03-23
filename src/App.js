@@ -4,7 +4,9 @@ import DefaultLayout from './layouts/DefaultLayout';
 import AdminLayout from './layouts/AdminLayout';
 
 import RequireAuth from './routes/RequireAuth';
+
 import { ROLES } from './constants/roleConstants';
+import { ROUTES } from './constants/routes';
 
 import Home from './pages/User/Home';
 import Login from './pages/User/Login';
@@ -16,6 +18,7 @@ import AdminForgotPassword from './pages/Admin/ForgotPassword';
 
 import AccessDenied from './pages/common/AccessDenied';
 import NotFound from './pages/common/NotFound';
+import Register from './pages/User/Register';
 
 function App() {
     return (
@@ -23,8 +26,9 @@ function App() {
             <Routes>
                 <Route element={<DefaultLayout />}>
                     <Route index element={<Home />} />
-                    <Route path="login" element={<Login />} />
-                    <Route path="forgot-password" element={<ForgotPassword />} />
+                    <Route path={ROUTES.LOGIN} element={<Login />} />
+                    <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
+                    <Route path={ROUTES.REGISTER} element={<Register />} />
 
                     {/* Đường dẫn yêu cầu đăng nhập */}
                     <Route element={<RequireAuth />}></Route>
