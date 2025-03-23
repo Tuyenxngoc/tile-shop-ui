@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 
 import { Dropdown } from 'antd';
+import Swal from 'sweetalert2';
 
 import {
     FaPhoneAlt,
@@ -49,6 +50,27 @@ function Header() {
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleSearchSubmit();
+        }
+    };
+
+    const handleCartClick = () => {
+        if (!isAuthenticated) {
+            Swal.fire({
+                title: 'Bạn chưa đăng nhập!',
+                text: 'Vui lòng đăng nhập hoặc đăng ký để tiếp tục.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Đăng nhập',
+                cancelButtonText: 'Đăng ký',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate('/dang-nhap');
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    navigate('/dang-ky');
+                }
+            });
+        } else {
+            navigate('/gio-hang');
         }
     };
 
@@ -122,12 +144,12 @@ function Header() {
                         </div>
                         <div className="col col-lg-5 col-md-5 col-6 text-end">
                             <div className={cx('box')}>
-                                <Link to="/gio-hang" className={cx('btn-link')}>
+                                <div className={cx('btn-link')} onClick={handleCartClick}>
                                     <i className={cx('icon')}>
                                         <FaShoppingBasket />
                                     </i>
                                     <span>Giỏ hàng</span>
-                                </Link>
+                                </div>
                             </div>
                             <div className={cx('box')}>
                                 {isAuthenticated ? (

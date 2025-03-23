@@ -11,6 +11,9 @@ import { ROUTES } from './constants/routes';
 import Home from './pages/User/Home';
 import Login from './pages/User/Login';
 import ForgotPassword from './pages/User/ForgotPassword';
+import Register from './pages/User/Register';
+
+import Cart from './pages/User/Cart';
 
 import Dashboard from './pages/Admin/Dashboard';
 import AdminLogin from './pages/Admin/Login';
@@ -18,7 +21,6 @@ import AdminForgotPassword from './pages/Admin/ForgotPassword';
 
 import AccessDenied from './pages/common/AccessDenied';
 import NotFound from './pages/common/NotFound';
-import Register from './pages/User/Register';
 
 function App() {
     return (
@@ -31,7 +33,9 @@ function App() {
                     <Route path={ROUTES.REGISTER} element={<Register />} />
 
                     {/* Đường dẫn yêu cầu đăng nhập */}
-                    <Route element={<RequireAuth />}></Route>
+                    <Route element={<RequireAuth />}>
+                        <Route path={ROUTES.CART} element={<Cart />} />
+                    </Route>
                 </Route>
 
                 <Route element={<RequireAuth allowedRoles={[ROLES.ADMIN]} />}>
