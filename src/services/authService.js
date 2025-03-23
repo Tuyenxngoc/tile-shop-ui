@@ -4,8 +4,12 @@ export const loginAPI = (values) => {
     return httpRequest.post('auth/login', values);
 };
 
-export const forgetPassword = (values) => {
-    return httpRequest.post('auth/forget-password', values);
+export const forgotPassword = (values) => {
+    return httpRequest.post('auth/forgot-password', values);
+};
+
+export const registerAPI = (values) => {
+    return httpRequest.post('auth/register', values);
 };
 
 export const changePassword = (values) => {
