@@ -6,6 +6,7 @@ import styles from './Home.module.scss';
 
 import SlideProduct from '~/components/SlideProduct';
 import Policy from '~/components/Policy';
+import SlideNew from '~/components/SlideNew';
 
 const cx = classNames.bind(styles);
 
@@ -105,6 +106,8 @@ function Home() {
                 <SlideProduct />
 
                 <SlideProduct />
+
+                <SlideNew />
             </div>
         </>
     );

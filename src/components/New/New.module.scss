@@ -20,7 +20,10 @@
         }
 
         div {
-            display: block;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
             position: absolute;
             top: 0;
             left: 0;
@@ -31,7 +34,6 @@
             background-color: rgba(0, 0, 0, 0.4);
             transition: all 0.5s linear;
             opacity: 0;
-            padding: 45% 20px;
 
             i {
                 transform: scale(0);
@@ -83,48 +85,5 @@
             color: #000;
             margin-bottom: 0;
         }
-    }
-}
-
-.base-price {
-    font-style: normal;
-    font-weight: 400;
-    font-size: 11px;
-    line-height: 13px;
-    display: flex;
-    align-items: center;
-    color: #62666b;
-
-    .original-price {
-        text-decoration-line: line-through;
-    }
-
-    .sale-off-ratio {
-        color: #d0021c;
-    }
-}
-
-.sale-price {
-    font-style: normal;
-    font-weight: 600;
-    font-size: 18px;
-    line-height: 30px;
-    color: #d0021c;
-}
-
-.actions {
-    padding-top: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .vote {
-        display: flex;
-        align-items: center;
-    }
-
-    .cart {
-        cursor: pointer;
-        font-size: 20px;
     }
 }
