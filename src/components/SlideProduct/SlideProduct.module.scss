@@ -1,0 +1,25 @@
+.wrapper {
+    background-color: #f6f6f6;
+    border-radius: 5px;
+    padding: 16px 12px;
+
+    .title-popup {
+        font-style: normal;
+        font-weight: 500;
+        font-size: 25px;
+        color: #1f252c;
+        text-transform: uppercase;
+    }
+
+    .btn-brand {
+        & + .btn-brand {
+            margin-left: 10px;
+        }
+    }
+
+    .btn-read-more {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
