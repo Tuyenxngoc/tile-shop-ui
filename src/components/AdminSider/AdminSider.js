@@ -2,10 +2,10 @@ import { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { Layout, Menu } from 'antd';
-import { AiFillDashboard } from 'react-icons/ai';
+import { AiFillDashboard, AiFillProduct } from 'react-icons/ai';
 import { IoMdSettings } from 'react-icons/io';
 import { BsNewspaper } from 'react-icons/bs';
-import { FaUsers, FaHistory, FaBook, FaChartBar } from 'react-icons/fa';
+import { FaUsers, FaHistory, FaChartBar } from 'react-icons/fa';
 
 import images from '~/assets';
 import useAuth from '~/hooks/useAuth';
@@ -35,28 +35,30 @@ const menuConfig = [
         label: 'Quản lý người dùng',
         key: '/admin/user',
         icon: <FaUsers />,
-        children: [
-            { label: 'Quản lý nhóm', key: '/admin/user-groups' },
-            { label: 'Quản lý người dùng', key: '/admin/users' },
-        ],
     },
-
     {
         label: 'Quản lý sản phẩm',
-        key: '/admin/books',
-        icon: <FaBook />,
+        key: 'product-management',
+        icon: <AiFillProduct />,
         children: [
-            { label: 'Danh sách sách', key: '/admin/books/list' },
-            { label: 'Nhập sách', key: '/admin/books/inward' },
-            { label: 'Kiểm kê sách', key: '/admin/books/inventory' },
-            { label: 'Xuất sách', key: '/admin/books/outward' },
+            { label: 'Danh sách sản phẩm', key: '/admin/products' },
+            { label: 'Thuộc tính sản phẩm', key: '/admin/product-attributes' },
+            { label: 'Hình ảnh sản phẩm', key: '/admin/product-images' },
+            { label: 'Danh mục sản phẩm', key: '/admin/categories' },
+            { label: 'Thuộc tính danh mục', key: '/admin/category-attributes' },
         ],
+    },
+    {
+        label: 'Quản lý đơn hàng',
+        key: '/admin/orders',
+        icon: <FaChartBar />,
+        children: [{ label: 'Báo cáo', key: '/admin/reports/statistics' }],
     },
     {
         label: 'Thống kê báo cáo',
         key: '/admin/reports',
         icon: <FaChartBar />,
-        children: [{ label: 'Báo cáo', key: '/admin/reports/statistics' }],
+        children: [{ label: 'Báo cáo', key: '/admin/reports/statistics2' }],
     },
     {
         label: 'Quản lý tin tức',
@@ -117,12 +119,7 @@ function AdminSider() {
                 theme="dark"
                 selectedKeys={[selectedKey]}
                 mode="inline"
-                items={menuItems.map(({ key, icon, label, children }) => ({
-                    key,
-                    icon,
-                    label,
-                    children: children?.map(({ key, icon, label }) => ({ key, icon, label })),
-                }))}
+                items={menuItems}
                 onClick={handleMenuItemClick}
             />
         </Sider>
