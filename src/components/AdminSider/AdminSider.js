@@ -42,10 +42,8 @@ const menuConfig = [
         icon: <AiFillProduct />,
         children: [
             { label: 'Danh sách sản phẩm', key: '/admin/products' },
-            { label: 'Thuộc tính sản phẩm', key: '/admin/product-attributes' },
-            { label: 'Hình ảnh sản phẩm', key: '/admin/product-images' },
+            { label: 'Thuộc tính sản phẩm', key: '/admin/attributes' },
             { label: 'Danh mục sản phẩm', key: '/admin/categories' },
-            { label: 'Thuộc tính danh mục', key: '/admin/category-attributes' },
         ],
     },
     {

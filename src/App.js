@@ -22,6 +22,8 @@ import AdminForgotPassword from './pages/Admin/ForgotPassword';
 import Category from './pages/Admin/Category';
 import CategoryForm from './pages/Admin/Category/CategoryForm';
 
+import Attribute from './pages/Admin/Attribute';
+
 import AccessDenied from './pages/common/AccessDenied';
 import NotFound from './pages/common/NotFound';
 
@@ -53,6 +55,11 @@ function App() {
                             <Route index element={<Category />} />
                             <Route path="new" element={<CategoryForm />} />
                             <Route path="edit/:id" element={<CategoryForm />} />
+                        </Route>
+
+                        {/* Quản lý thuộc tính */}
+                        <Route path="attributes">
+                            <Route index element={<Attribute />} />
                         </Route>
                     </Route>
                 </Route>
