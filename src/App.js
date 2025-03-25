@@ -18,7 +18,9 @@ import Cart from './pages/User/Cart';
 import Dashboard from './pages/Admin/Dashboard';
 import AdminLogin from './pages/Admin/Login';
 import AdminForgotPassword from './pages/Admin/ForgotPassword';
+
 import Category from './pages/Admin/Category';
+import CategoryForm from './pages/Admin/Category/CategoryForm';
 
 import AccessDenied from './pages/common/AccessDenied';
 import NotFound from './pages/common/NotFound';
@@ -46,9 +48,12 @@ function App() {
                         <Route index element={<Dashboard />} />
                         <Route path="home" element={<Dashboard />} />
 
-                        {/* Quản lý sản phẩm */}
-
-                        <Route path="categories" element={<Category />} />
+                        {/* Quản lý danh mục */}
+                        <Route path="categories">
+                            <Route index element={<Category />} />
+                            <Route path="new" element={<CategoryForm />} />
+                            <Route path="edit/:id" element={<CategoryForm />} />
+                        </Route>
                     </Route>
                 </Route>
 
