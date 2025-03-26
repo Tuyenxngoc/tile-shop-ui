@@ -60,8 +60,12 @@ const menuConfig = [
     },
     {
         label: 'Quản lý tin tức',
-        key: '/admin/news-articles',
+        key: 'news-management',
         icon: <BsNewspaper />,
+        children: [
+            { label: 'Danh sách tin tức', key: '/admin/news' },
+            { label: 'Danh mục tin tức', key: '/admin/news-categories' },
+        ],
     },
     {
         label: 'Lịch sử truy cập',

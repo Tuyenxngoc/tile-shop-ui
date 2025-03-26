@@ -15,6 +15,9 @@ import Register from './pages/User/Register';
 
 import Cart from './pages/User/Cart';
 
+import AccessDenied from './pages/common/AccessDenied';
+import NotFound from './pages/common/NotFound';
+
 import Dashboard from './pages/Admin/Dashboard';
 import AdminLogin from './pages/Admin/Login';
 import AdminForgotPassword from './pages/Admin/ForgotPassword';
@@ -24,8 +27,10 @@ import CategoryForm from './pages/Admin/Category/CategoryForm';
 
 import Attribute from './pages/Admin/Attribute';
 
-import AccessDenied from './pages/common/AccessDenied';
-import NotFound from './pages/common/NotFound';
+import News from './pages/Admin/News';
+import NewsForm from './pages/Admin/News/NewsForm';
+
+import NewsCategory from './pages/Admin/NewsCategory';
 
 function App() {
     return (
@@ -60,6 +65,18 @@ function App() {
                         {/* Quản lý thuộc tính */}
                         <Route path="attributes">
                             <Route index element={<Attribute />} />
+                        </Route>
+
+                        {/* Quản lý tin tức */}
+                        <Route path="news">
+                            <Route index element={<News />} />
+                            <Route path="new" element={<NewsForm />} />
+                            <Route path="edit/:id" element={<NewsForm />} />
+                        </Route>
+
+                        {/* Quản lý danh mục tin tức */}
+                        <Route path="news-categories">
+                            <Route index element={<NewsCategory />} />
                         </Route>
                     </Route>
                 </Route>

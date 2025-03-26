@@ -44,6 +44,7 @@ function CategoryForm() {
 
             if (response.status === 200 || response.status === 201) {
                 messageApi.success(response.data.data.message);
+                navigate('/admin/categories');
             }
         } catch (error) {
             handleError(error, formik, messageApi);
@@ -81,9 +82,7 @@ function CategoryForm() {
         };
 
         fetchCategories();
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedCategorySearch]);
+    }, [debouncedCategorySearch, messageApi]);
 
     //Tải dữ liệu
     useEffect(() => {
@@ -107,9 +106,7 @@ function CategoryForm() {
         };
 
         fetchCategory();
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+    }, [formik, id, messageApi, navigate]);
 
     return (
         <>
