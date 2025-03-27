@@ -1,6 +1,6 @@
 const images = {
     logo: require('./images/logo.svg').default,
-    logoSmall: require('./images/logo.svg').default,
+    logoSmall: require('./images/logoSmall.svg').default,
     right: require('./images/right.svg').default,
 
     group5: require('./images/Group 5.png'),
