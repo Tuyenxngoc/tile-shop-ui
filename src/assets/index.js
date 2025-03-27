@@ -1,5 +1,6 @@
 const images = {
     logo: require('./images/logo.svg').default,
+    logoSmall: require('./images/logo.svg').default,
     right: require('./images/right.svg').default,
 
     group5: require('./images/Group 5.png'),
@@ -21,6 +22,9 @@ const images = {
     visa: require('./images/visa.png'),
     mastercard: require('./images/mastercard.png'),
     jcb: require('./images/jcb.png'),
+
+    placeimg: require('./images/placeimg.svg').default,
+    placeimgHorizontal: require('./images/placeimg_horizontal.svg').default,
 };
 
 export const backgrounds = {};

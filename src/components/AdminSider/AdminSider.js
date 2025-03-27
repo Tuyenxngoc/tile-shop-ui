@@ -114,7 +114,7 @@ function AdminSider() {
         <Sider collapsible width={220} collapsed={collapsed} onCollapse={setCollapsed}>
             <div className="text-center py-2">
                 <Link to="/" className="d-block">
-                    <img src={images.logo} alt="logo" width={200} />
+                    <img src={collapsed ? images.logoSmall : images.logo} alt="logo" width={collapsed ? 50 : 200} />
                 </Link>
             </div>
             <Menu
