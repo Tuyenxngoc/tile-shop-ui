@@ -1,119 +1,29 @@
 .custom-quill {
-    border: 1px solid #d9d9d9;
-    border-radius: 8px;
-    overflow: hidden;
     background: #fff;
-    display: flex;
-    flex-direction: column;
-}
 
-/* Thanh công cụ (toolbar) */
-.custom-quill .ql-toolbar {
-    background: #f5f5f5;
-    border-bottom: 1px solid #d9d9d9;
-    padding: 10px;
-    border-radius: 8px 8px 0 0;
-}
-
-/* Khu vực soạn thảo */
-.custom-quill .ql-container {
-    flex-grow: 1;
-    min-height: 250px;
-    border: none;
-    font-size: 16px;
-}
-
-/* Khi nội dung quá dài, hiển thị thanh cuộn đẹp hơn */
-.custom-quill .ql-editor {
-    min-height: 250px;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-/* Viền input khi focus */
-.custom-quill .ql-container.ql-snow:focus-within {
-    border: 1px solid var(--primary-color);
-    box-shadow: 0 0 5px rgba(252, 180, 21, 0.5);
-}
-
-/* Placeholder tùy chỉnh */
-.custom-quill .ql-editor.ql-blank::before {
-    color: #bfbfbf;
-    font-style: italic;
-}
-
-/* Căn chỉnh hình ảnh khi chèn vào */
-.custom-quill .ql-editor img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 5px;
-}
-
-/* Tùy chỉnh danh sách bullet và numbered */
-.custom-quill .ql-editor ul,
-.custom-quill .ql-editor ol {
-    padding-left: 20px;
-}
-
-/* Tùy chỉnh blockquote */
-.custom-quill .ql-editor blockquote {
-    border-left: 4px solid var(--primary-color);
-    margin: 10px 0;
-    padding-left: 10px;
-    color: #555;
-    font-style: italic;
-}
-
-/* Tùy chỉnh code block */
-.custom-quill .ql-editor pre {
-    background: #f4f4f4;
-    color: #333;
-    padding: 10px;
-    border-radius: 5px;
-    font-family: 'Courier New', Courier, monospace;
-}
-
-/* Tùy chỉnh bảng */
-.custom-quill .ql-editor table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.custom-quill .ql-editor td,
-.custom-quill .ql-editor th {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-/* Khi hover vào bảng */
-.custom-quill .ql-editor th {
-    background-color: #f2f2f2;
-}
-
-/* Định dạng tiêu đề */
-.custom-quill .ql-editor h1 {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.custom-quill .ql-editor h2 {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.custom-quill .ql-editor h3 {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .custom-quill {
-        font-size: 14px;
+    .ql-toolbar.ql-snow {
+        background: #f5f5f5;
+        border: 1px solid #d9d9d9;
+        border-radius: 6px 6px 0 0;
     }
 
-    .custom-quill .ql-editor {
-        min-height: 200px;
+    .ql-container.ql-snow {
+        border: 1px solid #d9d9d9;
+
+        border-radius: 0 0 6px 6px;
+    }
+
+    &:hover {
+        .ql-toolbar.ql-snow,
+        .ql-container.ql-snow {
+            border-color: #ffc83d;
+        }
+    }
+
+    &.error {
+        .ql-toolbar.ql-snow,
+        .ql-container.ql-snow {
+            border-color: #ff4d4f;
+        }
     }
 }

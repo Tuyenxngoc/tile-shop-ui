@@ -9,16 +9,18 @@ import * as yup from 'yup';
 
 import useDebounce from '~/hooks/useDebounce';
 import { handleError } from '~/utils/errorHandler';
-import { createNews, updateNews } from '~/services/newsService';
+import { createNews, getNewsById, updateNews } from '~/services/newsService';
 import { getNewsCategories } from '~/services/newsCategoryService';
 import { RichTextInput, TextInput, TextAreaInput, SelectInput, ImageUploadInput } from '~/components/FormikInputs';
 import images from '~/assets';
+import { checkIdIsNumber } from '~/utils/helper';
 
 const defaultValue = {
     title: '',
     description: '',
     content: '',
     categoryId: null,
+    image: null,
 };
 
 const validationSchema = yup.object({
@@ -26,13 +28,12 @@ const validationSchema = yup.object({
     description: yup.string().required('Mô tả là bắt buộc'),
     content: yup.string().required('Nội dung là bắt buộc'),
     categoryId: yup.number().required('Loại tin tức là bắt buộc'),
+    image: yup.mixed().required('Ảnh bìa là bắt buộc'),
 });
 
 function NewsForm() {
     const { id } = useParams();
     const navigate = useNavigate();
-
-    const [image, setImage] = useState(null);
 
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -43,11 +44,13 @@ function NewsForm() {
 
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
+            const { image, ...payload } = values;
+
             let response;
             if (id) {
-                response = await updateNews(id, values, image);
+                response = await updateNews(id, payload, image);
             } else {
-                response = await createNews(values, image);
+                response = await createNews(payload, image);
             }
 
             if (response.status === 200 || response.status === 201) {
@@ -87,6 +90,37 @@ function NewsForm() {
 
         fetchCategories();
     }, [debouncedCategorySearch, messageApi]);
+
+    //Tải dữ liệu
+    useEffect(() => {
+        if (!id) return;
+
+        if (!checkIdIsNumber(id)) {
+            navigate('/admin/news');
+            return;
+        }
+
+        const fetchNews = async () => {
+            try {
+                const response = await getNewsById(id);
+                const { title, description, content, category, imageUrl } = response.data.data;
+
+                formik.setValues({
+                    title,
+                    description,
+                    content,
+                    categoryId: category ? category.id : null,
+                    image: imageUrl || null,
+                });
+            } catch (error) {
+                messageApi.error('Không tìm thấy tin tức!');
+            }
+        };
+
+        fetchNews();
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
 
     return (
         <>
@@ -130,6 +164,7 @@ function NewsForm() {
                                 required
                                 id="categoryId"
                                 label="Danh mục"
+                                placeholder="Chọn danh mục cho tin tức"
                                 className="col-12"
                                 formik={formik}
                                 loading={isCategoryLoading}
@@ -159,14 +194,15 @@ function NewsForm() {
                             />
                         </div>
                     </div>
-                    <div className="col-md-4 col-12">
-                        <ImageUploadInput
-                            label="Chọn ảnh bìa"
-                            width={300}
-                            defaultImage={images.placeimgHorizontal}
-                            onImageSelect={setImage}
-                        />
-                    </div>
+
+                    <ImageUploadInput
+                        label="Chọn ảnh bìa" //todo
+                        required
+                        className="col-md-4 col-12"
+                        defaultImage={images.placeimgHorizontal}
+                        onImageSelect={(file) => formik.setFieldValue('image', file)}
+                        error={formik.touched.image && formik.errors.image ? formik.errors.image : null}
+                    />
 
                     <div className="col-md-12 text-end">
                         <Space>

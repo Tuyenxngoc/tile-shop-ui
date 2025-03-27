@@ -73,7 +73,7 @@ function RichTextInput({
             )}
             <ReactQuill
                 ref={reactQuillRef}
-                className="custom-quill"
+                className={`custom-quill ${error ? 'error' : ''}`}
                 placeholder={placeholder}
                 value={value}
                 modules={modules()}

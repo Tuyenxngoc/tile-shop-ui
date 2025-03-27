@@ -4,8 +4,8 @@ function SelectInput({
     required = false,
     multiple = false,
     id,
-    label,
-    className,
+    label = '',
+    className = '',
     value,
     onChange,
     onBlur,
@@ -14,6 +14,8 @@ function SelectInput({
     onSearch,
     fieldNames,
     error,
+    helperText = '',
+    placeholder = '',
 }) {
     return (
         <div className={className}>
@@ -33,12 +35,16 @@ function SelectInput({
                 onBlur={onBlur}
                 status={error ? 'error' : undefined}
                 loading={loading}
-                placeholder={`Chọn ${label.toLowerCase()}`}
-                className="w-100"
+                placeholder={placeholder}
                 options={options}
                 fieldNames={fieldNames}
+                className="w-100"
             />
-            {error && <div className="text-danger">{error}</div>}
+            {error ? (
+                <div className="text-danger mt-1">{error}</div>
+            ) : (
+                helperText && <div className="text-muted mt-1">{helperText}</div>
+            )}
         </div>
     );
 }
