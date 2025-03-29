@@ -32,6 +32,8 @@ import NewsForm from './pages/Admin/News/NewsForm';
 
 import NewsCategory from './pages/Admin/NewsCategory';
 
+import Product from './pages/Admin/Product';
+
 function App() {
     return (
         <BrowserRouter>
@@ -58,6 +60,13 @@ function App() {
                         {/* Quản lý danh mục */}
                         <Route path="categories">
                             <Route index element={<Category />} />
+                            <Route path="new" element={<CategoryForm />} />
+                            <Route path="edit/:id" element={<CategoryForm />} />
+                        </Route>
+
+                        {/* Quản lý danh mục */}
+                        <Route path="products">
+                            <Route index element={<Product />} />
                             <Route path="new" element={<CategoryForm />} />
                             <Route path="edit/:id" element={<CategoryForm />} />
                         </Route>
