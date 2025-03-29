@@ -2,25 +2,28 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import queryString from 'query-string';
-import { Button, message, Space } from 'antd';
+import { Button, Image, message, Space, Upload } from 'antd';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-import useDebounce from '~/hooks/useDebounce';
-import { handleError } from '~/utils/errorHandler';
-import { createNews, getNewsById, updateNews } from '~/services/newsService';
-import { getNewsCategories } from '~/services/newsCategoryService';
-import { RichTextInput, TextInput, TextAreaInput, SelectInput, ImageUploadInput } from '~/components/FormikInputs';
+import { MdOutlineFileUpload } from 'react-icons/md';
+
 import images from '~/assets';
+import useDebounce from '~/hooks/useDebounce';
 import { checkIdIsNumber } from '~/utils/helper';
+import { handleError } from '~/utils/errorHandler';
+import { getNewsCategories } from '~/services/newsCategoryService';
+import { createNews, getNewsById, updateNews } from '~/services/newsService';
+import { RichTextInput, TextInput, TextAreaInput, SelectInput } from '~/components/FormInput';
+
+const entityListPage = '/admin/news';
 
 const defaultValue = {
     title: '',
     description: '',
     content: '',
     categoryId: null,
-    image: null,
 };
 
 const validationSchema = yup.object({
@@ -28,12 +31,14 @@ const validationSchema = yup.object({
     description: yup.string().required('Mô tả là bắt buộc'),
     content: yup.string().required('Nội dung là bắt buộc'),
     categoryId: yup.number().required('Loại tin tức là bắt buộc'),
-    image: yup.mixed().required('Ảnh bìa là bắt buộc'),
 });
 
 function NewsForm() {
     const { id } = useParams();
     const navigate = useNavigate();
+
+    const [previewImage, setPreviewImage] = useState(null);
+    const [uploadedImage, setUploadedImage] = useState(null);
 
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -42,21 +47,40 @@ function NewsForm() {
     const debouncedCategorySearch = useDebounce(categorySearchTerm, 300);
     const [isCategoryLoading, setIsCategoryLoading] = useState(false);
 
+    const handleUploadChange = ({ file }) => {
+        const { originFileObj } = file;
+        if (!originFileObj) {
+            return;
+        }
+
+        const url = URL.createObjectURL(originFileObj);
+        setPreviewImage(url);
+        setUploadedImage(originFileObj);
+    };
+
+    const handleBeforeUpload = (file) => {
+        const isImage = file.type.startsWith('image/');
+        if (!isImage) {
+            message.error('Bạn chỉ có thể upload file hình ảnh!');
+        }
+        return isImage;
+    };
+
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
-            const { image, ...payload } = values;
-
             let response;
             if (id) {
-                response = await updateNews(id, payload, image);
+                response = await updateNews(id, values, uploadedImage);
             } else {
-                response = await createNews(payload, image);
+                if (!uploadedImage) {
+                    messageApi.warning('Vui lòng chọn một ảnh bìa');
+                    return;
+                }
+                response = await createNews(values, uploadedImage);
             }
 
             if (response.status === 200 || response.status === 201) {
-                messageApi.success(response.data.data.message);
-
-                navigate('/admin/news');
+                navigate(entityListPage);
             }
         } catch (error) {
             handleError(error, formik, messageApi);
@@ -82,7 +106,7 @@ function NewsForm() {
                 const { items } = response.data.data;
                 setCategoryList(items);
             } catch (error) {
-                messageApi.error('Lỗi khi tải danh mục!');
+                messageApi.error('Lỗi: ' + error.message);
             } finally {
                 setIsCategoryLoading(false);
             }
@@ -96,28 +120,28 @@ function NewsForm() {
         if (!id) return;
 
         if (!checkIdIsNumber(id)) {
-            navigate('/admin/news');
+            navigate(entityListPage);
             return;
         }
 
-        const fetchNews = async () => {
+        const fetchEntity = async () => {
             try {
                 const response = await getNewsById(id);
                 const { title, description, content, category, imageUrl } = response.data.data;
 
+                setPreviewImage(imageUrl);
                 formik.setValues({
                     title,
                     description,
                     content,
                     categoryId: category ? category.id : null,
-                    image: imageUrl || null,
                 });
             } catch (error) {
-                messageApi.error('Không tìm thấy tin tức!');
+                messageApi.error('Lỗi: ' + error.message);
             }
         };
 
-        fetchNews();
+        fetchEntity();
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
@@ -195,18 +219,30 @@ function NewsForm() {
                         </div>
                     </div>
 
-                    <ImageUploadInput
-                        label="Chọn ảnh bìa" //todo
-                        required
-                        className="col-md-4 col-12"
-                        defaultImage={images.placeimgHorizontal}
-                        onImageSelect={(file) => formik.setFieldValue('image', file)}
-                        error={formik.touched.image && formik.errors.image ? formik.errors.image : null}
-                    />
+                    <div className="col-md-4 col-12">
+                        <span>
+                            <span className="text-danger">*</span> Ảnh bìa tin tức:
+                        </span>
+                        <div className="text-center">
+                            <Image className="w-100" src={previewImage} fallback={images.placeimgHorizontal} />
+
+                            <Upload
+                                className="d-block mt-2"
+                                accept="image/*"
+                                maxCount={1}
+                                showUploadList={false}
+                                beforeUpload={handleBeforeUpload}
+                                onChange={handleUploadChange}
+                                customRequest={() => false}
+                            >
+                                <Button icon={<MdOutlineFileUpload />}>Chọn ảnh để tải lên</Button>
+                            </Upload>
+                        </div>
+                    </div>
 
                     <div className="col-md-12 text-end">
                         <Space>
-                            <Button onClick={() => navigate('/admin/news')}>Quay lại</Button>
+                            <Button onClick={() => navigate(entityListPage)}>Quay lại</Button>
                             <Button type="primary" htmlType="submit" loading={formik.isSubmitting}>
                                 Lưu
                             </Button>

@@ -24,6 +24,7 @@ function TextAreaInput({
                 </label>
             )}
             <TextArea
+                {...rest}
                 id={id}
                 name={id}
                 rows={rows}
@@ -32,7 +33,6 @@ function TextAreaInput({
                 onBlur={onBlur}
                 placeholder={placeholder || label}
                 status={error ? 'error' : undefined}
-                {...rest}
             />
             {error ? (
                 <div className="text-danger mt-1">{error}</div>
