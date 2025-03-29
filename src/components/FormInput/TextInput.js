@@ -2,16 +2,21 @@ import { Input } from 'antd';
 
 function TextInput({
     id,
+    type = 'text',
     label = '',
+    placeholder = '',
+    helperText = '',
     className = '',
     required = false,
-    helperText = '',
     value = '',
+    defaultValue,
+    maxLength,
+    disabled = false,
+    readOnly = false,
+    allowClear = false,
     onChange,
     onBlur,
     error = '',
-    type = 'text',
-    placeholder = '',
     ...rest
 }) {
     return (
@@ -22,15 +27,22 @@ function TextInput({
                 </label>
             )}
             <Input
-                {...rest}
                 id={id}
                 name={id}
                 type={type}
                 value={value}
+                defaultValue={defaultValue}
+                maxLength={maxLength}
+                placeholder={placeholder || label}
+                disabled={disabled}
+                readOnly={readOnly}
+                allowClear={allowClear}
                 onChange={onChange}
                 onBlur={onBlur}
-                placeholder={placeholder || label}
                 status={error ? 'error' : undefined}
+                aria-invalid={!!error}
+                aria-describedby={error ? `${id}-error` : undefined}
+                {...rest}
             />
             {error ? (
                 <div className="text-danger mt-1">{error}</div>

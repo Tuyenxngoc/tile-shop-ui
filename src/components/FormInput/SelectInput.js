@@ -1,21 +1,23 @@
 import { Select } from 'antd';
 
 function SelectInput({
-    required = false,
-    multiple = false,
     id,
     label = '',
+    placeholder = '',
+    helperText = '',
     className = '',
+    required = false,
+    multiple = false,
     value,
+    defaultValue,
+    options,
+    fieldNames,
     onChange,
     onBlur,
-    options,
-    loading,
     onSearch,
-    fieldNames,
     error,
-    helperText = '',
-    placeholder = '',
+    loading,
+    disabled = false,
 }) {
     return (
         <div className={className}>
@@ -23,22 +25,26 @@ function SelectInput({
                 {required && <span className="text-danger">*</span>} {label}:
             </label>
             <Select
-                mode={multiple ? 'multiple' : undefined}
-                showSearch
-                allowClear={!required}
-                onSearch={onSearch}
-                filterOption={false}
                 id={id}
                 name={id}
+                mode={multiple ? 'multiple' : undefined}
                 value={value}
-                onChange={onChange}
-                onBlur={onBlur}
-                status={error ? 'error' : undefined}
-                loading={loading}
-                placeholder={placeholder}
+                defaultValue={defaultValue}
                 options={options}
                 fieldNames={fieldNames}
+                placeholder={placeholder}
+                showSearch
+                allowClear={!required}
+                disabled={disabled}
+                filterOption={false}
+                onChange={onChange}
+                onBlur={onBlur}
+                onSearch={onSearch}
+                status={error ? 'error' : undefined}
+                loading={loading}
                 className="w-100"
+                aria-invalid={!!error}
+                aria-describedby={error ? `${id}-error` : undefined}
             />
             {error ? (
                 <div className="text-danger mt-1">{error}</div>

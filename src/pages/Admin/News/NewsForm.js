@@ -61,7 +61,7 @@ function NewsForm() {
     const handleBeforeUpload = (file) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
-            message.error('Bạn chỉ có thể upload file hình ảnh!');
+            messageApi.error('Bạn chỉ có thể upload file hình ảnh!');
         }
         return isImage;
     };
@@ -161,7 +161,7 @@ function NewsForm() {
                                 className="col-12"
                                 label="Tiêu đề"
                                 placeholder="Nhập tiêu đề"
-                                helperText="Tiêu đề không quá 500 kí tự"
+                                helperText="Tiêu đề từ 3-500 kí tự"
                                 value={formik.values.title}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -174,6 +174,7 @@ function NewsForm() {
                                 className="col-12"
                                 label="Mô tả"
                                 placeholder="Nhập mô tả"
+                                helperText="Mô tả từ 3-1500 kí tự"
                                 value={formik.values.description}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -190,7 +191,6 @@ function NewsForm() {
                                 label="Danh mục"
                                 placeholder="Chọn danh mục cho tin tức"
                                 className="col-12"
-                                formik={formik}
                                 loading={isCategoryLoading}
                                 onSearch={setCategorySearchTerm}
                                 fieldNames={{ label: 'name', value: 'id' }}
