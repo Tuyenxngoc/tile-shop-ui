@@ -60,7 +60,7 @@ function BrandForm() {
                 response = await updateBrand(id, values, uploadedImage);
             } else {
                 if (!uploadedImage) {
-                    messageApi.warning('Vui lòng chọn một ảnh bìa');
+                    messageApi.warning('Vui lòng chọn một ảnh logo');
                     return;
                 }
                 response = await createBrand(values, uploadedImage);
