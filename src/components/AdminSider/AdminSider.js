@@ -44,6 +44,7 @@ const menuConfig = [
             { label: 'Danh sách sản phẩm', key: '/admin/products' },
             { label: 'Thuộc tính sản phẩm', key: '/admin/attributes' },
             { label: 'Danh mục sản phẩm', key: '/admin/categories' },
+            { label: 'Thương hiệu sản phẩm', key: '/admin/brands' },
         ],
     },
     {

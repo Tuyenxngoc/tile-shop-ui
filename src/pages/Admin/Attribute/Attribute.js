@@ -1,5 +1,19 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Flex, Form, Input, message, Modal, Popconfirm, Select, Space, Table } from 'antd';
+import {
+    Alert,
+    Button,
+    Checkbox,
+    Flex,
+    Form,
+    Input,
+    message,
+    Modal,
+    Popconfirm,
+    Select,
+    Space,
+    Table,
+    Tag,
+} from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import queryString from 'query-string';
@@ -171,6 +185,23 @@ function Attribute() {
             showSorterTooltip: false,
         },
         {
+            title: 'Giá trị mặc định',
+            dataIndex: 'defaultValue',
+            key: 'defaultValue',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => text || 'Không có',
+        },
+        {
+            title: 'Bắt buộc nhập',
+            dataIndex: 'isRequired',
+            key: 'isRequired',
+            align: 'center',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => (text ? <Tag color="red">Có</Tag> : <Tag color="green">Không</Tag>),
+        },
+        {
             title: '',
             key: 'action',
             render: (_, record) => (
@@ -212,6 +243,12 @@ function Attribute() {
                     >
                         <Input placeholder="Nhập tên thuộc tính" />
                     </Form.Item>
+                    <Form.Item label="Giá trị mặc định" name="defaultValue">
+                        <Input placeholder="Nhập giá trị mặc định" />
+                    </Form.Item>
+                    <Form.Item name="isRequired" valuePropName="checked">
+                        <Checkbox>Bắt buộc nhập</Checkbox>
+                    </Form.Item>
                 </Form>
             </Modal>
 
@@ -224,6 +261,12 @@ function Attribute() {
                         rules={[{ required: true, message: 'Vui lòng nhập tên thuộc tính' }]}
                     >
                         <Input placeholder="Nhập tên thuộc tính" />
+                    </Form.Item>
+                    <Form.Item label="Giá trị mặc định" name="defaultValue">
+                        <Input placeholder="Nhập giá trị mặc định" />
+                    </Form.Item>
+                    <Form.Item name="isRequired" valuePropName="checked">
+                        <Checkbox>Bắt buộc nhập</Checkbox>
                     </Form.Item>
                 </Form>
             </Modal>

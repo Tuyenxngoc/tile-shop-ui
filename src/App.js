@@ -33,6 +33,10 @@ import NewsForm from './pages/Admin/News/NewsForm';
 import NewsCategory from './pages/Admin/NewsCategory';
 
 import Product from './pages/Admin/Product';
+import ProductForm from './pages/Admin/Product/ProductForm';
+
+import Brand from './pages/Admin/Brand';
+import BrandForm from './pages/Admin/Brand/BrandForm';
 
 function App() {
     return (
@@ -67,8 +71,8 @@ function App() {
                         {/* Quản lý danh mục */}
                         <Route path="products">
                             <Route index element={<Product />} />
-                            <Route path="new" element={<CategoryForm />} />
-                            <Route path="edit/:id" element={<CategoryForm />} />
+                            <Route path="new" element={<ProductForm />} />
+                            <Route path="edit/:id" element={<ProductForm />} />
                         </Route>
 
                         {/* Quản lý thuộc tính */}
@@ -81,6 +85,13 @@ function App() {
                             <Route index element={<News />} />
                             <Route path="new" element={<NewsForm />} />
                             <Route path="edit/:id" element={<NewsForm />} />
+                        </Route>
+
+                        {/* Quản lý thương hiệu */}
+                        <Route path="brands">
+                            <Route index element={<Brand />} />
+                            <Route path="new" element={<BrandForm />} />
+                            <Route path="edit/:id" element={<BrandForm />} />
                         </Route>
 
                         {/* Quản lý danh mục tin tức */}

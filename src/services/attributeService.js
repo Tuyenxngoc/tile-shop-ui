@@ -4,6 +4,10 @@ export const getAttributeById = (id) => {
     return axiosPrivate.get(`attributes/${id}`);
 };
 
+export const getAttributeByCategoryId = (id) => {
+    return axiosPrivate.get(`attributes/category/${id}`);
+};
+
 export const getAttributes = (params) => {
     return axiosPrivate.get(`attributes?${params}`);
 };

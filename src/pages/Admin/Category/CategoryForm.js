@@ -175,7 +175,6 @@ function CategoryForm() {
                     />
 
                     <SelectInput
-                        required
                         id="parentId"
                         label="Danh mục"
                         placeholder="Chọn danh mục cha"
