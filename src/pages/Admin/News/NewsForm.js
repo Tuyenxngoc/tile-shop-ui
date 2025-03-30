@@ -152,12 +152,12 @@ function NewsForm() {
             <h2>{id ? 'Chỉnh sửa tin tức' : 'Thêm mới tin tức'}</h2>
 
             <form onSubmit={formik.handleSubmit}>
-                <div className="row">
+                <div className="row g-3">
                     <div className="col-md-8 col-12">
                         <div className="row g-3">
                             <TextInput
-                                id="title"
                                 required
+                                id="title"
                                 className="col-12"
                                 label="Tiêu đề"
                                 placeholder="Nhập tiêu đề"
@@ -169,8 +169,8 @@ function NewsForm() {
                             />
 
                             <TextAreaInput
-                                id="description"
                                 required
+                                id="description"
                                 className="col-12"
                                 label="Mô tả"
                                 placeholder="Nhập mô tả"
