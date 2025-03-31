@@ -128,6 +128,7 @@ function BrandForm() {
                                 label="Tên thương hiệu"
                                 placeholder="Nhập tên thương hiệu"
                                 helperText="Tên thương hiệu từ 3-100 kí tự"
+                                autoComplete="off"
                                 value={formik.values.name}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}

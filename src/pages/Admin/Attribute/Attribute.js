@@ -111,8 +111,7 @@ function Attribute() {
                 closeAddModal();
             }
         } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra khi thêm mới.';
-            messageApi.error(errorMessage);
+            messageApi.error('Lỗi: ' + error.message);
         }
     };
 
@@ -128,8 +127,7 @@ function Attribute() {
                 closeEditModal();
             }
         } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật.';
-            messageApi.error(errorMessage);
+            messageApi.error('Lỗi: ' + error.message);
         }
     };
 
@@ -142,8 +140,7 @@ function Attribute() {
                 messageApi.success(response.data.data.message);
             }
         } catch (error) {
-            const errorMessage = error.response?.data?.message || 'Có lỗi xảy ra khi xóa.';
-            messageApi.error(errorMessage);
+            messageApi.error('Lỗi: ' + error.message);
         }
     };
 
@@ -241,7 +238,7 @@ function Attribute() {
                         name="name"
                         rules={[{ required: true, message: 'Vui lòng nhập tên thuộc tính' }]}
                     >
-                        <Input placeholder="Nhập tên thuộc tính" />
+                        <Input placeholder="Nhập tên thuộc tính" autoComplete="off" />
                     </Form.Item>
                     <Form.Item label="Giá trị mặc định" name="defaultValue">
                         <Input placeholder="Nhập giá trị mặc định" />
@@ -260,7 +257,7 @@ function Attribute() {
                         name="name"
                         rules={[{ required: true, message: 'Vui lòng nhập tên thuộc tính' }]}
                     >
-                        <Input placeholder="Nhập tên thuộc tính" />
+                        <Input placeholder="Nhập tên thuộc tính" autoComplete="off" />
                     </Form.Item>
                     <Form.Item label="Giá trị mặc định" name="defaultValue">
                         <Input placeholder="Nhập giá trị mặc định" />

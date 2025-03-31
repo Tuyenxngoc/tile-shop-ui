@@ -113,7 +113,9 @@ function NewsForm() {
         };
 
         fetchCategories();
-    }, [debouncedCategorySearch, messageApi]);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debouncedCategorySearch]);
 
     //Tải dữ liệu
     useEffect(() => {
