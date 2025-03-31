@@ -1,0 +1,91 @@
+.wrapper {
+    background-color: #fff;
+    border-radius: 6px;
+}
+
+.title {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    color: #1f252c;
+    margin-bottom: 0;
+    padding: 16px 0;
+}
+
+.meta {
+    font-weight: normal;
+    color: #62666b;
+    font-size: 15px;
+}
+
+.comment-link {
+    font-weight: normal;
+    color: #62666b;
+    font-size: 11px;
+}
+
+.sale-cost-detail {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 23px;
+    line-height: 35px;
+    color: #ff0000;
+}
+
+.sale-public-cost-detail {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 19px;
+    text-decoration-line: line-through;
+    color: #1f252c;
+}
+
+.button-group {
+    .btn-custom {
+        border-radius: 4px;
+        padding: 15px;
+        text-align: center;
+        width: 100%;
+        font-weight: 700;
+        font-size: 15px;
+        color: #fff;
+
+        p {
+            font-size: 12px;
+        }
+    }
+
+    .btn-buy-now {
+        background: #fb6e2e;
+
+        &:hover {
+            color: #fff;
+            background: #e65b1f;
+        }
+    }
+
+    .btn-add-to-cart {
+        background: #2f80ed;
+
+        &:hover {
+            color: #fff;
+            background: #1c66d3;
+        }
+    }
+}
+
+.btn-hotline {
+    background: #fff;
+    color: #1f252c;
+    border: 1px solid #fb6e2e;
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+
+    .info-text {
+        font-size: 12px;
+        padding-top: 10px;
+        height: 3em;
+    }
+}

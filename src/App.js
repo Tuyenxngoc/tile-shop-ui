@@ -12,6 +12,7 @@ import Home from './pages/User/Home';
 import Login from './pages/User/Login';
 import ForgotPassword from './pages/User/ForgotPassword';
 import Register from './pages/User/Register';
+import ProductDetail from './pages/User/ProductDetail';
 
 import Cart from './pages/User/Cart';
 
@@ -47,6 +48,8 @@ function App() {
                     <Route path={ROUTES.LOGIN} element={<Login />} />
                     <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
                     <Route path={ROUTES.REGISTER} element={<Register />} />
+
+                    <Route path="products/:id" element={<ProductDetail />} />
 
                     {/* Đường dẫn yêu cầu đăng nhập */}
                     <Route element={<RequireAuth />}>

@@ -25,6 +25,13 @@ const images = {
 
     placeimg: require('./images/placeimg.svg').default,
     placeimgHorizontal: require('./images/placeimg_horizontal.svg').default,
+
+    pd1: require('./images/pd-1.png'),
+    pd2: require('./images/pd-2.png'),
+    pd3: require('./images/pd-3.png'),
+    pd4: require('./images/pd-4.png'),
+    pd5: require('./images/pd-5.png'),
+    pd6: require('./images/pd-6.png'),
 };
 
 export const backgrounds = {};
