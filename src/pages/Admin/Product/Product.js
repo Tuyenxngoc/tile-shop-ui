@@ -1,5 +1,11 @@
+import { Link } from 'react-router-dom';
+
 function Product() {
-    return <>cc</>;
+    return (
+        <>
+            <Link to="new">add</Link>
+        </>
+    );
 }
 
 export default Product;

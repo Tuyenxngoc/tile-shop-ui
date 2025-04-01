@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import queryString from 'query-string';
+import ImgCrop from 'antd-img-crop';
+import { PlusOutlined } from '@ant-design/icons';
 import { Button, Image, Input, message, Space, Upload } from 'antd';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-
-import { PlusOutlined } from '@ant-design/icons';
 
 import useDebounce from '~/hooks/useDebounce';
 import { checkIdIsNumber } from '~/utils/helper';
@@ -45,6 +45,20 @@ const getBase64 = (file) =>
         reader.onload = () => resolve(reader.result);
         reader.onerror = (error) => reject(error);
     });
+
+const validateFile2 = (file) => {
+    const isImage = file.type.startsWith('image/');
+    if (!isImage) {
+        return false;
+    }
+
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+        return false;
+    }
+
+    return true;
+};
 
 const uploadButton = (
     <button style={{ border: 0, background: 'none' }} type="button">
@@ -94,12 +108,20 @@ function ProductForm() {
         setFileList(newFileList);
     };
 
-    const handleBeforeUpload = (file) => {
+    const validateFile = (file) => {
         const isImage = file.type.startsWith('image/');
         if (!isImage) {
             messageApi.error('Bạn chỉ có thể upload file hình ảnh!');
+            return false;
         }
-        return false;
+
+        const maxSize = 5 * 1024 * 1024;
+        if (file.size > maxSize) {
+            messageApi.error('Kích thước file không được vượt quá 5MB!');
+            return false;
+        }
+
+        return true;
     };
 
     const handleChange = (attId, value) => {
@@ -236,16 +258,39 @@ function ProductForm() {
                             <span className="text-danger">*</span> Ảnh bìa sản phẩm:
                         </span>
                         <div className="text-center">
-                            <Upload
-                                listType="picture-card"
-                                fileList={fileList}
-                                maxCount={10}
-                                onPreview={handlePreview}
-                                onChange={handleFileListChange}
-                                beforeUpload={handleBeforeUpload}
+                            <ImgCrop
+                                rotationSlider
+                                aspectSlider
+                                showReset
+                                aspect={3 / 4}
+                                resetText="Đặt lại"
+                                modalTitle="Chỉnh sửa hình ảnh"
+                                beforeCrop={validateFile}
                             >
-                                {fileList.length >= 10 ? null : uploadButton}
-                            </Upload>
+                                <Upload
+                                    accept="image/*"
+                                    listType="picture-card"
+                                    fileList={fileList}
+                                    maxCount={10}
+                                    onPreview={handlePreview}
+                                    onChange={handleFileListChange}
+                                    beforeUpload={validateFile2}
+                                    customRequest={({ file, onSuccess }) => {
+                                        // setFileList((prevFileList) => [
+                                        //     ...prevFileList,
+                                        //     {
+                                        //         uid: file.uid,
+                                        //         name: file.name,
+                                        //         status: 'done',
+                                        //         url: URL.createObjectURL(file),
+                                        //     },
+                                        // ]);
+                                        onSuccess();
+                                    }}
+                                >
+                                    {fileList.length >= 8 ? null : uploadButton}
+                                </Upload>
+                            </ImgCrop>
                             {previewImage && (
                                 <Image
                                     wrapperStyle={{ display: 'none' }}
