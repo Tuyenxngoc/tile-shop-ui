@@ -46,18 +46,18 @@ const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 
-const validateFile2 = (file) => {
+const validateFile = (file) => {
     const isImage = file.type.startsWith('image/');
     if (!isImage) {
-        return false;
+        return { result: false, message: 'Bạn chỉ có thể upload file hình ảnh!' };
     }
 
-    const maxSize = 5 * 1024 * 1024;
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-        return false;
+        return { result: false, message: 'Kích thước file không được vượt quá 5MB!' };
     }
 
-    return true;
+    return { result: true, message: 'OK!' };
 };
 
 const uploadButton = (
@@ -104,24 +104,30 @@ function ProductForm() {
         setPreviewOpen(true);
     };
 
-    const handleFileListChange = ({ fileList: newFileList }) => {
+    const handleFileListChange = ({ file, fileList: newFileList }) => {
+        const response = validateFile(file);
+        if (!response.result) {
+            return;
+        }
+
         setFileList(newFileList);
     };
 
-    const validateFile = (file) => {
-        const isImage = file.type.startsWith('image/');
-        if (!isImage) {
-            messageApi.error('Bạn chỉ có thể upload file hình ảnh!');
-            return false;
-        }
-
-        const maxSize = 5 * 1024 * 1024;
-        if (file.size > maxSize) {
-            messageApi.error('Kích thước file không được vượt quá 5MB!');
+    const handleBeforeCrop = (file) => {
+        const response = validateFile(file);
+        if (!response.result) {
+            messageApi.error(response.message);
             return false;
         }
 
         return true;
+    };
+
+    const handleCustomRequest = (options) => {
+        const { onSuccess } = options;
+        setTimeout(() => {
+            onSuccess('ok');
+        }, 0);
     };
 
     const handleChange = (attId, value) => {
@@ -265,7 +271,7 @@ function ProductForm() {
                                 aspect={3 / 4}
                                 resetText="Đặt lại"
                                 modalTitle="Chỉnh sửa hình ảnh"
-                                beforeCrop={validateFile}
+                                beforeCrop={handleBeforeCrop}
                             >
                                 <Upload
                                     accept="image/*"
@@ -274,19 +280,7 @@ function ProductForm() {
                                     maxCount={10}
                                     onPreview={handlePreview}
                                     onChange={handleFileListChange}
-                                    beforeUpload={validateFile2}
-                                    customRequest={({ file, onSuccess }) => {
-                                        // setFileList((prevFileList) => [
-                                        //     ...prevFileList,
-                                        //     {
-                                        //         uid: file.uid,
-                                        //         name: file.name,
-                                        //         status: 'done',
-                                        //         url: URL.createObjectURL(file),
-                                        //     },
-                                        // ]);
-                                        onSuccess();
-                                    }}
+                                    customRequest={handleCustomRequest}
                                 >
                                     {fileList.length >= 8 ? null : uploadButton}
                                 </Upload>
