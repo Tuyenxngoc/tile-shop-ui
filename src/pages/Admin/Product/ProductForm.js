@@ -12,11 +12,11 @@ import * as yup from 'yup';
 import useDebounce from '~/hooks/useDebounce';
 import { checkIdIsNumber } from '~/utils/helper';
 import { handleError } from '~/utils/errorHandler';
-import { createProduct, getProductById, updateProduct } from '~/services/productService';
 import { getCategories } from '~/services/categoryService';
-import { SelectInput, TextAreaInput, TextInput } from '~/components/FormInput';
-import { getAttributeByCategoryId } from '~/services/attributeService';
 import { getBrands } from '~/services/brandService';
+import { getAttributeByCategoryId } from '~/services/attributeService';
+import { createProduct, getProductById, updateProduct } from '~/services/productService';
+import { NumberInput, SelectInput, TextAreaInput, TextInput } from '~/components/FormInput';
 
 const entityListPage = '/admin/news';
 
@@ -28,12 +28,7 @@ const defaultValue = {
     stockQuantity: 0,
     categoryId: null,
     brandId: null,
-    attributes: [
-        {
-            value: '0',
-            attributeId: 0,
-        },
-    ],
+    attributes: [],
 };
 
 const validationSchema = yup.object({});
@@ -84,7 +79,6 @@ function ProductForm() {
     const [isBrandLoading, setIsBrandLoading] = useState(false);
 
     const [attributeList, setAttributeList] = useState([]);
-    const [attributeValues, setAttributeValues] = useState({});
 
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
@@ -128,13 +122,6 @@ function ProductForm() {
         setTimeout(() => {
             onSuccess('ok');
         }, 0);
-    };
-
-    const handleChange = (attId, value) => {
-        setAttributeValues((prev) => ({
-            ...prev,
-            [attId]: value,
-        }));
     };
 
     const handleSubmit = async (values, { setSubmitting }) => {
@@ -213,8 +200,16 @@ function ProductForm() {
         const fetchAttributes = async () => {
             try {
                 const response = await getAttributeByCategoryId(formik.values.categoryId);
+                const items = response.data.data;
 
-                setAttributeList(response.data.data);
+                setAttributeList(items);
+                formik.setFieldValue(
+                    'attributes',
+                    items.map((item) => ({
+                        value: item.defaultValue,
+                        attributeId: item.id,
+                    })),
+                );
             } catch (error) {
                 messageApi.error('Lỗi: ' + error.message);
             }
@@ -306,6 +301,7 @@ function ProductForm() {
                         label="Tên sản phẩm"
                         placeholder="Nhập tên sản phẩm"
                         helperText="Tên sản phẩm từ 3-500 kí tự"
+                        autoComplete="on"
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
@@ -363,8 +359,8 @@ function ProductForm() {
                     <div className="col-12">
                         <h2>Thông tin chi tiết</h2>
                     </div>
-                    {attributeList.map(({ id, name, required, defaultValue }) => (
-                        <div key={id} className="col-md-6 col-12">
+                    {attributeList.map(({ id, name, required }, index) => (
+                        <div key={index} className="col-md-6 col-12">
                             <label htmlFor={id}>
                                 {required && <span className="text-danger">*</span>} {name}:
                             </label>
@@ -373,11 +369,70 @@ function ProductForm() {
                                 id={id}
                                 name={id}
                                 placeholder={`Nhập ${name}`}
-                                value={attributeValues[id] || ''}
-                                onChange={(e) => handleChange(id, e.target.value)}
+                                value={formik.values.attributes[index]?.value || ''}
+                                onChange={(e) => {
+                                    const newAttributes = [...formik.values.attributes];
+                                    newAttributes[index] = {
+                                        ...newAttributes[index],
+                                        value: e.target.value,
+                                        attributeId: id,
+                                    };
+                                    formik.setFieldValue('attributes', newAttributes);
+                                }}
                             />
                         </div>
                     ))}
+                </div>
+
+                <div className="row g-3">
+                    <div className="col-12">
+                        <h2>Thông tin bán hàng</h2>
+                    </div>
+                    <NumberInput
+                        required
+                        id="price"
+                        className="col-12"
+                        label="Giá sản phẩm"
+                        placeholder="Nhập giá sản phẩm"
+                        value={formik.values.price}
+                        onChange={(value) => formik.setFieldValue('price', value)}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.price && formik.errors.price ? formik.errors.price : null}
+                    />
+
+                    <NumberInput
+                        id="discountPercentage"
+                        className="col-12"
+                        label="Giảm giá (%)"
+                        placeholder="Nhập phần trăm giảm giá"
+                        min={0}
+                        max={100}
+                        value={formik.values.discountPercentage}
+                        onChange={(value) => formik.setFieldValue('discountPercentage', value)}
+                        onBlur={formik.handleBlur}
+                        error={
+                            formik.touched.discountPercentage && formik.errors.discountPercentage
+                                ? formik.errors.discountPercentage
+                                : null
+                        }
+                    />
+
+                    <NumberInput
+                        required
+                        id="stockQuantity"
+                        className="col-12"
+                        label="Số lượng tồn kho"
+                        placeholder="Nhập số lượng tồn kho"
+                        min={0}
+                        value={formik.values.stockQuantity}
+                        onChange={(value) => formik.setFieldValue('stockQuantity', value)}
+                        onBlur={formik.handleBlur}
+                        error={
+                            formik.touched.stockQuantity && formik.errors.stockQuantity
+                                ? formik.errors.stockQuantity
+                                : null
+                        }
+                    />
                 </div>
 
                 <div className="row">

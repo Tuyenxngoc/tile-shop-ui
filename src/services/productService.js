@@ -11,8 +11,10 @@ export const getProducts = (params) => {
 export const updateProduct = (id, values, images) => {
     const formData = new FormData();
     formData.append('product', new Blob([JSON.stringify(values)], { type: 'application/json' }));
-    if (images) {
-        formData.append('images', images);
+    if (images && images.length > 0) {
+        images.forEach((image) => {
+            formData.append('images', image);
+        });
     }
 
     return axiosPrivate.put(`products/${id}`, formData, {
@@ -25,8 +27,10 @@ export const updateProduct = (id, values, images) => {
 export const createProduct = (values, images) => {
     const formData = new FormData();
     formData.append('product', new Blob([JSON.stringify(values)], { type: 'application/json' }));
-    if (images) {
-        formData.append('images', images);
+    if (images && images.length > 0) {
+        images.forEach((image) => {
+            formData.append('images', image);
+        });
     }
 
     return axiosPrivate.post('products', formData, {
