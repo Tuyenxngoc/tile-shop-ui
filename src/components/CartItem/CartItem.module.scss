@@ -1,0 +1,32 @@
+.info {
+    .name {
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        line-height: 18px;
+        color: inherit;
+        font-size: 15px;
+    }
+}
+
+.price-current {
+    font-weight: 600;
+    font-size: 23px;
+    color: #ff0000;
+    font-size: 15px;
+}
+
+.price-old {
+    font-weight: 400;
+    font-size: 14px;
+    text-decoration-line: line-through;
+    color: #1f252c;
+}
+
+.discount {
+}
+
+.quantity-label {
+}
+
+.quantity-selector {
+}
