@@ -13,7 +13,7 @@ export const updateProduct = (id, values, images) => {
     formData.append('product', new Blob([JSON.stringify(values)], { type: 'application/json' }));
     if (images && images.length > 0) {
         images.forEach((image) => {
-            formData.append('images', image);
+            formData.append('images', image.originFileObj);
         });
     }
 
@@ -29,7 +29,7 @@ export const createProduct = (values, images) => {
     formData.append('product', new Blob([JSON.stringify(values)], { type: 'application/json' }));
     if (images && images.length > 0) {
         images.forEach((image) => {
-            formData.append('images', image);
+            formData.append('images', image.originFileObj);
         });
     }
 

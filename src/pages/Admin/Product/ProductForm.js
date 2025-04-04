@@ -18,7 +18,7 @@ import { getAttributeByCategoryId } from '~/services/attributeService';
 import { createProduct, getProductById, updateProduct } from '~/services/productService';
 import { NumberInput, SelectInput, TextAreaInput, TextInput } from '~/components/FormInput';
 
-const entityListPage = '/admin/news';
+const entityListPage = '/admin/products';
 
 const defaultValue = {
     name: '',
