@@ -19,3 +19,7 @@ export const createCategory = (values) => {
 export const deleteCategory = (id) => {
     return axiosPrivate.delete(`categories/${id}`);
 };
+
+export const getCategoriesTree = () => {
+    return axiosPrivate.get('categories/tree');
+};

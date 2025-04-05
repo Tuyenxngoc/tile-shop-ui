@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import queryString from 'query-string';
 import ImgCrop from 'antd-img-crop';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Image, Menu, message, Space, Upload, theme } from 'antd';
+import { Button, Image, Menu, message, Space, Upload, theme, TreeSelect } from 'antd';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -12,7 +12,7 @@ import * as yup from 'yup';
 import useDebounce from '~/hooks/useDebounce';
 import { checkIdIsNumber } from '~/utils/helper';
 import { handleError } from '~/utils/errorHandler';
-import { getCategories } from '~/services/categoryService';
+import { getCategoriesTree } from '~/services/categoryService';
 import { getBrands } from '~/services/brandService';
 import { getAttributeByCategoryId } from '~/services/attributeService';
 import { createProduct, getProductById, updateProduct } from '~/services/productService';
@@ -100,6 +100,21 @@ const uploadButton = (
     </button>
 );
 
+const convertToTreeData = (categories) => {
+    return categories.map((category) => {
+        return {
+            label: category.name,
+            value: category.id,
+            key: category.id.toString(),
+            children:
+                category.subCategories && category.subCategories.length > 0
+                    ? convertToTreeData(category.subCategories)
+                    : [],
+            selectable: !(category.subCategories && category.subCategories.length > 0),
+        };
+    });
+};
+
 const menuItems = [
     {
         key: 'basic-info',
@@ -126,8 +141,6 @@ function ProductForm() {
     const [messageApi, contextHolder] = message.useMessage();
 
     const [categoryList, setCategoryList] = useState([]);
-    const [categorySearchTerm, setCategorySearchTerm] = useState('');
-    const debouncedCategorySearch = useDebounce(categorySearchTerm, 300);
     const [isCategoryLoading, setIsCategoryLoading] = useState(false);
 
     const [brandList, setBrandList] = useState([]);
@@ -225,11 +238,9 @@ function ProductForm() {
         const fetchCategories = async () => {
             setIsCategoryLoading(true);
             try {
-                const params = queryString.stringify({ keyword: debouncedCategorySearch, searchBy: 'name' });
-                const response = await getCategories(params);
-
-                const { items } = response.data.data;
-                setCategoryList(items);
+                const response = await getCategoriesTree();
+                const treeData = convertToTreeData(response.data.data);
+                setCategoryList(treeData);
             } catch (error) {
                 messageApi.error('Lỗi: ' + error.message);
             } finally {
@@ -239,7 +250,7 @@ function ProductForm() {
 
         fetchCategories();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedCategorySearch]);
+    }, []);
 
     useEffect(() => {
         const fetchBrands = async () => {
@@ -424,23 +435,25 @@ function ProductForm() {
                             error={formik.touched.name && formik.errors.name ? formik.errors.name : null}
                         />
 
-                        <SelectInput
-                            required
-                            id="categoryId"
-                            label="Danh mục"
-                            placeholder="Chọn danh mục"
-                            className="col-12"
-                            loading={isCategoryLoading}
-                            onSearch={setCategorySearchTerm}
-                            fieldNames={{ label: 'name', value: 'id' }}
-                            value={formik.values.categoryId}
-                            onChange={(value) => formik.setFieldValue('categoryId', value)}
-                            onBlur={() => formik.setFieldTouched('categoryId', true)}
-                            options={categoryList}
-                            error={
-                                formik.touched.categoryId && formik.errors.categoryId ? formik.errors.categoryId : null
-                            }
-                        />
+                        <div className="col-12">
+                            <label htmlFor="categoryId">
+                                <span className="text-danger">*</span> Danh mục sản phẩm:
+                            </label>
+                            <TreeSelect
+                                id="categoryId"
+                                placeholder="Chọn danh mục"
+                                loading={isCategoryLoading}
+                                treeData={categoryList}
+                                value={formik.values.categoryId}
+                                onChange={(value) => formik.setFieldValue('categoryId', value)}
+                                onBlur={() => formik.setFieldTouched('categoryId', true)}
+                                status={formik.touched.categoryId && formik.errors.categoryId ? 'error' : undefined}
+                                className="w-100"
+                            />
+                            {formik.touched.categoryId && formik.errors.categoryId ? (
+                                <div className="text-danger mt-1">{formik.errors.categoryId}</div>
+                            ) : null}
+                        </div>
 
                         <SelectInput
                             id="brandId"
