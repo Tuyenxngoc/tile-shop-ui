@@ -23,7 +23,7 @@ function NumberInput({
     return (
         <div className={className}>
             {label && (
-                <label htmlFor={id}>
+                <label htmlFor={id} className="me-2">
                     {required && <span className="text-danger">*</span>} {label}:
                 </label>
             )}

@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import queryString from 'query-string';
 import ImgCrop from 'antd-img-crop';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Image, Input, message, Space, Upload } from 'antd';
+import { Button, Image, Input, Menu, message, Space, Upload, theme } from 'antd';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -38,7 +38,7 @@ const validationSchema = yup.object({
         .min(3, 'Độ dài tối thiểu là 3 ký tự')
         .max(255, 'Độ dài tối đa là 255 ký tự'),
 
-    description: yup.string().nullable(),
+    description: yup.string().required('Trường này không được để trống'),
 
     price: yup.number().typeError('Trường này bắt buộc là số').required('Trường này là bắt buộc'),
 
@@ -62,6 +62,21 @@ const validationSchema = yup.object({
         }),
     ),
 });
+
+const getDynamicAttributeSchema = (attributeList) => {
+    return yup.array().of(
+        yup.object().shape({
+            attributeId: yup.number().required(),
+            value: yup.string().when('attributeId', (attributeId, schema) => {
+                const attr = attributeList.find((a) => a.id === attributeId);
+                if (attr?.isRequired) {
+                    return schema.required('Trường này là bắt buộc');
+                }
+                return schema.nullable();
+            }),
+        }),
+    );
+};
 
 const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -88,11 +103,30 @@ const validateFile = (file) => {
 const uploadButton = (
     <button style={{ border: 0, background: 'none' }} type="button">
         <PlusOutlined />
-        <div style={{ marginTop: 8 }}>Upload</div>
+        <div style={{ marginTop: 8 }}>Thêm hình ảnh</div>
     </button>
 );
 
+const menuItems = [
+    {
+        key: 'basic-info',
+        label: <a href="#basic-info">Thông tin cơ bản</a>,
+    },
+    {
+        key: 'detailed-info',
+        label: <a href="#detailed-info">Thông tin chi tiết</a>,
+    },
+    {
+        key: 'sales-info',
+        label: <a href="#sales-info">Thông tin bán hàng</a>,
+    },
+];
+
 function ProductForm() {
+    const {
+        token: { colorBgContainer, borderRadiusLG },
+    } = theme.useToken();
+
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -161,7 +195,7 @@ function ProductForm() {
                 response = await updateProduct(id, values, fileList);
             } else {
                 if (!fileList || fileList.length === 0) {
-                    messageApi.warning('Vui lòng chọn một ảnh bìa');
+                    messageApi.warning('Vui lòng chọn ít nhất 1 hình ảnh!');
                     return;
                 }
                 response = await createProduct(values, fileList);
@@ -233,13 +267,37 @@ function ProductForm() {
                 const items = response.data.data;
 
                 setAttributeList(items);
-                formik.setFieldValue(
-                    'attributes',
-                    items.map((item) => ({
-                        value: item.defaultValue,
-                        attributeId: item.id,
-                    })),
-                );
+
+                // Cập nhật lại schema của formik
+                const dynamicSchema = getDynamicAttributeSchema(items);
+                formik.setFormikState((prevState) => ({
+                    ...prevState,
+                    validationSchema: validationSchema.shape({
+                        attributes: dynamicSchema,
+                    }),
+                }));
+
+                // Nếu đang tạo mới hoặc chưa có thuộc tính thì set mặc định từ API
+                if (!id || !formik.values.attributes || formik.values.attributes.length === 0) {
+                    formik.setFieldValue(
+                        'attributes',
+                        items.map((item) => ({
+                            value: item.defaultValue || '',
+                            attributeId: item.id,
+                        })),
+                    );
+                } else {
+                    // Khi đang chỉnh sửa, giữ lại giá trị đã nhập nếu trùng attributeId
+                    const mergedAttributes = items.map((item) => {
+                        const existing = formik.values.attributes.find((a) => a.attributeId === item.id);
+                        return {
+                            value: existing ? existing.value : item.defaultValue || '',
+                            attributeId: item.id,
+                        };
+                    });
+
+                    formik.setFieldValue('attributes', mergedAttributes);
+                }
             } catch (error) {
                 messageApi.error('Lỗi: ' + error.message);
             }
@@ -284,197 +342,249 @@ function ProductForm() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
-    console.log(formik.errors);
-
     return (
         <>
             {contextHolder}
             <h2>{id ? 'Chỉnh sửa sản phẩm' : 'Thêm mới sản phẩm'}</h2>
 
+            <div
+                style={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 999,
+                    background: colorBgContainer,
+                    borderRadius: borderRadiusLG,
+                    boxShadow: '0 1px 4px rgba(0, 0, 0, .12)',
+                    marginBottom: 16,
+                }}
+            >
+                <Menu mode="horizontal" items={menuItems} />
+            </div>
+
             <form onSubmit={formik.handleSubmit}>
-                <div className="row g-3">
-                    <div className="col-12">
-                        <h2>Thông tin cơ bản</h2>
-                    </div>
-                    <div className="col-12">
-                        <span>
-                            <span className="text-danger">*</span> Ảnh bìa sản phẩm:
-                        </span>
-                        <div className="text-center">
-                            <ImgCrop
-                                rotationSlider
-                                aspectSlider
-                                showReset
-                                aspect={3 / 4}
-                                resetText="Đặt lại"
-                                modalTitle="Chỉnh sửa hình ảnh"
-                                beforeCrop={handleBeforeCrop}
-                            >
-                                <Upload
-                                    accept="image/*"
-                                    listType="picture-card"
-                                    fileList={fileList}
-                                    maxCount={10}
-                                    onPreview={handlePreview}
-                                    onChange={handleFileListChange}
-                                    customRequest={handleCustomRequest}
+                <div
+                    id="basic-info"
+                    style={{
+                        padding: 24,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusLG,
+                        boxShadow: '0 1px 4px rgba(0, 0, 0, .12)',
+                        marginBottom: 16,
+                    }}
+                >
+                    <div className="row g-3">
+                        <div className="col-12">
+                            <h4>Thông tin cơ bản</h4>
+                        </div>
+                        <div className="col-12">
+                            <span>
+                                <span className="text-danger">*</span> Hình ảnh sản phẩm:
+                            </span>
+                            <div className="text-center">
+                                <ImgCrop
+                                    rotationSlider
+                                    aspectSlider
+                                    showReset
+                                    aspect={3 / 4}
+                                    resetText="Đặt lại"
+                                    modalTitle="Chỉnh sửa hình ảnh"
+                                    beforeCrop={handleBeforeCrop}
                                 >
-                                    {fileList.length >= 8 ? null : uploadButton}
-                                </Upload>
-                            </ImgCrop>
-                            {previewImage && (
-                                <Image
-                                    wrapperStyle={{ display: 'none' }}
-                                    preview={{
-                                        visible: previewOpen,
-                                        onVisibleChange: (visible) => setPreviewOpen(visible),
-                                        afterOpenChange: (visible) => !visible && setPreviewImage(''),
-                                    }}
-                                    src={previewImage}
-                                />
-                            )}
+                                    <Upload
+                                        accept="image/*"
+                                        listType="picture-card"
+                                        fileList={fileList}
+                                        maxCount={10}
+                                        onPreview={handlePreview}
+                                        onChange={handleFileListChange}
+                                        customRequest={handleCustomRequest}
+                                    >
+                                        {fileList.length >= 8 ? null : uploadButton}
+                                    </Upload>
+                                </ImgCrop>
+                                {previewImage && (
+                                    <Image
+                                        wrapperStyle={{ display: 'none' }}
+                                        preview={{
+                                            visible: previewOpen,
+                                            onVisibleChange: (visible) => setPreviewOpen(visible),
+                                            afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                                        }}
+                                        src={previewImage}
+                                    />
+                                )}
+                            </div>
                         </div>
+
+                        <TextInput
+                            required
+                            id="name"
+                            className="col-12"
+                            label="Tên sản phẩm"
+                            placeholder="Nhập tên sản phẩm"
+                            helperText="Tên sản phẩm từ 3-500 kí tự"
+                            autoComplete="on"
+                            value={formik.values.name}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.name && formik.errors.name ? formik.errors.name : null}
+                        />
+
+                        <SelectInput
+                            required
+                            id="categoryId"
+                            label="Danh mục"
+                            placeholder="Chọn danh mục"
+                            className="col-12"
+                            loading={isCategoryLoading}
+                            onSearch={setCategorySearchTerm}
+                            fieldNames={{ label: 'name', value: 'id' }}
+                            value={formik.values.categoryId}
+                            onChange={(value) => formik.setFieldValue('categoryId', value)}
+                            onBlur={() => formik.setFieldTouched('categoryId', true)}
+                            options={categoryList}
+                            error={
+                                formik.touched.categoryId && formik.errors.categoryId ? formik.errors.categoryId : null
+                            }
+                        />
+
+                        <SelectInput
+                            id="brandId"
+                            label="Thương hiệu"
+                            placeholder="Chọn thương hiệu"
+                            className="col-12"
+                            loading={isBrandLoading}
+                            onSearch={setBrandSearchTerm}
+                            fieldNames={{ label: 'name', value: 'id' }}
+                            value={formik.values.brandId}
+                            onChange={(value) => formik.setFieldValue('brandId', value)}
+                            onBlur={() => formik.setFieldTouched('brandId', true)}
+                            options={brandList}
+                            error={formik.touched.brandId && formik.errors.brandId ? formik.errors.brandId : null}
+                        />
+
+                        <TextAreaInput
+                            required
+                            id="description"
+                            className="col-12"
+                            label="Mô tả"
+                            placeholder="Nhập mô tả"
+                            value={formik.values.description}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={
+                                formik.touched.description && formik.errors.description
+                                    ? formik.errors.description
+                                    : null
+                            }
+                        />
                     </div>
-
-                    <TextInput
-                        required
-                        id="name"
-                        className="col-12"
-                        label="Tên sản phẩm"
-                        placeholder="Nhập tên sản phẩm"
-                        helperText="Tên sản phẩm từ 3-500 kí tự"
-                        autoComplete="on"
-                        value={formik.values.name}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.name && formik.errors.name ? formik.errors.name : null}
-                    />
-
-                    <SelectInput
-                        required
-                        id="categoryId"
-                        label="Danh mục"
-                        placeholder="Chọn danh mục"
-                        className="col-12"
-                        loading={isCategoryLoading}
-                        onSearch={setCategorySearchTerm}
-                        fieldNames={{ label: 'name', value: 'id' }}
-                        value={formik.values.categoryId}
-                        onChange={(value) => formik.setFieldValue('categoryId', value)}
-                        onBlur={() => formik.setFieldTouched('categoryId', true)}
-                        options={categoryList}
-                        error={formik.touched.categoryId && formik.errors.categoryId ? formik.errors.categoryId : null}
-                    />
-
-                    <SelectInput
-                        id="brandId"
-                        label="Thương hiệu"
-                        placeholder="Chọn thương hiệu"
-                        className="col-12"
-                        loading={isBrandLoading}
-                        onSearch={setBrandSearchTerm}
-                        fieldNames={{ label: 'name', value: 'id' }}
-                        value={formik.values.brandId}
-                        onChange={(value) => formik.setFieldValue('brandId', value)}
-                        onBlur={() => formik.setFieldTouched('brandId', true)}
-                        options={brandList}
-                        error={formik.touched.brandId && formik.errors.brandId ? formik.errors.brandId : null}
-                    />
-
-                    <TextAreaInput
-                        required
-                        id="description"
-                        className="col-12"
-                        label="Mô tả"
-                        placeholder="Nhập mô tả"
-                        helperText="Mô tả từ 3-1500 kí tự"
-                        value={formik.values.description}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={
-                            formik.touched.description && formik.errors.description ? formik.errors.description : null
-                        }
-                    />
                 </div>
 
-                <div className="row g-3">
-                    <div className="col-12">
-                        <h2>Thông tin chi tiết</h2>
-                    </div>
-                    {attributeList.map(({ id, name, required }, index) => (
-                        <div key={index} className="col-md-6 col-12">
-                            <label htmlFor={id}>
-                                {required && <span className="text-danger">*</span>} {name}:
-                            </label>
-
-                            <Input
-                                id={id}
-                                name={id}
-                                placeholder={`Nhập ${name}`}
-                                value={formik.values.attributes[index]?.value || ''}
-                                onChange={(e) => {
-                                    const newAttributes = [...formik.values.attributes];
-                                    newAttributes[index] = {
-                                        ...newAttributes[index],
-                                        value: e.target.value,
-                                        attributeId: id,
-                                    };
-                                    formik.setFieldValue('attributes', newAttributes);
-                                }}
-                            />
+                <div
+                    id="detailed-info"
+                    style={{
+                        padding: 24,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusLG,
+                        boxShadow: '0 1px 4px rgba(0, 0, 0, .12)',
+                        marginBottom: 16,
+                    }}
+                >
+                    <div className="row g-3">
+                        <div className="col-12">
+                            <h4>Thông tin chi tiết</h4>
                         </div>
-                    ))}
+                        {attributeList.length > 0 ? (
+                            attributeList.map(({ id, name, isRequired }, index) => (
+                                <div key={index} className="col-md-6 col-12">
+                                    <label htmlFor={id}>
+                                        {isRequired && <span className="text-danger">*</span>} {name}:
+                                    </label>
+
+                                    <Input
+                                        id={id}
+                                        name={id}
+                                        placeholder={`Nhập ${name}`}
+                                        value={formik.values.attributes[index]?.value || ''}
+                                        onChange={(e) => {
+                                            const newAttributes = [...formik.values.attributes];
+                                            newAttributes[index] = {
+                                                ...newAttributes[index],
+                                                value: e.target.value,
+                                                attributeId: id,
+                                            };
+                                            formik.setFieldValue('attributes', newAttributes);
+                                        }}
+                                    />
+                                </div>
+                            ))
+                        ) : (
+                            <span>Có thể điều chỉnh sau khi chọn danh mục</span>
+                        )}
+                    </div>
                 </div>
 
-                <div className="row g-3">
-                    <div className="col-12">
-                        <h2>Thông tin bán hàng</h2>
+                <div
+                    id="sales-info"
+                    style={{
+                        padding: 24,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusLG,
+                        boxShadow: '0 1px 4px rgba(0, 0, 0, .12)',
+                        marginBottom: 16,
+                    }}
+                >
+                    <div className="row g-3">
+                        <div className="col-12">
+                            <h4>Thông tin bán hàng</h4>
+                        </div>
+                        <NumberInput
+                            required
+                            id="price"
+                            className="col-12"
+                            label="Giá sản phẩm"
+                            placeholder="Nhập giá sản phẩm"
+                            value={formik.values.price}
+                            onChange={(value) => formik.setFieldValue('price', value)}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.price && formik.errors.price ? formik.errors.price : null}
+                        />
+
+                        <NumberInput
+                            id="discountPercentage"
+                            className="col-12"
+                            label="Giảm giá (%)"
+                            placeholder="Nhập phần trăm giảm giá"
+                            min={0}
+                            max={100}
+                            value={formik.values.discountPercentage}
+                            onChange={(value) => formik.setFieldValue('discountPercentage', value)}
+                            onBlur={formik.handleBlur}
+                            error={
+                                formik.touched.discountPercentage && formik.errors.discountPercentage
+                                    ? formik.errors.discountPercentage
+                                    : null
+                            }
+                        />
+
+                        <NumberInput
+                            required
+                            id="stockQuantity"
+                            className="col-12"
+                            label="Số lượng tồn kho"
+                            placeholder="Nhập số lượng tồn kho"
+                            min={0}
+                            value={formik.values.stockQuantity}
+                            onChange={(value) => formik.setFieldValue('stockQuantity', value)}
+                            onBlur={formik.handleBlur}
+                            error={
+                                formik.touched.stockQuantity && formik.errors.stockQuantity
+                                    ? formik.errors.stockQuantity
+                                    : null
+                            }
+                        />
                     </div>
-                    <NumberInput
-                        required
-                        id="price"
-                        className="col-12"
-                        label="Giá sản phẩm"
-                        placeholder="Nhập giá sản phẩm"
-                        value={formik.values.price}
-                        onChange={(value) => formik.setFieldValue('price', value)}
-                        onBlur={formik.handleBlur}
-                        error={formik.touched.price && formik.errors.price ? formik.errors.price : null}
-                    />
-
-                    <NumberInput
-                        id="discountPercentage"
-                        className="col-12"
-                        label="Giảm giá (%)"
-                        placeholder="Nhập phần trăm giảm giá"
-                        min={0}
-                        max={100}
-                        value={formik.values.discountPercentage}
-                        onChange={(value) => formik.setFieldValue('discountPercentage', value)}
-                        onBlur={formik.handleBlur}
-                        error={
-                            formik.touched.discountPercentage && formik.errors.discountPercentage
-                                ? formik.errors.discountPercentage
-                                : null
-                        }
-                    />
-
-                    <NumberInput
-                        required
-                        id="stockQuantity"
-                        className="col-12"
-                        label="Số lượng tồn kho"
-                        placeholder="Nhập số lượng tồn kho"
-                        min={0}
-                        value={formik.values.stockQuantity}
-                        onChange={(value) => formik.setFieldValue('stockQuantity', value)}
-                        onBlur={formik.handleBlur}
-                        error={
-                            formik.touched.stockQuantity && formik.errors.stockQuantity
-                                ? formik.errors.stockQuantity
-                                : null
-                        }
-                    />
                 </div>
 
                 <div className="row">
