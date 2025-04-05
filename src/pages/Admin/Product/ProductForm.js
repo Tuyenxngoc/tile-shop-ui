@@ -31,7 +31,37 @@ const defaultValue = {
     attributes: [],
 };
 
-const validationSchema = yup.object({});
+const validationSchema = yup.object({
+    name: yup
+        .string()
+        .required('Trường này không được để trống')
+        .min(3, 'Độ dài tối thiểu là 3 ký tự')
+        .max(255, 'Độ dài tối đa là 255 ký tự'),
+
+    description: yup.string().nullable(),
+
+    price: yup.number().typeError('Trường này bắt buộc là số').required('Trường này là bắt buộc'),
+
+    discountPercentage: yup
+        .number()
+        .typeError('Trường này bắt buộc là số')
+        .required('Trường này là bắt buộc')
+        .min(0, 'Giá trị tối thiểu là 0')
+        .max(100, 'Giá trị tối đa là 100'),
+
+    stockQuantity: yup.number().typeError('Trường này bắt buộc là số nguyên').required('Trường này là bắt buộc'),
+
+    categoryId: yup.number().typeError('Trường này bắt buộc là số').required('Trường này là bắt buộc'),
+
+    brandId: yup.number().nullable(),
+
+    attributes: yup.array().of(
+        yup.object({
+            attributeId: yup.number(),
+            value: yup.string().nullable(),
+        }),
+    ),
+});
 
 const getBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -232,8 +262,18 @@ function ProductForm() {
         const fetchEntity = async () => {
             try {
                 const response = await getProductById(id);
-                const { name } = response.data.data;
-                console.log(name);
+                const { name, description, price, discountPercentage, stockQuantity, categoryId, brandId, attributes } =
+                    response.data.data;
+                formik.setValues({
+                    name,
+                    description,
+                    price,
+                    discountPercentage,
+                    stockQuantity,
+                    categoryId,
+                    brandId,
+                    attributes,
+                });
             } catch (error) {
                 messageApi.error('Lỗi: ' + error.message);
             }
@@ -243,6 +283,8 @@ function ProductForm() {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
+
+    console.log(formik.errors);
 
     return (
         <>
