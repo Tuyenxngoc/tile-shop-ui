@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import queryString from 'query-string';
 import ImgCrop from 'antd-img-crop';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Image, Input, Menu, message, Space, Upload, theme } from 'antd';
+import { Button, Image, Menu, message, Space, Upload, theme } from 'antd';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -16,7 +16,7 @@ import { getCategories } from '~/services/categoryService';
 import { getBrands } from '~/services/brandService';
 import { getAttributeByCategoryId } from '~/services/attributeService';
 import { createProduct, getProductById, updateProduct } from '~/services/productService';
-import { NumberInput, SelectInput, TextAreaInput, TextInput } from '~/components/FormInput';
+import { NumberInput, RichTextInput, SelectInput, TextInput } from '~/components/FormInput';
 
 const entityListPage = '/admin/products';
 
@@ -54,25 +54,18 @@ const validationSchema = yup.object({
     categoryId: yup.number().typeError('Trường này bắt buộc là số').required('Trường này là bắt buộc'),
 
     brandId: yup.number().nullable(),
-
-    attributes: yup.array().of(
-        yup.object({
-            attributeId: yup.number(),
-            value: yup.string().nullable(),
-        }),
-    ),
 });
 
 const getDynamicAttributeSchema = (attributeList) => {
     return yup.array().of(
         yup.object().shape({
             attributeId: yup.number().required(),
-            value: yup.string().when('attributeId', (attributeId, schema) => {
-                const attr = attributeList.find((a) => a.id === attributeId);
+            value: yup.string().when('attributeId', ([attributeId], schema, context) => {
+                const attr = attributeList.find((a) => a.id === Number(attributeId));
                 if (attr?.isRequired) {
                     return schema.required('Trường này là bắt buộc');
                 }
-                return schema.nullable();
+                return schema;
             }),
         }),
     );
@@ -142,11 +135,21 @@ function ProductForm() {
     const debouncedBrandSearch = useDebounce(brandSearchTerm, 300);
     const [isBrandLoading, setIsBrandLoading] = useState(false);
 
-    const [attributeList, setAttributeList] = useState([]);
-
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState([]);
+
+    const [attributeList, setAttributeList] = useState([]);
+
+    const dynamicAttributeSchema = useMemo(() => {
+        return getDynamicAttributeSchema(attributeList);
+    }, [attributeList]);
+
+    const fullValidationSchema = useMemo(() => {
+        return validationSchema.shape({
+            attributes: dynamicAttributeSchema,
+        });
+    }, [dynamicAttributeSchema]);
 
     const handlePreview = async (file) => {
         if (!file.url && !file.preview) {
@@ -213,7 +216,7 @@ function ProductForm() {
 
     const formik = useFormik({
         initialValues: defaultValue,
-        validationSchema: validationSchema,
+        validationSchema: fullValidationSchema,
         onSubmit: handleSubmit,
         enableReinitialize: true,
     });
@@ -267,15 +270,6 @@ function ProductForm() {
                 const items = response.data.data;
 
                 setAttributeList(items);
-
-                // Cập nhật lại schema của formik
-                const dynamicSchema = getDynamicAttributeSchema(items);
-                formik.setFormikState((prevState) => ({
-                    ...prevState,
-                    validationSchema: validationSchema.shape({
-                        attributes: dynamicSchema,
-                    }),
-                }));
 
                 // Nếu đang tạo mới hoặc chưa có thuộc tính thì set mặc định từ API
                 if (!id || !formik.values.attributes || formik.values.attributes.length === 0) {
@@ -463,15 +457,15 @@ function ProductForm() {
                             error={formik.touched.brandId && formik.errors.brandId ? formik.errors.brandId : null}
                         />
 
-                        <TextAreaInput
+                        <RichTextInput
                             required
                             id="description"
                             className="col-12"
-                            label="Mô tả"
-                            placeholder="Nhập mô tả"
+                            label="Mô tả sản phẩm"
+                            placeholder="Nhập mô tả sản phẩm"
                             value={formik.values.description}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
+                            onChange={(value) => formik.setFieldValue('description', value)}
+                            onBlur={() => formik.setFieldTouched('description', true)}
                             error={
                                 formik.touched.description && formik.errors.description
                                     ? formik.errors.description
@@ -497,27 +491,32 @@ function ProductForm() {
                         </div>
                         {attributeList.length > 0 ? (
                             attributeList.map(({ id, name, isRequired }, index) => (
-                                <div key={index} className="col-md-6 col-12">
-                                    <label htmlFor={id}>
-                                        {isRequired && <span className="text-danger">*</span>} {name}:
-                                    </label>
-
-                                    <Input
-                                        id={id}
-                                        name={id}
-                                        placeholder={`Nhập ${name}`}
-                                        value={formik.values.attributes[index]?.value || ''}
-                                        onChange={(e) => {
-                                            const newAttributes = [...formik.values.attributes];
-                                            newAttributes[index] = {
-                                                ...newAttributes[index],
-                                                value: e.target.value,
-                                                attributeId: id,
-                                            };
-                                            formik.setFieldValue('attributes', newAttributes);
-                                        }}
-                                    />
-                                </div>
+                                <TextInput
+                                    key={index}
+                                    required={isRequired}
+                                    id={id}
+                                    name={`attributes[${index}].value`}
+                                    className="col-md-6 col-12"
+                                    label={name}
+                                    placeholder={`Nhập ${name}`}
+                                    value={formik.values.attributes[index]?.value || ''}
+                                    onChange={(e) => {
+                                        const newAttributes = [...formik.values.attributes];
+                                        newAttributes[index] = {
+                                            ...newAttributes[index],
+                                            value: e.target.value,
+                                            attributeId: id,
+                                        };
+                                        formik.setFieldValue('attributes', newAttributes);
+                                    }}
+                                    onBlur={formik.handleBlur}
+                                    error={
+                                        formik.touched.attributes?.[index]?.value &&
+                                        formik.errors.attributes?.[index]?.value
+                                            ? formik.errors.attributes[index].value
+                                            : null
+                                    }
+                                />
                             ))
                         ) : (
                             <span>Có thể điều chỉnh sau khi chọn danh mục</span>
