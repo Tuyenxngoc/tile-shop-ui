@@ -1,11 +1,11 @@
 import { axiosPrivate } from '~/utils/httpRequest';
 
 export const getProductById = (id) => {
-    return axiosPrivate.get(`products/${id}`);
+    return axiosPrivate.get(`admin/products/${id}`);
 };
 
 export const getProducts = (params) => {
-    return axiosPrivate.get(`products?${params}`);
+    return axiosPrivate.get(`admin/products?${params}`);
 };
 
 export const updateProduct = (id, values, images) => {
@@ -21,7 +21,7 @@ export const updateProduct = (id, values, images) => {
     const existingImageUrls = images.filter((img) => !img.originFileObj && img.url).map((img) => img.url);
     formData.append('existingImages', new Blob([JSON.stringify(existingImageUrls)], { type: 'application/json' }));
 
-    return axiosPrivate.put(`products/${id}`, formData, {
+    return axiosPrivate.put(`admin/products/${id}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -37,7 +37,7 @@ export const createProduct = (values, images) => {
         });
     }
 
-    return axiosPrivate.post('products', formData, {
+    return axiosPrivate.post('admin/products', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -45,7 +45,7 @@ export const createProduct = (values, images) => {
 };
 
 export const deleteProduct = (id) => {
-    return axiosPrivate.delete(`products/${id}`);
+    return axiosPrivate.delete(`admin/products/${id}`);
 };
 
 export const getProductBySlug = (slug) => {
