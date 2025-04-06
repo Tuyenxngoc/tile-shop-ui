@@ -49,7 +49,7 @@ function App() {
                     <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
                     <Route path={ROUTES.REGISTER} element={<Register />} />
 
-                    <Route path="products/:id" element={<ProductDetail />} />
+                    <Route path=":id" element={<ProductDetail />} />
 
                     {/* Đường dẫn yêu cầu đăng nhập */}
                     <Route element={<RequireAuth />}>

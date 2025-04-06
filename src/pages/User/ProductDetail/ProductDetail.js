@@ -29,6 +29,9 @@ const imagesMtt = [
     'https://nshpos.com/Web/Resources/Uploaded/18/images/bon%20cau/demuhler/ML366304-6.jpg',
 ];
 
+const datta =
+    '<h1>Thông tin sản phẩm</h1><p>Đây là thông tin chi tiết về sản phẩm Bồn cầu thường đặt sàn DeMuhler ML366304.</p>';
+
 function ProductDetail() {
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
@@ -56,8 +59,8 @@ function ProductDetail() {
             />
 
             <div className={cx('wrapper')}>
-                <div className="row p-3">
-                    <div className="col-6">
+                <div className="row m-0">
+                    <div className="col-12 col-md-6">
                         <div className="product-images">
                             <Swiper
                                 style={{
@@ -104,17 +107,17 @@ function ProductDetail() {
                             </a>
                         </div>
                     </div>
-                    <div className="col-6">
-                        <div className="row">
+                    <div className="col-12 col-md-6">
+                        <div className="row mb-3">
                             <div className="col-12">
                                 <h1 className={cx('title')}>Bồn cầu thường đặt sàn DeMuhler ML366304</h1>
                             </div>
-                            <div className="col-12 pb-2">
+                            <div className="col-12 mb-2">
                                 <span className={cx('meta')}>
                                     Thương hiệu: <strong className="text-danger">DeMuhler</strong>
                                 </span>
                             </div>
-                            <div className="col-12 pb-4">
+                            <div className="col-12 mb-4">
                                 <span className={cx('meta')}>
                                     Tình trạng: <strong className="text-danger">Liên hệ để biết thêm thông tin</strong>
                                 </span>
@@ -128,8 +131,8 @@ function ProductDetail() {
                             </div>
                         </div>
 
-                        <div className="row">
-                            <div className="col-12 my-3">
+                        <div className="row mb-3">
+                            <div className="col-12">
                                 <span className={cx('sale-cost-detail')}>6,870,000₫</span> &nbsp; &nbsp; &nbsp;
                                 <span className={cx('sale-public-cost-detail')}>10,570,000₫</span> &nbsp; &nbsp; &nbsp;
                                 <span className={cx('meta')}>-35%</span>
@@ -151,8 +154,8 @@ function ProductDetail() {
                             </div>
                         </div>
 
-                        <div className="row">
-                            <div className="col-12 py-1">
+                        <div className="row g-2 mb-3">
+                            <div className="col-12">
                                 <div>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -170,7 +173,7 @@ function ProductDetail() {
                                     <Link to="/he-thong-cua-hang">Xem hệ thống Showroom</Link>
                                 </div>
                             </div>
-                            <div className="col-12 py-1">
+                            <div className="col-12">
                                 <div>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -187,7 +190,7 @@ function ProductDetail() {
                                     Khảo sát - Tư vấn miễn phí
                                 </div>
                             </div>
-                            <div className="col-12 py-1">
+                            <div className="col-12">
                                 <div>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -204,7 +207,7 @@ function ProductDetail() {
                                     Bảo hành chính hãng
                                 </div>
                             </div>
-                            <div className="col-12 py-1">
+                            <div className="col-12">
                                 <div>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -221,7 +224,7 @@ function ProductDetail() {
                                     Giao hàng toàn quốc
                                 </div>
                             </div>
-                            <div className="col-12 py-1">
+                            <div className="col-12">
                                 <div>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -240,13 +243,13 @@ function ProductDetail() {
                             </div>
                         </div>
 
-                        <div className="row mt-3">
-                            <div className="col-md-12">
-                                <div className="icon-round-product-detail text-white text-center">
+                        <div className="row mb-3">
+                            <div className={cx('why-buy', 'col-md-12')}>
+                                <div className={cx('icon-wrapper', 'text-white', 'text-center')}>
                                     <FaShoppingBag />
                                 </div>
-                                <div className="header-product-detail-side-right">
-                                    <p className="content">TẠI SAO MUA HÀNG Ở S.HOME SOLUTION</p>
+                                <div className={cx('content-wrapper')}>
+                                    <p className={cx('headline')}>TẠI SAO MUA HÀNG Ở HÙNG HƯƠNG</p>
                                 </div>
                             </div>
                         </div>
@@ -277,6 +280,17 @@ function ProductDetail() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className={cx('wrapper')}>
+                <div className="row m-0">
+                    <div class="col-12 col-md-7 order-2 order-md-1">
+                        <div dangerouslySetInnerHTML={{ __html: datta }} />
+                    </div>
+                    <div class="col-12 col-md-5 order-1 order-md-2">
+                        <h3>Thông số kỹ thuật</h3>
                     </div>
                 </div>
             </div>
