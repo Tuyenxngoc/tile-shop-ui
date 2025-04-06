@@ -176,18 +176,14 @@ function NewsCategory() {
             showSorterTooltip: false,
         },
         {
-            title: '',
+            title: 'Thao tác',
             key: 'action',
             render: (_, record) => (
                 <Space>
                     <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => showEditModal(record)} />
                     <Popconfirm
                         title="Thông báo"
-                        description={
-                            <div>
-                                Bạn có chắc muốn xóa <b>{record.name}</b> không?
-                            </div>
-                        }
+                        description={'Bạn có chắc muốn xóa danh mục này không?'}
                         onConfirm={() => handleDeleteEntity(record.id)}
                         okText="Xóa"
                         cancelText="Hủy"

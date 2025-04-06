@@ -137,18 +137,14 @@ function News() {
             render: (text) => text.name,
         },
         {
-            title: '',
+            title: 'Thao tác',
             key: 'action',
             render: (_, record) => (
                 <Space>
                     <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
                     <Popconfirm
                         title="Thông báo"
-                        description={
-                            <div>
-                                Bạn có chắc muốn xóa <b>{record.title}</b> không?
-                            </div>
-                        }
+                        description={'Bạn có chắc muốn xóa tin tức này không?'}
                         onConfirm={() => handleDeleteEntity(record.id)}
                         okText="Xóa"
                         cancelText="Hủy"

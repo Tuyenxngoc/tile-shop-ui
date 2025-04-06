@@ -34,24 +34,28 @@ const defaultValue = {
 const validationSchema = yup.object({
     name: yup
         .string()
-        .required('Trường này không được để trống')
+        .required('Không được để trống ô')
         .min(3, 'Độ dài tối thiểu là 3 ký tự')
         .max(255, 'Độ dài tối đa là 255 ký tự'),
 
-    description: yup.string().required('Trường này không được để trống'),
+    description: yup.string().required('Không được để trống ô'),
 
-    price: yup.number().typeError('Trường này bắt buộc là số').required('Trường này là bắt buộc'),
+    price: yup
+        .number()
+        .typeError('Trường này bắt buộc là số')
+        .required('Không được để trống ô')
+        .min(1000, 'Giá trị tối thiểu là 1.000đ'),
 
     discountPercentage: yup
         .number()
         .typeError('Trường này bắt buộc là số')
-        .required('Trường này là bắt buộc')
+        .required('Không được để trống ô')
         .min(0, 'Giá trị tối thiểu là 0')
         .max(100, 'Giá trị tối đa là 100'),
 
-    stockQuantity: yup.number().typeError('Trường này bắt buộc là số nguyên').required('Trường này là bắt buộc'),
+    stockQuantity: yup.number().typeError('Trường này bắt buộc là số nguyên').required('Không được để trống ô'),
 
-    categoryId: yup.number().typeError('Trường này bắt buộc là số').required('Trường này là bắt buộc'),
+    categoryId: yup.number().typeError('Trường này bắt buộc là số').required('Không được để trống ô'),
 
     brandId: yup.number().nullable(),
 });
@@ -63,7 +67,7 @@ const getDynamicAttributeSchema = (attributeList) => {
             value: yup.string().when('attributeId', ([attributeId], schema, context) => {
                 const attr = attributeList.find((a) => a.id === Number(attributeId));
                 if (attr?.isRequired) {
-                    return schema.required('Trường này là bắt buộc');
+                    return schema.required('Không được để trống ô');
                 }
                 return schema;
             }),
@@ -427,7 +431,7 @@ function ProductForm() {
                             className="col-12"
                             label="Tên sản phẩm"
                             placeholder="Nhập tên sản phẩm"
-                            helperText="Tên sản phẩm từ 3-500 kí tự"
+                            helperText="Tên sản phẩm từ 3-255 kí tự"
                             autoComplete="on"
                             value={formik.values.name}
                             onChange={formik.handleChange}

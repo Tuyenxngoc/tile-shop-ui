@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, Flex, Input, message, Popconfirm, Select, Space, Table } from 'antd';
+import { Alert, Button, Flex, Input, message, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 
@@ -8,6 +8,7 @@ import queryString from 'query-string';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { deleteProduct, getProducts } from '~/services/productService';
+import { formatCurrency } from '~/utils/utils';
 
 const options = [
     { value: 'id', label: 'ID' },
@@ -111,20 +112,18 @@ function Product() {
             key: 'name',
             sorter: true,
             showSorterTooltip: false,
-        },
-        {
-            title: 'Slug',
-            dataIndex: 'slug',
-            key: 'slug',
-            sorter: true,
-            showSorterTooltip: false,
-        },
-        {
-            title: 'Mô tả',
-            dataIndex: 'description',
-            key: 'description',
-            sorter: true,
-            showSorterTooltip: false,
+            render: (text, record) => (
+                <div className="row g-0">
+                    <div className="col-2">
+                        <img src={record.imageUrl} alt={text} width={56} className="img-fluid" />
+                    </div>
+                    <div className="col-10" style={{ maxWidth: 300 }}>
+                        <Tooltip title={text}>
+                            <span className="text-truncate-2">{text}</span>
+                        </Tooltip>
+                    </div>
+                </div>
+            ),
         },
         {
             title: 'Giá',
@@ -132,7 +131,7 @@ function Product() {
             key: 'price',
             sorter: true,
             showSorterTooltip: false,
-            render: (price) => `${price.toLocaleString()} ₫`,
+            render: (price) => formatCurrency(price),
         },
         {
             title: 'Giảm giá (%)',
@@ -143,7 +142,7 @@ function Product() {
             render: (discount) => `${discount}%`,
         },
         {
-            title: 'Số lượng kho',
+            title: 'Kho hàng',
             dataIndex: 'stockQuantity',
             key: 'stockQuantity',
             sorter: true,
@@ -157,18 +156,14 @@ function Product() {
             showSorterTooltip: false,
         },
         {
-            title: '',
+            title: 'Thao tác',
             key: 'action',
             render: (_, record) => (
                 <Space>
                     <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
                     <Popconfirm
                         title="Thông báo"
-                        description={
-                            <div>
-                                Bạn có chắc muốn xóa <b>{record.name}</b> không?
-                            </div>
-                        }
+                        description={'Bạn có chắc muốn xóa sản phẩm này không?'}
                         onConfirm={() => handleDeleteEntity(record.id)}
                         okText="Xóa"
                         cancelText="Hủy"

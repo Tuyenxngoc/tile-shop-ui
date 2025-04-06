@@ -129,18 +129,14 @@ function Brand() {
             render: (text, record) => <Image src={text} alt={record.title} width={150} />,
         },
         {
-            title: '',
+            title: 'Thao tác',
             key: 'action',
             render: (_, record) => (
                 <Space>
                     <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
                     <Popconfirm
                         title="Thông báo"
-                        description={
-                            <div>
-                                Bạn có chắc muốn xóa <b>{record.name}</b> không?
-                            </div>
-                        }
+                        description={'Bạn có chắc muốn xóa thương hiệu này không?'}
                         onConfirm={() => handleDeleteEntity(record.id)}
                         okText="Xóa"
                         cancelText="Hủy"

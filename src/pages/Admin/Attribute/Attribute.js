@@ -199,18 +199,14 @@ function Attribute() {
             render: (text) => (text ? <Tag color="red">Có</Tag> : <Tag color="green">Không</Tag>),
         },
         {
-            title: '',
+            title: 'Thao tác',
             key: 'action',
             render: (_, record) => (
                 <Space>
                     <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => showEditModal(record)} />
                     <Popconfirm
                         title="Thông báo"
-                        description={
-                            <div>
-                                Bạn có chắc muốn xóa <b>{record.name}</b> không?
-                            </div>
-                        }
+                        description={'Bạn có chắc muốn xóa thuộc tính này không?'}
                         onConfirm={() => handleDeleteEntity(record.id)}
                         okText="Xóa"
                         cancelText="Hủy"
