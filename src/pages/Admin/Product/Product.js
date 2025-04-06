@@ -113,7 +113,7 @@ function Product() {
             sorter: true,
             showSorterTooltip: false,
             render: (text, record) => (
-                <div className="row g-0">
+                <div className="row g-2">
                     <div className="col-2">
                         <img src={record.imageUrl} alt={text} width={56} className="img-fluid" />
                     </div>

@@ -13,9 +13,13 @@ export const updateProduct = (id, values, images) => {
     formData.append('product', new Blob([JSON.stringify(values)], { type: 'application/json' }));
     if (images && images.length > 0) {
         images.forEach((image) => {
-            formData.append('images', image.originFileObj);
+            if (image.originFileObj) {
+                formData.append('images', image.originFileObj);
+            }
         });
     }
+    const existingImageUrls = images.filter((img) => !img.originFileObj && img.url).map((img) => img.url);
+    formData.append('existingImages', new Blob([JSON.stringify(existingImageUrls)], { type: 'application/json' }));
 
     return axiosPrivate.put(`products/${id}`, formData, {
         headers: {

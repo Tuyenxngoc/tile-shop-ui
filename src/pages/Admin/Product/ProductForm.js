@@ -183,6 +183,11 @@ function ProductForm() {
     };
 
     const handleFileListChange = ({ file, fileList: newFileList }) => {
+        if (!file.originFileObj) {
+            setFileList(newFileList);
+            return;
+        }
+
         const response = validateFile(file);
         if (!response.result) {
             return;
@@ -329,8 +334,18 @@ function ProductForm() {
         const fetchEntity = async () => {
             try {
                 const response = await getProductById(id);
-                const { name, description, price, discountPercentage, stockQuantity, categoryId, brandId, attributes } =
-                    response.data.data;
+                const {
+                    name,
+                    description,
+                    price,
+                    discountPercentage,
+                    stockQuantity,
+                    categoryId,
+                    brandId,
+                    attributes,
+                    images,
+                } = response.data.data;
+
                 formik.setValues({
                     name,
                     description,
@@ -341,6 +356,16 @@ function ProductForm() {
                     brandId,
                     attributes,
                 });
+
+                if (images && images.length > 0) {
+                    const mappedImages = images.map((img, index) => ({
+                        uid: `${index}`,
+                        name: `image-${index}.jpg`,
+                        status: 'done',
+                        url: img,
+                    }));
+                    setFileList(mappedImages);
+                }
             } catch (error) {
                 messageApi.error('Lỗi: ' + error.message);
             }
