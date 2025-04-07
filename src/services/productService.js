@@ -1,5 +1,6 @@
-import { axiosPrivate } from '~/utils/httpRequest';
+import httpRequest, { axiosPrivate } from '~/utils/httpRequest';
 
+// ---------- ADMIN ----------
 export const getProductById = (id) => {
     return axiosPrivate.get(`admin/products/${id}`);
 };
@@ -48,6 +49,15 @@ export const deleteProduct = (id) => {
     return axiosPrivate.delete(`admin/products/${id}`);
 };
 
-export const getProductBySlug = (slug) => {
-    return axiosPrivate.get(`products/slug/${slug}`);
+// ---------- USER ----------
+export const getProductsForUser = (params) => {
+    return httpRequest.get(`products?${params}`);
+};
+
+export const getProductByIdForUser = (id) => {
+    return httpRequest.get(`products/${id}`);
+};
+
+export const getProductBySlugForUser = (slug) => {
+    return httpRequest.get(`products/slug/${slug}`);
 };

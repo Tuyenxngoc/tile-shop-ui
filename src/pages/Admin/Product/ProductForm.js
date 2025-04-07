@@ -419,7 +419,6 @@ function ProductForm() {
                                     rotationSlider
                                     aspectSlider
                                     showReset
-                                    aspect={3 / 4}
                                     resetText="Đặt lại"
                                     modalTitle="Chỉnh sửa hình ảnh"
                                     beforeCrop={handleBeforeCrop}

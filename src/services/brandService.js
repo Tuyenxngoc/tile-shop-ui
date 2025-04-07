@@ -1,11 +1,12 @@
-import { axiosPrivate } from '~/utils/httpRequest';
+import httpRequest, { axiosPrivate } from '~/utils/httpRequest';
 
+// ---------- ADMIN ----------
 export const getBrandById = (id) => {
-    return axiosPrivate.get(`brands/${id}`);
+    return axiosPrivate.get(`admin/brands/${id}`);
 };
 
 export const getBrands = (params) => {
-    return axiosPrivate.get(`brands?${params}`);
+    return axiosPrivate.get(`admin/brands?${params}`);
 };
 
 export const updateBrand = (id, values, image) => {
@@ -15,7 +16,7 @@ export const updateBrand = (id, values, image) => {
         formData.append('image', image);
     }
 
-    return axiosPrivate.put(`brands/${id}`, formData, {
+    return axiosPrivate.put(`admin/brands/${id}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -29,7 +30,7 @@ export const createBrand = (values, image) => {
         formData.append('image', image);
     }
 
-    return axiosPrivate.post('brands', formData, {
+    return axiosPrivate.post('admin/brands', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -37,5 +38,14 @@ export const createBrand = (values, image) => {
 };
 
 export const deleteBrand = (id) => {
-    return axiosPrivate.delete(`brands/${id}`);
+    return axiosPrivate.delete(`admin/brands/${id}`);
+};
+
+// ---------- USER ----------
+export const getBrandsForUser = (params) => {
+    return httpRequest.get(`brands?${params}`);
+};
+
+export const getBrandByIdForUser = (id) => {
+    return httpRequest.get(`brands/${id}`);
 };

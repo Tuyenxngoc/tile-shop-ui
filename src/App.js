@@ -16,8 +16,8 @@ import ProductDetail from './pages/User/ProductDetail';
 
 import Cart from './pages/User/Cart';
 
-import AccessDenied from './pages/common/AccessDenied';
-import NotFound from './pages/common/NotFound';
+import AccessDenied from './pages/Common/AccessDenied';
+import NotFound from './pages/Common/NotFound';
 
 import Dashboard from './pages/Admin/Dashboard';
 import AdminLogin from './pages/Admin/Login';
