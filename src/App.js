@@ -8,6 +8,8 @@ import RequireAuth from './routes/RequireAuth';
 import { ROLES } from './constants/roleConstants';
 import { ROUTES } from './constants/routes';
 
+import ScrollToTop from './components/ScrollToTop';
+
 import Home from './pages/User/Home';
 import Login from './pages/User/Login';
 import ForgotPassword from './pages/User/ForgotPassword';
@@ -42,6 +44,7 @@ import BrandForm from './pages/Admin/Brand/BrandForm';
 function App() {
     return (
         <BrowserRouter>
+            <ScrollToTop />
             <Routes>
                 <Route element={<DefaultLayout />}>
                     <Route index element={<Home />} />

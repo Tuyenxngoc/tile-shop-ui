@@ -32,6 +32,8 @@ const images = {
     pd4: require('./images/pd-4.png'),
     pd5: require('./images/pd-5.png'),
     pd6: require('./images/pd-6.png'),
+
+    pdf0: require('./images/pdf0.png'),
 };
 
 export const backgrounds = {};

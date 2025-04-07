@@ -21,7 +21,7 @@ function Cart() {
                 </div>
             </div>
             <div className={cx('wrapper')}>
-                <div className="row m-0 mb-3">
+                <div className="row mx-0 mb-3">
                     <div className="col-12 py-3">
                         {cartItems.length > 0 ? (
                             cartItems.map((item, index) => <CartItem key={index} />)
