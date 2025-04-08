@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
-import { Breadcrumb, Button, Progress, Rate } from 'antd';
+import { Alert, Breadcrumb, Button, Progress, Rate, Spin } from 'antd';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
@@ -20,23 +20,19 @@ import styles from './ProductDetail.module.scss';
 
 import images from '~/assets';
 import Policy from '~/components/Policy';
+import { getProductBySlugForUser } from '~/services/productService';
+import { formatCurrency } from '~/utils/utils';
 
 const cx = classNames.bind(styles);
 
-const imagesMtt = [
-    'https://nshpos.com/Web/Resources/Uploaded/18/images/bon%20cau/demuhler/ML366304.jpg',
-    'https://nshpos.com/Web/Resources/Uploaded/18/images/bon%20cau/demuhler/ML366304-1.jpg',
-    'https://nshpos.com/Web/Resources/Uploaded/18/images/bon%20cau/demuhler/ML366304-2.jpg',
-    'https://nshpos.com/Web/Resources/Uploaded/18/images/bon%20cau/demuhler/ML366304-3.jpg',
-    'https://nshpos.com/Web/Resources/Uploaded/18/images/bon%20cau/demuhler/ML366304-4.jpg',
-    'https://nshpos.com/Web/Resources/Uploaded/18/images/bon%20cau/demuhler/ML366304-5.jpg',
-    'https://nshpos.com/Web/Resources/Uploaded/18/images/bon%20cau/demuhler/ML366304-6.jpg',
-];
-
-const datta =
-    '<h1>Thông tin sản phẩm</h1><p>Đây là thông tin chi tiết về sản phẩm Bồn cầu thường đặt sàn DeMuhler ML366304.</p>';
-
 function ProductDetail() {
+    const { id } = useParams();
+
+    const [entityData, setEntityData] = useState(null);
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
     const [showMore, setShowMore] = useState(false);
@@ -48,6 +44,41 @@ function ProductDetail() {
             setIsOverflowing(contentRef.current.scrollHeight > 600);
         }
     }, []);
+
+    useEffect(() => {
+        const fetchEntities = async () => {
+            setIsLoading(true);
+            setErrorMessage(null);
+            try {
+                const response = await getProductBySlugForUser(id);
+                const { data } = response.data;
+                setEntityData(data);
+            } catch (error) {
+                const errorMessage = error.response?.data?.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+                setErrorMessage(errorMessage);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchEntities();
+    }, [id]);
+
+    if (isLoading) {
+        return (
+            <div className="d-flex justify-content-center w-100">
+                <Spin size="large" />
+            </div>
+        );
+    }
+
+    if (errorMessage) {
+        return (
+            <div className="w-100">
+                <Alert message="Lỗi" description={errorMessage} type="error" />
+            </div>
+        );
+    }
 
     return (
         <div className="container">
@@ -87,7 +118,7 @@ function ProductDetail() {
                                 modules={[FreeMode, Navigation, Thumbs]}
                                 className="mySwiper2"
                             >
-                                {imagesMtt.map((src, index) => (
+                                {entityData.images.map((src, index) => (
                                     <SwiperSlide key={index}>
                                         <img src={src} alt={`Slide ${index + 1}`} />
                                     </SwiperSlide>
@@ -102,7 +133,7 @@ function ProductDetail() {
                                 modules={[FreeMode, Navigation, Thumbs]}
                                 className="mySwiper"
                             >
-                                {imagesMtt.map((src, index) => (
+                                {entityData.images.map((src, index) => (
                                     <SwiperSlide key={index}>
                                         <img src={src} alt={`Thumbnail ${index + 1}`} />
                                     </SwiperSlide>
@@ -124,12 +155,14 @@ function ProductDetail() {
                     <div className="col-12 col-md-6">
                         <div className="row mb-3">
                             <div className="col-12">
-                                <h1 className={cx('title')}>Bồn cầu thường đặt sàn DeMuhler ML366304</h1>
+                                <h1 className={cx('title')}>{entityData.name}</h1>
                             </div>
                             <div className="col-12 mb-2">
-                                <span className={cx('meta')}>
-                                    Thương hiệu: <strong className="text-danger">DeMuhler</strong>
-                                </span>
+                                {entityData.brand && (
+                                    <span className={cx('meta')}>
+                                        Thương hiệu: <strong className="text-danger">DeMuhler</strong>
+                                    </span>
+                                )}
                             </div>
                             <div className="col-12 mb-4">
                                 <span className={cx('meta')}>
@@ -147,9 +180,13 @@ function ProductDetail() {
 
                         <div className="row mb-3">
                             <div className="col-12">
-                                <span className={cx('sale-cost-detail')}>6,870,000₫</span> &nbsp; &nbsp; &nbsp;
-                                <span className={cx('sale-public-cost-detail')}>10,570,000₫</span> &nbsp; &nbsp; &nbsp;
-                                <span className={cx('meta')}>-35%</span>
+                                <span className={cx('sale-cost-detail')}>{formatCurrency(entityData.salePrice)}</span>
+                                &nbsp; &nbsp; &nbsp;
+                                <span className={cx('sale-public-cost-detail')}>
+                                    {formatCurrency(entityData.price)}
+                                </span>
+                                &nbsp; &nbsp; &nbsp;
+                                <span className={cx('meta')}>-{entityData.discountPercentage}%</span>
                             </div>
                         </div>
 
@@ -310,7 +347,7 @@ function ProductDetail() {
             >
                 <div className="row mx-0">
                     <div className="col-12 col-md-7 order-2 order-md-1">
-                        <div dangerouslySetInnerHTML={{ __html: datta }} />
+                        <div dangerouslySetInnerHTML={{ __html: entityData.description }} />
                     </div>
                     <div className="col-12 col-md-5 order-1 order-md-2">
                         <h3>Thông số kỹ thuật</h3>
