@@ -1,6 +1,8 @@
-import { Breadcrumb, Rate } from 'antd';
-
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+
+import { Breadcrumb, Button, Progress, Rate } from 'antd';
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 
@@ -8,15 +10,16 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
+import './swiper-custom.scss';
 
 import { FaShoppingBag } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaStar } from 'react-icons/fa6';
 
 import classNames from 'classnames/bind';
 import styles from './ProductDetail.module.scss';
-import './swiper-custom.scss';
-import { Link } from 'react-router-dom';
+
 import images from '~/assets';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
+import Policy from '~/components/Policy';
 
 const cx = classNames.bind(styles);
 
@@ -409,13 +412,9 @@ function ProductDetail() {
             </div>
 
             {isOverflowing && (
-                <div className="row">
+                <div className="row mb-3">
                     <div className="col-12 text-center">
-                        <button
-                            onClick={() => setShowMore(!showMore)}
-                            className="btn btn-light"
-                            style={{ border: '0.5px solid #1F252C', borderRadius: 5, width: 178 }}
-                        >
+                        <Button onClick={() => setShowMore(!showMore)}>
                             {showMore ? (
                                 <>
                                     Thu gọn <FaChevronUp />
@@ -425,10 +424,103 @@ function ProductDetail() {
                                     Xem thêm <FaChevronDown />
                                 </>
                             )}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}
+
+            <div className="row mb-3">
+                <div className="col-12">Sản phẩm tương tự</div>
+                <div className="col-12">cc</div>
+            </div>
+
+            <div className="row mb-3">
+                <div className="col-12 col-md-8">
+                    <div className={cx('section-title')}>Đánh giá và nhận xét</div>
+
+                    <div className={cx('review-wrap')}>
+                        <div className={cx('review-score')}>
+                            <div className={cx('score-value')}>5/5</div>
+                            <div>
+                                <Rate value={5} disabled />
+                                <div className={cx('score-count')}>1 đánh giá và nhận xét</div>
+                            </div>
+                        </div>
+
+                        <div className={cx('rate-bar')}>
+                            <span>5</span>
+                            <FaStar color="#fcb415" />
+                            <Progress strokeColor="#fcb415" status="normal" percent={100} />
+                        </div>
+                        <div className={cx('rate-bar')}>
+                            <span>4</span>
+                            <FaStar color="#fcb415" />
+                            <Progress strokeColor="#fcb415" status="normal" percent={0} />
+                        </div>
+                        <div className={cx('rate-bar')}>
+                            <span>3</span>
+                            <FaStar color="#fcb415" />
+                            <Progress strokeColor="#fcb415" status="normal" percent={0} />
+                        </div>
+                        <div className={cx('rate-bar')}>
+                            <span>2</span>
+                            <FaStar color="#fcb415" />
+                            <Progress strokeColor="#fcb415" status="normal" percent={0} />
+                        </div>
+                        <div className={cx('rate-bar')}>
+                            <span>1</span>
+                            <FaStar color="#fcb415" />
+                            <Progress strokeColor="#fcb415" status="normal" percent={0} />
+                        </div>
+
+                        <div className={cx('rating-prompt')}>Bạn đánh giá sao về sản phẩm này ?</div>
+
+                        <Button type="primary" block>
+                            ĐÁNH GIÁ NGAY
+                        </Button>
+                    </div>
+                </div>
+                <div className="col-12 col-md-4">
+                    <div className={cx('section-title')}>Video nổi bật</div>
+                    <div className="inner-video mb-3">
+                        <div className="ratio ratio-16x9 rounded overflow-hidden">
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                src="https://www.youtube.com/embed/SwVyUBz6YRI?si=bYfUGgH3OOFe2c4G"
+                                title="YouTube video player"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                                style={{ border: 'none' }}
+                            ></iframe>
+                        </div>
+                    </div>
+
+                    <div className={cx('section-title')}>Tin tức nổi bật</div>
+                    <div className="inner-image mb-3">
+                        <a href="https://shome.vn/tin-tuc/tung-bung-khai-truong-showroom-bac-ninh-s-home-tang-vang-9999">
+                            <img
+                                src="https://nshpos.com/Web/Resources/Uploaded/18/images/Main.jpg"
+                                alt="TƯNG BỪNG KHAI TRƯƠNG - TẶNG VÀNG 9999  🎊"
+                                className="img-fluid rounded"
+                            />
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="text-center my-4"
+                style={{
+                    fontWeight: 500,
+                    fontSize: '32px',
+                    color: '#FCB415',
+                }}
+            >
+                Tại sao lại chọn Hùng Hương
+            </div>
+
+            <Policy />
         </div>
     );
 }
