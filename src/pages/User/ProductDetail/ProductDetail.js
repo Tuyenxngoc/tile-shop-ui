@@ -40,10 +40,15 @@ function ProductDetail() {
     const contentRef = useRef(null);
 
     useEffect(() => {
-        if (contentRef.current) {
-            setIsOverflowing(contentRef.current.scrollHeight > 600);
+        if (contentRef.current && entityData) {
+            const checkOverflow = () => {
+                setIsOverflowing(contentRef.current?.scrollHeight > 600);
+            };
+
+            // Đảm bảo DOM đã render xong
+            setTimeout(checkOverflow, 0);
         }
-    }, []);
+    }, [entityData]);
 
     useEffect(() => {
         const fetchEntities = async () => {
@@ -347,7 +352,10 @@ function ProductDetail() {
             >
                 <div className="row mx-0">
                     <div className="col-12 col-md-7 order-2 order-md-1">
-                        <div dangerouslySetInnerHTML={{ __html: entityData.description }} />
+                        <div
+                            className="rich-text-content"
+                            dangerouslySetInnerHTML={{ __html: entityData.description }}
+                        />
                     </div>
                     <div className="col-12 col-md-5 order-1 order-md-2">
                         <h3>Thông số kỹ thuật</h3>
@@ -368,78 +376,20 @@ function ProductDetail() {
                             </a>
                         </div>
 
-                        <div className="text-danger mt-3">
-                            <strong>Bồn cầu rời GROHE, thân bồn cầu đặt sàn 2 khối Euro Ceramic 3933800H</strong>
+                        <div className={cx('spec-title', 'text-danger', 'mt-3')}>
+                            <strong>{entityData.name}</strong>
                         </div>
 
-                        <table className="table table-striped">
+                        <table className={cx('spec-table', 'table', 'table-striped')}>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <strong>Mã Sản phẩm</strong>
-                                    </td>
-                                    <td>3933800H</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Tên sản phẩm</strong>
-                                    </td>
-                                    <td>Bồn cầu rời GROHE, thân bồn cầu đặt sàn 2 khối Euro Ceramic 3933800H</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Thương hiệu</strong>
-                                    </td>
-                                    <td>Grohe</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Mã hàng hóa</strong>
-                                    </td>
-                                    <td>101080009</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Loại sản phẩm</strong>
-                                    </td>
-                                    <td>Thân bồn cầu</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Chất liệu</strong>
-                                    </td>
-                                    <td>Sứ</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Lượng nước xả</strong>
-                                    </td>
-                                    <td>3/5L</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Loại nắp</strong>
-                                    </td>
-                                    <td>Không gồm nắp</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Kích thước</strong>
-                                    </td>
-                                    <td>670 x 401 x 374 mm</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Tâm xả</strong>
-                                    </td>
-                                    <td>305 mm</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Áp lực nước sử dụng</strong>
-                                    </td>
-                                    <td>0.05MPa~0.70MPa</td>
-                                </tr>
+                                {entityData.attributes.map((attr, index) => (
+                                    <tr key={index}>
+                                        <td>
+                                            <strong>{attr.name}</strong>
+                                        </td>
+                                        <td>{attr.value}</td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>

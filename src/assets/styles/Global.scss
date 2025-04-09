@@ -95,3 +95,11 @@ ol {
     text-overflow: ellipsis;
     word-break: break-word;
 }
+
+.rich-text-content {
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+}

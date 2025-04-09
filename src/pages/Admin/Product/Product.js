@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, Button, Flex, Input, message, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
+import { EyeOutlined } from '@ant-design/icons';
 
 import queryString from 'query-string';
 
@@ -160,6 +161,7 @@ function Product() {
             key: 'action',
             render: (_, record) => (
                 <Space>
+                    <Button type="text" icon={<EyeOutlined />} href={`/${record.slug}`} target="_blank" />
                     <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
                     <Popconfirm
                         title="Thông báo"
