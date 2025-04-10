@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import { Alert, Breadcrumb, Button, Progress, Rate, Spin } from 'antd';
+import { Alert, Breadcrumb, Button, Rate, Spin } from 'antd';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
@@ -13,7 +13,7 @@ import 'swiper/css/thumbs';
 import './swiper-custom.scss';
 
 import { FaShoppingBag } from 'react-icons/fa';
-import { FaChevronDown, FaChevronUp, FaStar } from 'react-icons/fa6';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 
 import classNames from 'classnames/bind';
 import styles from './ProductDetail.module.scss';
@@ -22,6 +22,7 @@ import images from '~/assets';
 import Policy from '~/components/Policy';
 import { getProductBySlugForUser } from '~/services/productService';
 import { formatCurrency } from '~/utils/utils';
+import ReviewSection from './ReviewSection';
 
 const cx = classNames.bind(styles);
 
@@ -423,49 +424,7 @@ function ProductDetail() {
 
             <div className="row mb-3">
                 <div className="col-12 col-md-8">
-                    <div className={cx('section-title')}>Đánh giá và nhận xét</div>
-
-                    <div className={cx('review-wrap')}>
-                        <div className={cx('review-score')}>
-                            <div className={cx('score-value')}>5/5</div>
-                            <div>
-                                <Rate value={5} disabled />
-                                <div className={cx('score-count')}>1 đánh giá và nhận xét</div>
-                            </div>
-                        </div>
-
-                        <div className={cx('rate-bar')}>
-                            <span>5</span>
-                            <FaStar color="#fcb415" />
-                            <Progress strokeColor="#fcb415" status="normal" percent={100} />
-                        </div>
-                        <div className={cx('rate-bar')}>
-                            <span>4</span>
-                            <FaStar color="#fcb415" />
-                            <Progress strokeColor="#fcb415" status="normal" percent={0} />
-                        </div>
-                        <div className={cx('rate-bar')}>
-                            <span>3</span>
-                            <FaStar color="#fcb415" />
-                            <Progress strokeColor="#fcb415" status="normal" percent={0} />
-                        </div>
-                        <div className={cx('rate-bar')}>
-                            <span>2</span>
-                            <FaStar color="#fcb415" />
-                            <Progress strokeColor="#fcb415" status="normal" percent={0} />
-                        </div>
-                        <div className={cx('rate-bar')}>
-                            <span>1</span>
-                            <FaStar color="#fcb415" />
-                            <Progress strokeColor="#fcb415" status="normal" percent={0} />
-                        </div>
-
-                        <div className={cx('rating-prompt')}>Bạn đánh giá sao về sản phẩm này ?</div>
-
-                        <Button type="primary" block>
-                            ĐÁNH GIÁ NGAY
-                        </Button>
-                    </div>
+                    <ReviewSection productId={id} />
                 </div>
                 <div className="col-12 col-md-4">
                     <div className={cx('section-title')}>Video nổi bật</div>
@@ -497,7 +456,7 @@ function ProductDetail() {
             </div>
 
             <div
-                class="text-center my-4"
+                className="text-center my-4"
                 style={{
                     fontWeight: 500,
                     fontSize: '32px',
