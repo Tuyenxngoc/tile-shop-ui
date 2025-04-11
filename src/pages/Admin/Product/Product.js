@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, Flex, Input, message, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
+import { Alert, Button, Flex, Image, Input, message, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { EyeOutlined } from '@ant-design/icons';
@@ -114,11 +114,16 @@ function Product() {
             sorter: true,
             showSorterTooltip: false,
             render: (text, record) => (
-                <div className="row g-2">
-                    <div className="col-2">
-                        <img src={record.imageUrl} alt={text} width={56} className="img-fluid" />
-                    </div>
-                    <div className="col-10" style={{ maxWidth: 300 }}>
+                <div className="d-flex align-items-start gap-2">
+                    <Image
+                        src={record.imageUrl}
+                        alt="review"
+                        width={56}
+                        height={56}
+                        preview={{ mask: 'Xem ảnh' }}
+                        className="rounded-2"
+                    />
+                    <div style={{ maxWidth: 300 }}>
                         <Tooltip title={text}>
                             <span className="text-truncate-2">{text}</span>
                         </Tooltip>

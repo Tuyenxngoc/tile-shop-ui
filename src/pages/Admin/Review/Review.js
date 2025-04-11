@@ -15,6 +15,7 @@ import {
     theme,
     Tooltip,
 } from 'antd';
+import { FaStar } from 'react-icons/fa6';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
@@ -22,12 +23,37 @@ import queryString from 'query-string';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { approveReview, deleteReview, getReviews, rejectReview } from '~/services/reviewService';
-import { FaStar } from 'react-icons/fa6';
 
 const options = [
-    { value: 'id', label: 'ID' },
-    { value: 'title', label: 'Tiêu đề' },
+    { value: 'name', label: 'Tên sản phẩm' },
     { value: 'category', label: 'Danh mục' },
+];
+
+const statusOptions = [
+    { value: 'PENDING', label: 'Chờ duyệt' },
+    { value: 'APPROVED', label: 'Đã duyệt' },
+    { value: 'REJECTED', label: 'Đã từ chối' },
+];
+
+const statusTagMap = {
+    PENDING: <Tag color="gold">Chờ duyệt</Tag>,
+    APPROVED: <Tag color="green">Đã duyệt</Tag>,
+    REJECTED: <Tag color="red">Đã từ chối</Tag>,
+};
+
+const ratingTabs = [
+    {
+        key: 'all',
+        label: 'Tất cả',
+    },
+    ...Array.from({ length: 5 }, (_, i) => {
+        const starValue = 5 - i;
+        return {
+            key: `${starValue}`,
+            label: `${starValue}`,
+            icon: <FaStar color="#fcb415" />,
+        };
+    }),
 ];
 
 function Review() {
@@ -36,7 +62,13 @@ function Review() {
     } = theme.useToken();
 
     const [meta, setMeta] = useState(INITIAL_META);
-    const [filters, setFilters] = useState(INITIAL_FILTERS);
+    const [filters, setFilters] = useState({
+        ...INITIAL_FILTERS,
+        rating: undefined,
+        hasContent: undefined,
+        hasImage: undefined,
+        status: undefined,
+    });
 
     const [entityData, setEntityData] = useState(null);
 
@@ -78,31 +110,53 @@ function Review() {
         }));
     };
 
+    const handleRatingFilter = (key) => {
+        setFilters((prev) => ({
+            ...prev,
+            pageNum: 1,
+            rating: key === 'all' ? undefined : key,
+        }));
+    };
+
+    const handleStatusChange = (value) => {
+        setFilters((prev) => ({
+            ...prev,
+            pageNum: 1,
+            status: value,
+        }));
+    };
+
     const handleApprove = async (id) => {
         try {
-            // Gọi API duyệt sản phẩm
-            await approveReview(id);
-            message.success('Sản phẩm đã được duyệt!');
-            // Cập nhật lại danh sách nếu cần
+            const response = await approveReview(id);
+            if (response.status === 200) {
+                const { message, data } = response.data.data;
+                messageApi.success(message);
+
+                setEntityData((prev) => prev.map((item) => (item.id === id ? data : item)));
+            }
         } catch (error) {
-            console.error('Lỗi khi duyệt:', error);
-            message.error('Duyệt sản phẩm thất bại!');
+            const errorMessage = error.response?.data?.message || 'Duyệt đánh giá sản phẩm thất bại!';
+            messageApi.error(errorMessage);
         }
     };
 
     const handleReject = async (id) => {
         try {
-            // Gọi API từ chối duyệt sản phẩm
-            await rejectReview(id);
-            message.success('Đã từ chối duyệt sản phẩm!');
-            // Cập nhật lại danh sách nếu cần
+            const response = await rejectReview(id);
+            if (response.status === 200) {
+                const { message, data } = response.data.data;
+                messageApi.success(message);
+
+                setEntityData((prev) => prev.map((item) => (item.id === id ? data : item)));
+            }
         } catch (error) {
-            console.error('Lỗi khi từ chối:', error);
-            message.error('Từ chối duyệt sản phẩm thất bại!');
+            const errorMessage = error.response?.data?.message || 'Từ chối duyệt đánh giá sản phẩm thất bại!';
+            messageApi.error(errorMessage);
         }
     };
 
-    const handleDeleteEntity = async (id) => {
+    const handleDelete = async (id) => {
         try {
             const response = await deleteReview(id);
             if (response.status === 200) {
@@ -148,18 +202,21 @@ function Review() {
         },
         {
             title: 'Tên sản phẩm',
-            dataIndex: 'name',
-            key: 'name',
-            sorter: true,
-            showSorterTooltip: false,
-            render: (text, record) => (
-                <div className="row g-2">
-                    <div className="col-2">
-                        <img src={record.imageUrl} alt={text} width={56} className="img-fluid" />
-                    </div>
-                    <div className="col-10" style={{ maxWidth: 300 }}>
-                        <Tooltip title={text}>
-                            <span className="text-truncate-2">{text}</span>
+            dataIndex: 'product',
+            key: 'product',
+            render: (product) => (
+                <div className="d-flex align-items-start gap-2">
+                    <Image
+                        src={product.imageUrl}
+                        alt="review"
+                        width={56}
+                        height={56}
+                        preview={{ mask: 'Xem ảnh' }}
+                        className="rounded-2"
+                    />
+                    <div style={{ maxWidth: 300 }}>
+                        <Tooltip title={product.name}>
+                            <span className="text-truncate-2">{product.name}</span>
                         </Tooltip>
                     </div>
                 </div>
@@ -215,16 +272,11 @@ function Review() {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
+            align: 'center',
             fixed: 'right',
             sorter: true,
             showSorterTooltip: false,
-            render: (text, record) => (
-                <div className="text-center">
-                    {text === 'PENDING' && <Tag color="gold">Chờ duyệt</Tag>}
-                    {text === 'APPROVED' && <Tag color="green">Đã duyệt</Tag>}
-                    {text === 'REJECTED' && <Tag color="red">Đã từ chối</Tag>}
-                </div>
-            ),
+            render: (text) => statusTagMap[text] || null,
         },
         {
             title: 'Thao tác',
@@ -244,8 +296,8 @@ function Review() {
                     )}
                     <Popconfirm
                         title="Thông báo"
-                        description={'Bạn có chắc muốn xóa sản phẩm này không?'}
-                        onConfirm={() => handleDeleteEntity(record.id)}
+                        description={'Bạn có chắc muốn xóa đánh giá này không?'}
+                        onConfirm={() => handleDelete(record.id)}
                         okText="Xóa"
                         cancelText="Hủy"
                     >
@@ -255,23 +307,6 @@ function Review() {
             ),
         },
     ];
-
-    const onChange = (key) => {
-        console.log(key);
-    };
-
-    const items = Array.from({ length: 5 }, (_, i) => {
-        const starValue = i + 1;
-        return {
-            key: `${starValue}`,
-            label: (
-                <div className="d-flex align-items-center">
-                    {starValue}
-                    <FaStar color="#fcb415" style={{ marginLeft: 4 }} />
-                </div>
-            ),
-        };
-    });
 
     if (errorMessage) {
         return <Alert message="Lỗi" description={errorMessage} type="error" />;
@@ -291,7 +326,7 @@ function Review() {
                 }}
             >
                 <h2>Đánh giá sản phẩm</h2>
-                <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+                <Tabs defaultActiveKey="all" items={ratingTabs} onChange={handleRatingFilter} />
             </div>
 
             <div
@@ -303,34 +338,67 @@ function Review() {
                     marginBottom: 16,
                 }}
             >
-                <Space>
-                    <Space.Compact className="my-2">
-                        <Select
-                            options={options}
-                            disabled={isLoading}
-                            value={activeFilterOption}
-                            onChange={(value) => setActiveFilterOption(value)}
-                        />
-                        <Input
-                            allowClear
-                            name="searchInput"
-                            placeholder="Nhập từ cần tìm..."
-                            value={searchInput}
-                            disabled={isLoading}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                        />
-                        <Button type="primary" loading={isLoading} onClick={() => handleSearch()}>
-                            Tìm
-                        </Button>
-                    </Space.Compact>
-                </Space>
+                <Space direction="vertical" size="middle">
+                    <Space>
+                        <Space.Compact className="my-2">
+                            <Select
+                                options={options}
+                                disabled={isLoading}
+                                value={activeFilterOption}
+                                onChange={(value) => setActiveFilterOption(value)}
+                            />
+                            <Input
+                                allowClear
+                                name="searchInput"
+                                placeholder="Nhập từ cần tìm..."
+                                value={searchInput}
+                                disabled={isLoading}
+                                onChange={(e) => setSearchInput(e.target.value)}
+                            />
+                            <Button type="primary" loading={isLoading} onClick={() => handleSearch()}>
+                                Tìm
+                            </Button>
+                        </Space.Compact>
 
-                <div>
-                    <Space wrap size="middle">
-                        <Button type="default">Có nội dung</Button>
-                        <Button type="default">Có hình ảnh</Button>
+                        <Select
+                            placeholder="Trạng thái"
+                            allowClear
+                            disabled={isLoading}
+                            style={{ width: 160 }}
+                            value={filters.status}
+                            onChange={handleStatusChange}
+                            options={statusOptions}
+                        />
                     </Space>
-                </div>
+
+                    <Space wrap size="middle">
+                        <Button
+                            type={filters.hasContent ? 'primary' : 'default'}
+                            onClick={() =>
+                                setFilters((prev) => ({
+                                    ...prev,
+                                    hasContent: prev.hasContent === true ? undefined : true,
+                                    pageNum: 1,
+                                }))
+                            }
+                        >
+                            Có nội dung
+                        </Button>
+
+                        <Button
+                            type={filters.hasImage ? 'primary' : 'default'}
+                            onClick={() =>
+                                setFilters((prev) => ({
+                                    ...prev,
+                                    hasImage: prev.hasImage === true ? undefined : true,
+                                    pageNum: 1,
+                                }))
+                            }
+                        >
+                            Có hình ảnh
+                        </Button>
+                    </Space>
+                </Space>
             </div>
             <div
                 style={{
