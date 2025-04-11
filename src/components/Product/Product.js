@@ -11,10 +11,12 @@ import styles from './Product.module.scss';
 const cx = classNames.bind(styles);
 
 function Product({ data, onAddToCart }) {
+    const productPath = 'san-pham/' + data.slug;
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('hover-mask')}>
-                <Link to={data.slug} className="rounded">
+                <Link to={productPath} className="rounded">
                     <img src={data.imageUrl} alt={data.name} className="img-fluid" />
                     <div>
                         <i>
@@ -24,7 +26,7 @@ function Product({ data, onAddToCart }) {
                 </Link>
             </div>
             <div className={cx('content')}>
-                <Link to={data.slug}>
+                <Link to={productPath}>
                     <h3>{data.name}</h3>
                 </Link>
             </div>

@@ -166,7 +166,7 @@ function Product() {
             key: 'action',
             render: (_, record) => (
                 <Space>
-                    <Button type="text" icon={<EyeOutlined />} href={`/${record.slug}`} target="_blank" />
+                    <Button type="text" icon={<EyeOutlined />} href={`/san-pham/${record.slug}`} target="_blank" />
                     <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
                     <Popconfirm
                         title="Thông báo"

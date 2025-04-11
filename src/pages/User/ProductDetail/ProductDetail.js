@@ -96,20 +96,11 @@ function ProductDetail() {
                 className="py-4"
                 separator=">"
                 items={[
-                    {
-                        title: 'Home',
-                    },
-                    {
-                        title: 'Application Center',
-                        href: '',
-                    },
-                    {
-                        title: 'Application List',
-                        href: '',
-                    },
-                    {
-                        title: 'An Application',
-                    },
+                    { title: 'Trang chủ', href: '/' },
+                    ...entityData.categoryPath.map((cat) => ({
+                        title: cat.name,
+                        href: `/danh-muc/${cat.id}`,
+                    })),
                 ]}
             />
 
@@ -399,23 +390,19 @@ function ProductDetail() {
                         </table>
                     </div>
 
-                    {!showMore && <div className={cx('bg-article')} />}
+                    {isOverflowing && !showMore && <div className={cx('bg-article')} />}
                 </div>
             </div>
 
             {isOverflowing && (
                 <div className="row mb-3">
                     <div className="col-12 text-center">
-                        <Button onClick={() => setShowMore(!showMore)}>
-                            {showMore ? (
-                                <>
-                                    Thu gọn <FaChevronUp />
-                                </>
-                            ) : (
-                                <>
-                                    Xem thêm <FaChevronDown />
-                                </>
-                            )}
+                        <Button
+                            onClick={() => setShowMore(!showMore)}
+                            icon={showMore ? <FaChevronUp /> : <FaChevronDown />}
+                            iconPosition="end"
+                        >
+                            {showMore ? 'Thu gọn' : 'Xem thêm'}
                         </Button>
                     </div>
                 </div>
