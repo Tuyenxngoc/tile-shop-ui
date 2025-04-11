@@ -9,8 +9,8 @@ export const rejectReview = (id) => {
     return axiosPrivate.put(`reviews/${id}/reject`);
 };
 
-export const getPendingReviews = (params) => {
-    return axiosPrivate.get(`reviews/pending?${params}`);
+export const getReviews = (params) => {
+    return axiosPrivate.get(`reviews?${params}`);
 };
 
 export const deleteReview = (id) => {

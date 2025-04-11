@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Form, Input, Modal, Pagination, Progress, Rate, Spin, Upload } from 'antd';
+import { Alert, Button, Form, Image, Input, Modal, Pagination, Progress, Rate, Space, Spin, Upload } from 'antd';
 
 import queryString from 'query-string';
 import { FaStar } from 'react-icons/fa6';
@@ -199,12 +199,8 @@ function ReviewSection({ productId, message }) {
                     >
                         <Rate />
                     </Form.Item>
-                    <Form.Item
-                        name="comment"
-                        label="Nhận xét"
-                        rules={[{ required: true, message: 'Vui lòng nhập nhận xét' }]}
-                    >
-                        <Input.TextArea rows={4} />
+                    <Form.Item name="comment" label="Nhận xét">
+                        <Input.TextArea rows={4} maxLength={500} showCount />
                     </Form.Item>
 
                     <Form.Item label="Hình ảnh sản phẩm (tối đa 3)">
@@ -280,10 +276,38 @@ function ReviewSection({ productId, message }) {
                         reviews.map((review) => (
                             <div className={cx('comment')} key={review.id}>
                                 <hr />
-                                <strong>{review.customer.name}</strong>
-                                <Rate value={review.rating} disabled className="ms-2" />
-                                <div>{review.comment}</div>
-                                <span className="text-gray-500">{dayjs(review.createdDate).fromNow()}</span>
+
+                                <div className="d-flex justify-content-between align-items-center mb-1">
+                                    <div>
+                                        <strong className="me-2">{review.customer.name}</strong>
+                                        <Rate value={review.rating} disabled style={{ fontSize: 14 }} />
+                                    </div>
+                                    <span className="text-muted" style={{ fontSize: 12 }}>
+                                        {dayjs(review.createdDate).fromNow()}
+                                    </span>
+                                </div>
+
+                                <div className="mb-2" style={{ whiteSpace: 'pre-wrap' }}>
+                                    {review.comment}
+                                </div>
+
+                                {review.images.length > 0 && (
+                                    <Image.PreviewGroup>
+                                        <Space size={8} wrap>
+                                            {review.images.map((image, index) => (
+                                                <Image
+                                                    key={index}
+                                                    src={image}
+                                                    alt="review"
+                                                    width={64}
+                                                    height={64}
+                                                    preview={{ mask: 'Xem ảnh' }}
+                                                    style={{ borderRadius: 8, objectFit: 'cover' }}
+                                                />
+                                            ))}
+                                        </Space>
+                                    </Image.PreviewGroup>
+                                )}
                             </div>
                         ))
                     )}

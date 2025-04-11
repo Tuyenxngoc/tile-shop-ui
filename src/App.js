@@ -41,6 +41,8 @@ import ProductForm from './pages/Admin/Product/ProductForm';
 import Brand from './pages/Admin/Brand';
 import BrandForm from './pages/Admin/Brand/BrandForm';
 
+import Review from './pages/Admin/Review';
+
 function App() {
     return (
         <BrowserRouter>
@@ -74,11 +76,16 @@ function App() {
                             <Route path="edit/:id" element={<CategoryForm />} />
                         </Route>
 
-                        {/* Quản lý danh mục */}
+                        {/* Quản lý sản phẩm */}
                         <Route path="products">
                             <Route index element={<Product />} />
                             <Route path="new" element={<ProductForm />} />
                             <Route path="edit/:id" element={<ProductForm />} />
+                        </Route>
+
+                        {/* Quản lý đánh giá */}
+                        <Route path="reviews">
+                            <Route index element={<Review />} />
                         </Route>
 
                         {/* Quản lý thuộc tính */}

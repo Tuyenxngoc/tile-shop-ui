@@ -10,7 +10,8 @@ const { Content } = Layout;
 
 const noWrapperRegexes = [
     /^\/admin\/products\/new$/, // exact match "/admin/products/new"
-    /^\/admin\/products\/edit\/[^/]+$/, // matches "/admin/products/edit/:id"
+    /^\/admin\/products\/edit\/[^/]+$/, // matches "/admin/products/edit/:id",
+    /^\/admin\/reviews$/, // exact match "/admin/reviews"
 ];
 
 function pathMatchesAnyRegex(path, regexes) {
