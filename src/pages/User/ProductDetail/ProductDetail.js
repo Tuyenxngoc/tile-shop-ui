@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import { Alert, Breadcrumb, Button, Rate, Spin } from 'antd';
+import { Alert, Breadcrumb, Button, message, Rate, Spin } from 'antd';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
@@ -33,6 +33,8 @@ function ProductDetail() {
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
+
+    const [messageApi, contextHolder] = message.useMessage();
 
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
@@ -88,6 +90,8 @@ function ProductDetail() {
 
     return (
         <div className="container">
+            {contextHolder}
+
             <Breadcrumb
                 className="py-4"
                 separator=">"
@@ -424,7 +428,7 @@ function ProductDetail() {
 
             <div className="row mb-3">
                 <div className="col-12 col-md-8">
-                    <ReviewSection productId={id} />
+                    <ReviewSection productId={entityData.id} message={messageApi} />
                 </div>
                 <div className="col-12 col-md-4">
                     <div className={cx('section-title')}>Video nổi bật</div>

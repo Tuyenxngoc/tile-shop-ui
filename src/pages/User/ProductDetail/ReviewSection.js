@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Pagination, Progress, Rate, Spin } from 'antd';
+import { Alert, Button, Form, Input, Modal, Pagination, Progress, Rate, Spin, Upload } from 'antd';
 
+import queryString from 'query-string';
 import { FaStar } from 'react-icons/fa6';
+import { PlusOutlined } from '@ant-design/icons';
 
 import classNames from 'classnames/bind';
 import styles from './ProductDetail.module.scss';
@@ -9,15 +11,26 @@ import styles from './ProductDetail.module.scss';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
+import useAuth from '~/hooks/useAuth';
+import { validateFile } from '~/utils';
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
-import { getReviewsByProductId, getReviewSummaryByProductId } from '~/services/reviewService';
-import queryString from 'query-string';
+import { createReview, getReviewsByProductId, getReviewSummaryByProductId } from '~/services/reviewService';
 
 dayjs.extend(relativeTime);
 
 const cx = classNames.bind(styles);
 
-function ReviewSection({ productId }) {
+const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+    });
+
+function ReviewSection({ productId, message }) {
+    const { isAuthenticated } = useAuth();
+
     const [meta, setMeta] = useState(INITIAL_META);
     const [filters, setFilters] = useState(INITIAL_FILTERS);
 
@@ -25,6 +38,12 @@ function ReviewSection({ productId }) {
     const [reviews, setReviews] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [form] = Form.useForm();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [fileList, setFileList] = useState([]);
 
     const handleChangePage = (newPage) => {
         setFilters((prev) => ({ ...prev, pageNum: newPage }));
@@ -38,42 +57,111 @@ function ReviewSection({ productId }) {
         }));
     };
 
-    const handleSortChange = (pagination, filters, sorter) => {
-        const sortOrder = sorter.order === 'ascend' ? true : sorter.order === 'descend' ? false : undefined;
-        setFilters((prev) => ({
-            ...prev,
-            sortBy: sorter.field,
-            isAscending: sortOrder,
-        }));
+    const handlePreview = async (file) => {
+        let src = file.url;
+        if (!src && file.originFileObj) {
+            src = await getBase64(file.originFileObj);
+        }
+        const image = new Image();
+        image.src = src;
+        const imgWindow = window.open(src);
+        if (imgWindow) {
+            imgWindow.document.write(image.outerHTML);
+        }
     };
 
+    const handleFileListChange = ({ file, fileList: newFileList }) => {
+        const { result, message } = validateFile(file);
+        if (!result) {
+            message.error(message);
+            return;
+        }
+
+        if (newFileList.length > 3) {
+            return;
+        }
+
+        setFileList(newFileList);
+    };
+
+    const handleCustomRequest = (options) => {
+        const { onSuccess } = options;
+        setTimeout(() => {
+            onSuccess('ok');
+        }, 0);
+    };
+
+    const showRatingModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+        form.resetFields();
+    };
+
+    const handleSubmitReview = async (values) => {
+        const payload = {
+            ...values,
+            productId,
+        };
+
+        setIsSubmitting(true);
+        try {
+            const response = await createReview(payload, fileList);
+            message.success('Đánh giá của bạn đã được gửi!');
+            handleCancel();
+        } catch (error) {
+            const errorMessage =
+                error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+            message.error(errorMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // Fetch review summary
     useEffect(() => {
         if (!productId) return;
 
-        const fetchData = async () => {
+        const fetchSummary = async () => {
+            try {
+                const response = await getReviewSummaryByProductId(productId);
+                setSummary(response.data.data || {});
+            } catch (error) {
+                const errorMessage =
+                    error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+                setErrorMessage(errorMessage);
+            }
+        };
+
+        fetchSummary();
+    }, [productId]);
+
+    // Fetch reviews
+    useEffect(() => {
+        if (!productId) return;
+
+        const fetchReviews = async () => {
             setIsLoading(true);
             setErrorMessage(null);
             try {
                 const params = queryString.stringify(filters);
-                const [summaryRes, reviewsRes] = await Promise.all([
-                    getReviewSummaryByProductId(productId),
-                    getReviewsByProductId(productId, params),
-                ]);
+                const response = await getReviewsByProductId(productId, params);
 
-                setSummary(summaryRes.data.data || {});
-
-                const { meta, items } = reviewsRes.data.data;
+                const { meta, items } = response.data.data;
                 setReviews(items);
                 setMeta(meta);
             } catch (error) {
-                const errorMessage = error.response?.data?.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+                const errorMessage =
+                    error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
                 setErrorMessage(errorMessage);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchData();
+        fetchReviews();
     }, [filters, productId]);
 
     if (isLoading) {
@@ -94,6 +182,52 @@ function ReviewSection({ productId }) {
 
     return (
         <>
+            <Modal
+                title="Đánh giá sản phẩm"
+                open={isModalOpen}
+                onCancel={handleCancel}
+                onOk={() => form.submit()}
+                confirmLoading={isSubmitting}
+                okText="Gửi"
+                cancelText="Hủy"
+            >
+                <Form form={form} layout="vertical" size="small" onFinish={handleSubmitReview}>
+                    <Form.Item
+                        name="rating"
+                        label="Số sao"
+                        rules={[{ required: true, message: 'Vui lòng chọn số sao' }]}
+                    >
+                        <Rate />
+                    </Form.Item>
+                    <Form.Item
+                        name="comment"
+                        label="Nhận xét"
+                        rules={[{ required: true, message: 'Vui lòng nhập nhận xét' }]}
+                    >
+                        <Input.TextArea rows={4} />
+                    </Form.Item>
+
+                    <Form.Item label="Hình ảnh sản phẩm (tối đa 3)">
+                        <Upload
+                            accept="image/*"
+                            listType="picture-card"
+                            fileList={fileList}
+                            maxCount={3}
+                            onPreview={handlePreview}
+                            onChange={handleFileListChange}
+                            customRequest={handleCustomRequest}
+                        >
+                            {fileList.length >= 3 ? null : (
+                                <div>
+                                    <PlusOutlined />
+                                    <div style={{ marginTop: 8 }}>Tải lên</div>
+                                </div>
+                            )}
+                        </Upload>
+                    </Form.Item>
+                </Form>
+            </Modal>
+
             <div className={cx('section-title')}>Đánh giá và nhận xét</div>
             <div className={cx('review-wrap')}>
                 <div className={cx('review-score')}>
@@ -119,14 +253,29 @@ function ReviewSection({ productId }) {
 
                 <div className={cx('rating-prompt')}>Bạn đánh giá sao về sản phẩm này ?</div>
 
-                <Button type="primary" block>
-                    ĐÁNH GIÁ NGAY
-                </Button>
+                {isAuthenticated ? (
+                    <Button type="primary" block onClick={showRatingModal}>
+                        ĐÁNH GIÁ NGAY
+                    </Button>
+                ) : (
+                    <Alert
+                        type="info"
+                        showIcon
+                        message="Vui lòng đăng nhập để đánh giá sản phẩm"
+                        action={
+                            <Button type="link" href="/dang-nhap">
+                                Đăng nhập
+                            </Button>
+                        }
+                    />
+                )}
 
                 <div className={cx('comment-list')}>
-                    <hr />
                     {reviews.length === 0 ? (
-                        <div>Chưa có đánh giá nào.</div>
+                        <div>
+                            <hr />
+                            Chưa có đánh giá nào.
+                        </div>
                     ) : (
                         reviews.map((review) => (
                             <div className={cx('comment')} key={review.id}>

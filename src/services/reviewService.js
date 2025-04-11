@@ -27,7 +27,7 @@ export const createReview = (values, images) => {
         });
     }
 
-    return httpRequest.post(`reviews`, formData, {
+    return axiosPrivate.post(`reviews`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },

@@ -12,6 +12,7 @@ import * as yup from 'yup';
 import useDebounce from '~/hooks/useDebounce';
 import { checkIdIsNumber } from '~/utils/helper';
 import { handleError } from '~/utils/errorHandler';
+import { getBase64, validateFile } from '~/utils';
 import { getCategoriesTree } from '~/services/categoryService';
 import { getBrands } from '~/services/brandService';
 import { getAttributeByCategoryId } from '~/services/attributeService';
@@ -73,28 +74,6 @@ const getDynamicAttributeSchema = (attributeList) => {
             }),
         }),
     );
-};
-
-const getBase64 = (file) =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-    });
-
-const validateFile = (file) => {
-    const isImage = file.type.startsWith('image/');
-    if (!isImage) {
-        return { result: false, message: 'Bạn chỉ có thể upload file hình ảnh!' };
-    }
-
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-        return { result: false, message: 'Kích thước file không được vượt quá 5MB!' };
-    }
-
-    return { result: true, message: 'OK!' };
 };
 
 const uploadButton = (
