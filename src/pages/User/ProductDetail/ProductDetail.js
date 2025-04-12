@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 
 import { Alert, Breadcrumb, Button, message, Rate, Spin } from 'antd';
 
+import Swal from 'sweetalert2';
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 
@@ -20,6 +22,7 @@ import styles from './ProductDetail.module.scss';
 
 import images from '~/assets';
 import Policy from '~/components/Policy';
+import { addToCart } from '~/services/cartService';
 import { getProductBySlugForUser } from '~/services/productService';
 import { formatCurrency } from '~/utils/utils';
 import ReviewSection from './ReviewSection';
@@ -41,6 +44,33 @@ function ProductDetail() {
     const [showMore, setShowMore] = useState(false);
     const [isOverflowing, setIsOverflowing] = useState(false);
     const contentRef = useRef(null);
+
+    const handleAddToCart = async (productId) => {
+        try {
+            const payload = {
+                productId,
+                quantity: 1,
+            };
+
+            await addToCart(payload);
+
+            Swal.fire({
+                title: 'Thành công!',
+                text: 'Sản phẩm đã được thêm vào giỏ hàng.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+            });
+        } catch (error) {
+            console.log(error);
+
+            Swal.fire({
+                title: 'Thất bại!',
+                text: error.response?.data?.message || 'Không thể thêm vào giỏ hàng.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
+        }
+    };
 
     useEffect(() => {
         if (contentRef.current && entityData) {
@@ -193,13 +223,19 @@ function ProductDetail() {
 
                         <div className={cx('row', 'g-2', 'mb-3', 'button-group')}>
                             <div className="col col-6 text-center">
-                                <button className={cx('btn', 'btn-custom', 'btn-buy-now', 'p-1')}>
+                                <button
+                                    className={cx('btn', 'btn-custom', 'btn-buy-now', 'p-1')}
+                                    onClick={() => handleAddToCart(entityData.id)}
+                                >
                                     MUA NGAY
                                     <p className="mb-0">Giao hàng tận nơi</p>
                                 </button>
                             </div>
                             <div className="col col-6 text-center">
-                                <button className={cx('btn', 'btn-custom', 'btn-add-to-cart', 'p-1')}>
+                                <button
+                                    className={cx('btn', 'btn-custom', 'btn-add-to-cart', 'p-1')}
+                                    onClick={() => handleAddToCart(entityData.id)}
+                                >
                                     THÊM VÀO GIỎ HÀNG
                                     <p className="mb-0">Giao hàng tận nơi</p>
                                 </button>

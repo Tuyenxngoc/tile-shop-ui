@@ -2,6 +2,7 @@ const images = {
     logo: require('./images/logo.svg').default,
     logoSmall: require('./images/logoSmall.svg').default,
     right: require('./images/right.svg').default,
+    empty: require('./images/empty.svg').default,
 
     group5: require('./images/Group 5.png'),
     group6: require('./images/Group 6.png'),

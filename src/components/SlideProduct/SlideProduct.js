@@ -16,6 +16,7 @@ import Product from '../Product';
 import { getProductsForUser } from '~/services/productService';
 import { Alert, Spin } from 'antd';
 import { getBrandsForUser } from '~/services/brandService';
+import { addToCart } from '~/services/cartService';
 
 const cx = classNames.bind(styles);
 
@@ -26,13 +27,31 @@ function SlideProduct() {
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
 
-    const handleAddToCart = () => {
-        Swal.fire({
-            title: 'Thành công!',
-            text: 'Sản phẩm đã được thêm vào giỏ hàng.',
-            icon: 'success',
-            confirmButtonText: 'OK',
-        });
+    const handleAddToCart = async (productId) => {
+        try {
+            const payload = {
+                productId,
+                quantity: 1,
+            };
+
+            await addToCart(payload);
+
+            Swal.fire({
+                title: 'Thành công!',
+                text: 'Sản phẩm đã được thêm vào giỏ hàng.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+            });
+        } catch (error) {
+            console.log(error);
+
+            Swal.fire({
+                title: 'Thất bại!',
+                text: error.response?.data?.message || 'Không thể thêm vào giỏ hàng.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
+        }
     };
 
     useEffect(() => {
@@ -103,7 +122,7 @@ function SlideProduct() {
                             >
                                 {entityData.map((product, index) => (
                                     <SwiperSlide key={index}>
-                                        <Product data={product} onAddToCart={handleAddToCart} />
+                                        <Product data={product} onAddToCart={() => handleAddToCart(product.id)} />
                                     </SwiperSlide>
                                 ))}
                             </Swiper>
