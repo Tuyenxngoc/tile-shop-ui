@@ -51,6 +51,7 @@ function CartItem({ data, isLoading, onQuantityChange, onRemove }) {
                                 disabled={data.quantity <= 1 || isLoading}
                             />
                             <NumberInput
+                                id="quantity"
                                 value={data.quantity}
                                 onChange={(value) => onQuantityChange(data.productId, value)}
                                 min={1}

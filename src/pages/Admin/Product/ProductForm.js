@@ -76,6 +76,18 @@ const getDynamicAttributeSchema = (attributeList) => {
     );
 };
 
+const formatVND = (value) => {
+    if (!value) return '';
+    // Xóa ký tự không phải số và định dạng lại thành tiền tệ
+    value = value.replace(/\D/g, '');
+    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '₫';
+};
+
+const parseVND = (value) => {
+    // Loại bỏ ký tự '₫' và các dấu phẩy
+    return value.replace(/[^\d]/g, '');
+};
+
 const uploadButton = (
     <button style={{ border: 0, background: 'none' }} type="button">
         <PlusOutlined />
@@ -559,6 +571,9 @@ function ProductForm() {
                             <h4>Thông tin bán hàng</h4>
                         </div>
                         <NumberInput
+                            style={{ width: '70%' }}
+                            formatter={formatVND}
+                            parser={parseVND}
                             required
                             id="price"
                             className="col-12"
@@ -571,6 +586,8 @@ function ProductForm() {
                         />
 
                         <NumberInput
+                            style={{ width: '70%' }}
+                            required
                             id="discountPercentage"
                             className="col-12"
                             label="Giảm giá (%)"
@@ -588,6 +605,7 @@ function ProductForm() {
                         />
 
                         <NumberInput
+                            style={{ width: '70%' }}
                             required
                             id="stockQuantity"
                             className="col-12"
