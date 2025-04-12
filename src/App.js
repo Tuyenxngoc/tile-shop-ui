@@ -45,6 +45,9 @@ import BrandForm from './pages/Admin/Brand/BrandForm';
 
 import Review from './pages/Admin/Review';
 
+import User from './pages/Admin/User';
+import UserForm from './pages/Admin/User/UserForm';
+
 function App() {
     return (
         <BrowserRouter>
@@ -85,6 +88,13 @@ function App() {
                             <Route index element={<Product />} />
                             <Route path="new" element={<ProductForm />} />
                             <Route path="edit/:id" element={<ProductForm />} />
+                        </Route>
+
+                        {/* Quản lý người dùng */}
+                        <Route path="user">
+                            <Route index element={<User />} />
+                            <Route path="new" element={<UserForm />} />
+                            <Route path="edit/:id" element={<UserForm />} />
                         </Route>
 
                         {/* Quản lý đánh giá */}
