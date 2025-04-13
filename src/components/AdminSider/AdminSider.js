@@ -2,14 +2,15 @@ import { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { Layout, Menu } from 'antd';
-import { AiFillDashboard, AiFillProduct } from 'react-icons/ai';
+import { AiFillDashboard } from 'react-icons/ai';
 import { IoMdSettings } from 'react-icons/io';
 import { BsNewspaper } from 'react-icons/bs';
-import { FaUsers, FaHistory, FaChartBar } from 'react-icons/fa';
+import { FaUsers, FaChartBar, FaShoppingCart } from 'react-icons/fa';
 
 import images from '~/assets';
 import useAuth from '~/hooks/useAuth';
 import { checkUserHasRequiredRole } from '~/utils/helper';
+import { FaBoxOpen } from 'react-icons/fa6';
 
 const { Sider } = Layout;
 
@@ -21,14 +22,12 @@ const menuConfig = [
     },
     {
         label: 'Thiết lập hệ thống',
-        key: '/admin/settings',
+        key: 'system-settings',
         icon: <IoMdSettings />,
         children: [
-            { label: 'Thông tin thư viện', key: '/admin/settings/library-info' },
-            { label: 'Nội quy thư viện', key: '/admin/settings/library-rules' },
-            { label: 'Kì nghỉ ngày lễ', key: '/admin/settings/holidays' },
-            { label: 'Cấu hình chung', key: '/admin/settings/general' },
-            { label: 'Thiết lập Slide', key: '/admin/settings/slider' },
+            { label: 'Thông tin cửa hàng', key: '/admin/system-settings/store-info' },
+            { label: 'Cấu hình chung', key: '/admin/system-settings/general' },
+            { label: 'Thiết lập Slide', key: '/admin/system-settings/slider' },
         ],
     },
     {
@@ -39,7 +38,7 @@ const menuConfig = [
     {
         label: 'Quản lý sản phẩm',
         key: 'product-management',
-        icon: <AiFillProduct />,
+        icon: <FaBoxOpen />,
         children: [
             { label: 'Danh sách sản phẩm', key: '/admin/products' },
             { label: 'Thuộc tính sản phẩm', key: '/admin/attributes' },
@@ -51,14 +50,14 @@ const menuConfig = [
     {
         label: 'Quản lý đơn hàng',
         key: '/admin/orders',
-        icon: <FaChartBar />,
+        icon: <FaShoppingCart />,
         children: [{ label: 'Báo cáo', key: '/admin/reports/statistics' }],
     },
     {
-        label: 'Thống kê báo cáo',
-        key: '/admin/reports',
+        label: 'Thống kê & Báo cáo',
+        key: '/admin/statistics',
         icon: <FaChartBar />,
-        children: [{ label: 'Báo cáo', key: '/admin/reports/statistics2' }],
+        children: [{ label: 'Báo cáo tổng hợp', key: '/admin/statistics/overview' }],
     },
     {
         label: 'Quản lý tin tức',
@@ -68,11 +67,6 @@ const menuConfig = [
             { label: 'Danh sách tin tức', key: '/admin/news' },
             { label: 'Danh mục tin tức', key: '/admin/news-categories' },
         ],
-    },
-    {
-        label: 'Lịch sử truy cập',
-        key: '/admin/histories',
-        icon: <FaHistory />,
     },
 ];
 

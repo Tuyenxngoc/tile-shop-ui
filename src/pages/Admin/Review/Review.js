@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
     Alert,
     Button,
@@ -25,6 +26,7 @@ import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { approveReview, deleteReview, getReviews, rejectReview } from '~/services/reviewService';
 
 const options = [
+    { value: 'id', label: 'ID sản phẩm' },
     { value: 'name', label: 'Tên sản phẩm' },
     { value: 'category', label: 'Danh mục' },
 ];
@@ -61,6 +63,9 @@ function Review() {
         token: { colorBgContainer, borderRadiusLG },
     } = theme.useToken();
 
+    const location = useLocation();
+    const { searchBy, keyword } = location.state || {};
+
     const [meta, setMeta] = useState(INITIAL_META);
     const [filters, setFilters] = useState({
         ...INITIAL_FILTERS,
@@ -68,12 +73,14 @@ function Review() {
         hasContent: undefined,
         hasImage: undefined,
         status: undefined,
+        searchBy,
+        keyword,
     });
 
     const [entityData, setEntityData] = useState(null);
 
-    const [searchInput, setSearchInput] = useState('');
-    const [activeFilterOption, setActiveFilterOption] = useState(options[0].value);
+    const [searchInput, setSearchInput] = useState(keyword || '');
+    const [activeFilterOption, setActiveFilterOption] = useState(searchBy || options[0].value);
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);

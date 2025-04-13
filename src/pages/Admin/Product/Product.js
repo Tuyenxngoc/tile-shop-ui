@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Alert, Button, Flex, Image, Input, message, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
-import { EyeOutlined } from '@ant-design/icons';
+import { AiOutlineBars } from 'react-icons/ai';
+import { PiListStarBold } from 'react-icons/pi';
 
 import queryString from 'query-string';
 
@@ -164,19 +165,42 @@ function Product() {
         {
             title: 'Thao tác',
             key: 'action',
+            fixed: 'right',
             render: (_, record) => (
-                <Space>
-                    <Button type="text" icon={<EyeOutlined />} href={`/san-pham/${record.slug}`} target="_blank" />
-                    <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
-                    <Popconfirm
-                        title="Thông báo"
-                        description={'Bạn có chắc muốn xóa sản phẩm này không?'}
-                        onConfirm={() => handleDeleteEntity(record.id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                    >
-                        <Button type="text" danger icon={<FaRegTrashAlt />} />
-                    </Popconfirm>
+                <Space direction="vertical">
+                    <Space>
+                        <Button type="text" icon={<AiOutlineBars />} href={`/san-pham/${record.slug}`} target="_blank">
+                            Thông tin
+                        </Button>
+
+                        <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)}>
+                            Chỉnh sửa
+                        </Button>
+                    </Space>
+
+                    <Space>
+                        <Button
+                            type="text"
+                            icon={<PiListStarBold />}
+                            onClick={() =>
+                                navigate('/admin/reviews', { state: { searchBy: 'id', keyword: record.id } })
+                            }
+                        >
+                            Xem đánh giá
+                        </Button>
+
+                        <Popconfirm
+                            title="Thông báo"
+                            description={'Bạn có chắc muốn xóa sản phẩm này không?'}
+                            onConfirm={() => handleDeleteEntity(record.id)}
+                            okText="Xóa"
+                            cancelText="Hủy"
+                        >
+                            <Button type="text" danger icon={<FaRegTrashAlt />}>
+                                Xóa
+                            </Button>
+                        </Popconfirm>
+                    </Space>
                 </Space>
             ),
         },
