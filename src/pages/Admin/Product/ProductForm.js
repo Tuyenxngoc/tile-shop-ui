@@ -20,6 +20,7 @@ import { createProduct, getProductById, updateProduct } from '~/services/product
 import { NumberInput, RichTextInput, SelectInput, TextInput } from '~/components/FormInput';
 
 const entityListPage = '/admin/products';
+const maxImageCount = 10;
 
 const defaultValue = {
     name: '',
@@ -418,12 +419,12 @@ function ProductForm() {
                                         accept="image/*"
                                         listType="picture-card"
                                         fileList={fileList}
-                                        maxCount={10}
+                                        maxCount={maxImageCount}
                                         onPreview={handlePreview}
                                         onChange={handleFileListChange}
                                         customRequest={handleCustomRequest}
                                     >
-                                        {fileList.length >= 8 ? null : uploadButton}
+                                        {fileList.length >= maxImageCount ? null : uploadButton}
                                     </Upload>
                                 </ImgCrop>
                                 {previewImage && (

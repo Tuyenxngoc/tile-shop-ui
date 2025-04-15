@@ -11,8 +11,9 @@ export const getNews = (params) => {
 export const updateNews = (id, values, image) => {
     const formData = new FormData();
     formData.append('news', new Blob([JSON.stringify(values)], { type: 'application/json' }));
-    if (image) {
-        formData.append('image', image);
+
+    if (image?.originFileObj) {
+        formData.append('image', image.originFileObj);
     }
 
     return axiosPrivate.put(`news/${id}`, formData, {
@@ -25,8 +26,9 @@ export const updateNews = (id, values, image) => {
 export const createNews = (values, image) => {
     const formData = new FormData();
     formData.append('news', new Blob([JSON.stringify(values)], { type: 'application/json' }));
-    if (image) {
-        formData.append('image', image);
+
+    if (image?.originFileObj) {
+        formData.append('image', image.originFileObj);
     }
 
     return axiosPrivate.post('news', formData, {
