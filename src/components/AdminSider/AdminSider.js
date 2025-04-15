@@ -32,7 +32,7 @@ const menuConfig = [
     },
     {
         label: 'Quản lý người dùng',
-        key: '/admin/user',
+        key: '/admin/users',
         icon: <FaUsers />,
     },
     {

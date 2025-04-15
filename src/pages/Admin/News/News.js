@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, Flex, Image, Input, message, Popconfirm, Select, Space, Table } from 'antd';
+import { Alert, Button, Flex, Image, Input, message, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 
@@ -111,6 +111,13 @@ function News() {
             key: 'title',
             sorter: true,
             showSorterTooltip: false,
+            render: (text) => (
+                <div style={{ maxWidth: 300 }}>
+                    <Tooltip title={text}>
+                        <span className="text-truncate-2">{text}</span>
+                    </Tooltip>
+                </div>
+            ),
         },
         {
             title: 'Mô tả',
@@ -118,27 +125,40 @@ function News() {
             key: 'description',
             sorter: true,
             showSorterTooltip: false,
+            render: (text) => (
+                <div style={{ maxWidth: 300 }}>
+                    <Tooltip title={text}>
+                        <span className="text-truncate-2">{text}</span>
+                    </Tooltip>
+                </div>
+            ),
         },
         {
             title: 'Ảnh bìa',
             dataIndex: 'imageUrl',
             key: 'imageUrl',
-            sorter: true,
-            showSorterTooltip: false,
             align: 'center',
-            render: (text, record) => <Image src={text} alt={record.title} width={150} />,
+            render: (text) => (
+                <Image
+                    src={text}
+                    alt="review"
+                    width={56}
+                    height={56}
+                    preview={{ mask: 'Xem ảnh' }}
+                    className="rounded-2"
+                />
+            ),
         },
         {
             title: 'Danh mục',
             dataIndex: 'category',
             key: 'category',
-            sorter: true,
-            showSorterTooltip: false,
             render: (text) => text.name,
         },
         {
             title: 'Thao tác',
             key: 'action',
+            fixed: 'right',
             render: (_, record) => (
                 <Space>
                     <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, Flex, Input, message, Popconfirm, Select, Space, Switch, Table, Tag } from 'antd';
+import { Alert, Button, Flex, Input, message, Popconfirm, Select, Space, Switch, Table, Tag, Tooltip } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 
@@ -155,6 +155,13 @@ function User() {
             key: 'address',
             sorter: true,
             showSorterTooltip: false,
+            render: (text) => (
+                <div style={{ maxWidth: 300 }}>
+                    <Tooltip title={text}>
+                        <span className="text-truncate-2">{text}</span>
+                    </Tooltip>
+                </div>
+            ),
         },
         {
             title: 'Giới tính',
@@ -185,6 +192,7 @@ function User() {
         {
             title: 'Thao tác',
             key: 'action',
+            fixed: 'right',
             render: (_, record) => (
                 <Space>
                     <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
