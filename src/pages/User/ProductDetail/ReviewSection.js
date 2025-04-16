@@ -28,7 +28,7 @@ const getBase64 = (file) =>
         reader.onerror = (error) => reject(error);
     });
 
-function ReviewSection({ productId, message }) {
+function ReviewSection({ id, productId, message }) {
     const { isAuthenticated } = useAuth();
 
     const [meta, setMeta] = useState(INITIAL_META);
@@ -108,7 +108,7 @@ function ReviewSection({ productId, message }) {
 
         setIsSubmitting(true);
         try {
-            const response = await createReview(payload, fileList);
+            await createReview(payload, fileList);
             message.success('Đánh giá của bạn đã được gửi!');
             handleCancel();
         } catch (error) {
@@ -225,7 +225,7 @@ function ReviewSection({ productId, message }) {
             </Modal>
 
             <div className={cx('section-title')}>Đánh giá và nhận xét</div>
-            <div className={cx('review-wrap')}>
+            <div id={id} className={cx('review-wrap')}>
                 <div className={cx('review-score')}>
                     <div className={cx('score-value')}>{summary.averageRating}/5</div>
                     <div>
@@ -279,7 +279,7 @@ function ReviewSection({ productId, message }) {
 
                                 <div className="d-flex justify-content-between align-items-center mb-1">
                                     <div>
-                                        <strong className="me-2">{review.customer.name}</strong>
+                                        <strong className="me-2">{review.user.name}</strong>
                                         <Rate value={review.rating} disabled style={{ fontSize: 14 }} />
                                     </div>
                                     <span className="text-muted" style={{ fontSize: 12 }}>

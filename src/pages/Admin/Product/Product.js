@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, Flex, Image, Input, message, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
+import { Alert, Button, Flex, Image, Input, message, Popconfirm, Rate, Select, Space, Table, Tooltip } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { AiOutlineBars } from 'react-icons/ai';
@@ -161,6 +161,7 @@ function Product() {
             key: 'averageRating',
             sorter: true,
             showSorterTooltip: false,
+            render: (value) => <Rate allowHalf disabled defaultValue={value} />,
         },
         {
             title: 'Thao tác',

@@ -201,11 +201,11 @@ function ProductDetail() {
                                 </span>
                             </div>
                             <div className="col-12">
-                                <Rate value={5} disabled />
-                                <span>(5)</span>
-                                <Link className={cx('comment-link')} to="#">
+                                <Rate value={entityData.averageRating} disabled />
+                                <span>({entityData.averageRating})</span>
+                                <a className={cx('comment-link')} href="#review">
                                     (Xem đánh giá)
-                                </Link>
+                                </a>
                             </div>
                         </div>
 
@@ -451,7 +451,7 @@ function ProductDetail() {
 
             <div className="row mb-3">
                 <div className="col-12 col-md-8">
-                    <ReviewSection productId={entityData.id} message={messageApi} />
+                    <ReviewSection id="review" productId={entityData.id} message={messageApi} />
                 </div>
                 <div className="col-12 col-md-4">
                     <div className={cx('section-title')}>Video nổi bật</div>
