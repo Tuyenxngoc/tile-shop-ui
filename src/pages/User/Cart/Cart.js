@@ -169,7 +169,7 @@ function Cart() {
                 </div>
                 <div className="col col-12 text-center">
                     <Button block type="primary" size="large" onClick={handleCheckout}>
-                        Mua ngay
+                        TIẾN HÀNH ĐẶT HÀNG
                     </Button>
                 </div>
                 <div className="col-md-12 text-center" style={{ color: '#62666B' }}>
