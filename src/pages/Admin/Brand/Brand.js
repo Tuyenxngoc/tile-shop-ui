@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, Flex, Image, Input, message, Popconfirm, Select, Space, Table, Tag } from 'antd';
+import { Alert, Button, Flex, Image, Input, message, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 
@@ -105,11 +105,18 @@ function Brand() {
             showSorterTooltip: false,
         },
         {
-            title: 'Tiêu đề',
+            title: 'Tên thương hiệu',
             dataIndex: 'name',
             key: 'name',
             sorter: true,
             showSorterTooltip: false,
+            render: (text) => (
+                <div style={{ maxWidth: 200 }}>
+                    <Tooltip title={text}>
+                        <span className="text-truncate-2">{text}</span>
+                    </Tooltip>
+                </div>
+            ),
         },
         {
             title: 'Mô tả',
@@ -117,7 +124,13 @@ function Brand() {
             key: 'description',
             sorter: true,
             showSorterTooltip: false,
-            render: (text) => text || <Tag>Chưa có mô tả</Tag>,
+            render: (text) => (
+                <div style={{ maxWidth: 300 }}>
+                    <Tooltip title={text}>
+                        <span className="text-truncate-2">{text}</span>
+                    </Tooltip>
+                </div>
+            ),
         },
         {
             title: 'Ảnh bìa',
@@ -126,7 +139,16 @@ function Brand() {
             sorter: true,
             showSorterTooltip: false,
             align: 'center',
-            render: (text, record) => <Image src={text} alt={record.title} width={150} />,
+            render: (text) => (
+                <Image
+                    src={text}
+                    alt="review"
+                    width={56}
+                    height={56}
+                    preview={{ mask: 'Xem ảnh' }}
+                    className="rounded-2"
+                />
+            ),
         },
         {
             title: 'Thao tác',

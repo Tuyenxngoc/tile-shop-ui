@@ -215,7 +215,7 @@ function UpdateUserForm() {
                         error={formik.touched.gender && formik.errors.gender ? formik.errors.gender : null}
                     />
 
-                    <div className="col-md-12 text-end">
+                    <div className="col-12 text-end">
                         <Space>
                             <Button onClick={() => navigate(entityListPage)}>Quay lại</Button>
                             <Button type="primary" htmlType="submit" loading={formik.isSubmitting}>

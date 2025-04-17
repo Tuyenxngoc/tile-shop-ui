@@ -167,6 +167,7 @@ function NewsForm() {
             try {
                 const response = await getNewsById(id);
                 const { title, description, content, category, imageUrl } = response.data.data;
+
                 formik.setValues({
                     title,
                     description,
@@ -295,7 +296,7 @@ function NewsForm() {
                         error={formik.touched.content && formik.errors.content ? formik.errors.content : null}
                     />
 
-                    <div className="col-md-12 text-end">
+                    <div className="col-12 text-end">
                         <Space>
                             <Button onClick={() => navigate(entityListPage)}>Quay lại</Button>
                             <Button type="primary" htmlType="submit" loading={formik.isSubmitting}>

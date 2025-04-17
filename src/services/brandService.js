@@ -12,8 +12,9 @@ export const getBrands = (params) => {
 export const updateBrand = (id, values, image) => {
     const formData = new FormData();
     formData.append('brand', new Blob([JSON.stringify(values)], { type: 'application/json' }));
-    if (image) {
-        formData.append('image', image);
+
+    if (image?.originFileObj) {
+        formData.append('image', image.originFileObj);
     }
 
     return axiosPrivate.put(`admin/brands/${id}`, formData, {
@@ -26,8 +27,9 @@ export const updateBrand = (id, values, image) => {
 export const createBrand = (values, image) => {
     const formData = new FormData();
     formData.append('brand', new Blob([JSON.stringify(values)], { type: 'application/json' }));
-    if (image) {
-        formData.append('image', image);
+
+    if (image?.originFileObj) {
+        formData.append('image', image.originFileObj);
     }
 
     return axiosPrivate.post('admin/brands', formData, {
