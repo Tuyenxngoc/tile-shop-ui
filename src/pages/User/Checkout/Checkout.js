@@ -34,7 +34,7 @@ const defaultValue = {
     phoneNumber: '',
     email: '',
     deliveryMethod: deliveryMethodOptions[0].value,
-    address: '',
+    shippingAddress: '',
     note: '',
     needInvoice: false,
     paymentMethod: paymentMethodOptions[0].value,
@@ -219,12 +219,14 @@ function Checkout() {
 
                                 {formik.values.deliveryMethod === 'home_delivery' && (
                                     <ProvinceSelector
-                                        onChange={({ fullAddress }) => formik.setFieldValue('address', fullAddress)}
+                                        onChange={({ fullAddress }) =>
+                                            formik.setFieldValue('shippingAddress', fullAddress)
+                                        }
                                     />
                                 )}
 
-                                {formik.touched.address && formik.errors.address && (
-                                    <div className="text-danger">{formik.errors.address}</div>
+                                {formik.touched.shippingAddress && formik.errors.shippingAddress && (
+                                    <div className="text-danger">{formik.errors.shippingAddress}</div>
                                 )}
                             </div>
 
