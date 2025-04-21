@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Select, Input } from 'antd';
 import { getDistrictsByProvince, getProvinces, getWardsByDistrict } from '~/services/addressService';
 
-const AddressSelector = () => {
+const AddressSelector = ({ onChange }) => {
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
@@ -64,6 +64,26 @@ const AddressSelector = () => {
     const handleHouseNumberChange = (e) => {
         setHouseNumber(e.target.value);
     };
+
+    useEffect(() => {
+        if (selectedProvince && selectedDistrict && selectedWard && houseNumber) {
+            const province = provinces.find((p) => p.code === selectedProvince)?.name || '';
+            const district = districts.find((d) => d.code === selectedDistrict)?.name || '';
+            const ward = wards.find((w) => w.code === selectedWard)?.name || '';
+
+            const fullAddress = `${houseNumber}, ${ward}, ${district}, ${province}`;
+
+            onChange?.({
+                provinceCode: selectedProvince,
+                districtCode: selectedDistrict,
+                wardCode: selectedWard,
+                houseNumber,
+                fullAddress,
+            });
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedProvince, selectedDistrict, selectedWard, houseNumber]);
 
     return (
         <div className="row g-3">

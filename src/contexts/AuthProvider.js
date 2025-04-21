@@ -12,8 +12,13 @@ const AuthContext = createContext();
 const defaultAuth = {
     isAuthenticated: false,
     user: {
-        username: '',
         userId: '',
+        username: '',
+        email: '',
+        phoneNumber: '',
+        fullName: '',
+        address: '',
+        gender: '',
         roleNames: [],
     },
 };
@@ -37,12 +42,18 @@ const AuthProvider = ({ children }) => {
             }
             const response = await getCurrentUserLogin();
             if (response.status === 200) {
-                const { username, userId, roleNames } = response.data.data;
+                const { userId, username, email, phoneNumber, fullName, address, gender, roleNames } =
+                    response.data.data;
                 setAuthData({
                     isAuthenticated: true,
                     user: {
-                        username,
                         userId,
+                        username,
+                        email,
+                        phoneNumber,
+                        fullName,
+                        address,
+                        gender,
                         roleNames,
                     },
                 });
