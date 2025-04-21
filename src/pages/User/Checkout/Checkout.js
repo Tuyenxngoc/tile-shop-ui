@@ -11,6 +11,9 @@ import { TextAreaInput, TextInput } from '~/components/FormInput';
 import { formatCurrency } from '~/utils';
 import useAuth from '~/hooks/useAuth';
 import useStore from '~/hooks/useStore';
+import { initiateVnpayPayment } from '~/services/paymentService';
+import queryString from 'query-string';
+import { createOrder } from '~/services/ordersService';
 
 const deliveryMethodOptions = [
     { value: 'home_delivery', label: 'Giao hàng tận nơi' },
@@ -37,6 +40,9 @@ const defaultValue = {
     shippingAddress: '',
     note: '',
     needInvoice: false,
+    invoiceCompanyName: '',
+    invoiceTaxCode: '',
+    invoiceCompanyAddress: '',
     paymentMethod: paymentMethodOptions[0].value,
 };
 
@@ -54,6 +60,34 @@ const validationSchema = yup.object({
         .trim()
         .required('Vui lòng nhập họ và tên')
         .matches(/^\S+(\s+\S+)+$/, 'Họ và tên phải có ít nhất hai từ'),
+
+    deliveryMethod: yup.string().required('Vui lòng chọn phương thức giao hàng'),
+
+    shippingAddress: yup.string().when('deliveryMethod', {
+        is: (val) => val === 'home_delivery',
+        then: () => yup.string().required('Vui lòng chọn địa chỉ giao hàng'),
+        otherwise: () => yup.string().notRequired(),
+    }),
+
+    needInvoice: yup.boolean(),
+
+    invoiceCompanyName: yup.string().when('needInvoice', {
+        is: true,
+        then: () => yup.string().required('Vui lòng nhập tên công ty'),
+        otherwise: () => yup.string().notRequired(),
+    }),
+
+    invoiceTaxCode: yup.string().when('needInvoice', {
+        is: true,
+        then: () => yup.string().required('Vui lòng nhập mã số thuế'),
+        otherwise: () => yup.string().notRequired(),
+    }),
+
+    invoiceCompanyAddress: yup.string().when('needInvoice', {
+        is: true,
+        then: () => yup.string().required('Vui lòng nhập địa chỉ công ty'),
+        otherwise: () => yup.string().notRequired(),
+    }),
 });
 
 function Checkout() {
@@ -67,7 +101,29 @@ function Checkout() {
 
     const [totalPrice, setTotalPrice] = useState(0);
 
-    const handleSubmit = async (values, { setSubmitting }) => {};
+    const handleSubmit = async (values, { setSubmitting }) => {
+        setSubmitting(true);
+
+        if (values.paymentMethod === 'vnpay') {
+            // Initiate VNPAY payment
+            try {
+                const params = queryString.stringify({ amount: totalPrice });
+                const response = await initiateVnpayPayment(params);
+                const { url } = response.data.data;
+
+                // Redirect user to the VNPAY payment page
+                window.location.href = url;
+            } catch (error) {
+                setErrorMessage(error.response?.data?.message || 'Lỗi thanh toán qua VNPAY. Vui lòng thử lại sau.');
+            }
+        } else {
+            // Handle other payment methods (e.g., COD)
+            // Process COD or other methods
+            try {
+                const response = await createOrder(values);
+            } catch (error) {}
+        }
+    };
 
     const formik = useFormik({
         initialValues: {
@@ -230,79 +286,77 @@ function Checkout() {
                                 )}
                             </div>
 
+                            <TextAreaInput
+                                rows={2}
+                                id="note"
+                                className="col-12"
+                                label="Yêu cầu khác"
+                                value={formik.values.note}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.note && formik.errors.note ? formik.errors.note : null}
+                            />
+
                             <div className="col-12">
-                                <TextAreaInput
-                                    rows={2}
-                                    id="note"
-                                    className="col-12"
-                                    label="Yêu cầu khác"
-                                    value={formik.values.note}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.note && formik.errors.note ? formik.errors.note : null}
-                                />
-
-                                <div className="col-12">
-                                    <Checkbox
-                                        checked={formik.values.needInvoice}
-                                        onChange={(e) => formik.setFieldValue('needInvoice', e.target.checked)}
-                                    >
-                                        Yêu cầu xuất hóa đơn công ty (Vui lòng điền email để nhận hóa đơn VAT)
-                                    </Checkbox>
-                                </div>
-
-                                {formik.values.needInvoice && (
-                                    <>
-                                        <TextInput
-                                            className="col-12"
-                                            size="large"
-                                            label="Tên công ty"
-                                            id="companyName"
-                                            required
-                                            value={formik.values.companyName}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            error={
-                                                formik.touched.companyName && formik.errors.companyName
-                                                    ? formik.errors.companyName
-                                                    : null
-                                            }
-                                        />
-
-                                        <TextInput
-                                            className="col-12"
-                                            size="large"
-                                            label="Địa chỉ công ty"
-                                            id="companyAddress"
-                                            required
-                                            value={formik.values.companyAddress}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            error={
-                                                formik.touched.companyAddress && formik.errors.companyAddress
-                                                    ? formik.errors.companyAddress
-                                                    : null
-                                            }
-                                        />
-
-                                        <TextInput
-                                            className="col-12"
-                                            size="large"
-                                            label="Mã số thuế"
-                                            id="taxCode"
-                                            required
-                                            value={formik.values.taxCode}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            error={
-                                                formik.touched.taxCode && formik.errors.taxCode
-                                                    ? formik.errors.taxCode
-                                                    : null
-                                            }
-                                        />
-                                    </>
-                                )}
+                                <Checkbox
+                                    checked={formik.values.needInvoice}
+                                    onChange={(e) => formik.setFieldValue('needInvoice', e.target.checked)}
+                                >
+                                    Yêu cầu xuất hóa đơn công ty (Vui lòng điền email để nhận hóa đơn VAT)
+                                </Checkbox>
                             </div>
+
+                            {formik.values.needInvoice && (
+                                <>
+                                    <TextInput
+                                        className="col-12"
+                                        size="large"
+                                        label="Tên công ty"
+                                        id="invoiceCompanyName"
+                                        required
+                                        value={formik.values.invoiceCompanyName}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={
+                                            formik.touched.invoiceCompanyName && formik.errors.invoiceCompanyName
+                                                ? formik.errors.invoiceCompanyName
+                                                : null
+                                        }
+                                    />
+
+                                    <TextInput
+                                        className="col-12"
+                                        size="large"
+                                        label="Địa chỉ công ty"
+                                        id="invoiceCompanyAddress"
+                                        required
+                                        value={formik.values.invoiceCompanyAddress}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={
+                                            formik.touched.invoiceCompanyAddress && formik.errors.invoiceCompanyAddress
+                                                ? formik.errors.invoiceCompanyAddress
+                                                : null
+                                        }
+                                    />
+
+                                    <TextInput
+                                        className="col-12"
+                                        size="large"
+                                        label="Mã số thuế"
+                                        id="invoiceTaxCode"
+                                        required
+                                        value={formik.values.invoiceTaxCode}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={
+                                            formik.touched.invoiceTaxCode && formik.errors.invoiceTaxCode
+                                                ? formik.errors.invoiceTaxCode
+                                                : null
+                                        }
+                                    />
+                                </>
+                            )}
 
                             <div className="col-12">
                                 <h4 className="mb-3">Chọn phương thức thanh toán</h4>

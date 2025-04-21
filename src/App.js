@@ -17,6 +17,7 @@ import Register from './pages/User/Register';
 import ProductDetail from './pages/User/ProductDetail';
 import ProductByCategory from './pages/User/ProductByCategory';
 import Checkout from './pages/User/Checkout';
+import VnpayReturn from './pages/User/VnpayReturn';
 
 import Cart from './pages/User/Cart';
 
@@ -63,6 +64,7 @@ function App() {
                     <Route path="san-pham/:id" element={<ProductDetail />} />
                     <Route path="danh-muc/:id" element={<ProductByCategory />} />
                     <Route path="thanh-toan" element={<Checkout />} />
+                    <Route path="/vnpay-return" element={<VnpayReturn />} />
 
                     {/* Đường dẫn yêu cầu đăng nhập */}
                     <Route element={<RequireAuth />}>
