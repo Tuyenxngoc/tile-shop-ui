@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { Alert, Breadcrumb, Button, message, Rate, Spin } from 'antd';
 
@@ -31,6 +31,7 @@ const cx = classNames.bind(styles);
 
 function ProductDetail() {
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const [entityData, setEntityData] = useState(null);
 
@@ -63,6 +64,26 @@ function ProductDetail() {
         } catch (error) {
             console.log(error);
 
+            Swal.fire({
+                title: 'Thất bại!',
+                text: error.response?.data?.message || 'Không thể thêm vào giỏ hàng.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
+        }
+    };
+
+    const handleBuyNow = async (productId) => {
+        try {
+            const payload = {
+                productId,
+                quantity: 1,
+            };
+
+            await addToCart(payload);
+
+            navigate('/gio-hang');
+        } catch (error) {
             Swal.fire({
                 title: 'Thất bại!',
                 text: error.response?.data?.message || 'Không thể thêm vào giỏ hàng.',
@@ -225,7 +246,7 @@ function ProductDetail() {
                             <div className="col col-6 text-center">
                                 <button
                                     className={cx('btn', 'btn-custom', 'btn-buy-now', 'p-1')}
-                                    onClick={() => handleAddToCart(entityData.id)}
+                                    onClick={() => handleBuyNow(entityData.id)}
                                 >
                                     MUA NGAY
                                     <p className="mb-0">Giao hàng tận nơi</p>
