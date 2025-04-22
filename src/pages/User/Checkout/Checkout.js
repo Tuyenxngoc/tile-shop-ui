@@ -5,7 +5,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 
 import { getCartItems } from '~/services/cartService';
-import OrderItem from '~/components/OrderItem';
+import CheckoutItem from '~/components/CheckoutItem';
 import ProvinceSelector from '~/components/ProvinceSelector';
 import { TextAreaInput, TextInput } from '~/components/FormInput';
 import { formatCurrency } from '~/utils';
@@ -96,7 +96,7 @@ function Checkout() {
     const store = useStore();
     const navigate = useNavigate();
 
-    const [entityData, setEntityData] = useState(null);
+    const [checkoutItems, setCheckoutItems] = useState(null);
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -105,6 +105,12 @@ function Checkout() {
 
     const handleSubmit = async (values, { setSubmitting }) => {
         setSubmitting(true);
+
+        if (values.paymentMethod === 'VNPAY' && totalPrice < 5000) {
+            setErrorMessage('Giá trị đơn hàng phải từ 5.000đ để thanh toán qua VNPAY.');
+            setSubmitting(false);
+            return;
+        }
 
         try {
             const orderResponse = await createOrder(values);
@@ -151,7 +157,12 @@ function Checkout() {
             try {
                 const response = await getCartItems();
                 const { data } = response.data;
-                setEntityData(data);
+
+                if (data.length === 0) {
+                    navigate('/', { replace: true });
+                } else {
+                    setCheckoutItems(data);
+                }
             } catch (error) {
                 const errorMessage = error.response?.data?.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
                 setErrorMessage(errorMessage);
@@ -161,33 +172,19 @@ function Checkout() {
         };
 
         fetchEntities();
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
-        if (entityData && entityData.length > 0) {
-            const totalPrice = entityData.reduce((acc, item) => acc + item.salePrice * item.quantity, 0);
+        if (checkoutItems && checkoutItems.length > 0) {
+            const totalPrice = checkoutItems.reduce((acc, item) => acc + item.salePrice * item.quantity, 0);
 
             setTotalPrice(totalPrice);
         } else {
             setTotalPrice(0);
         }
-    }, [entityData]);
-
-    if (isLoading) {
-        return (
-            <div className="d-flex justify-content-center w-100">
-                <Spin size="large" />
-            </div>
-        );
-    }
-
-    if (errorMessage) {
-        return (
-            <div className="w-100">
-                <Alert message="Lỗi" description={errorMessage} type="error" />
-            </div>
-        );
-    }
+    }, [checkoutItems]);
 
     return (
         <div className="container mt-5 mb-5">
@@ -195,16 +192,23 @@ function Checkout() {
                 <div className="row">
                     <div className="col-md-4 order-md-2 mb-4">
                         <h4 className="mb-3">Giỏ hàng của bạn</h4>
-                        {entityData.map((item, index) => (
-                            <OrderItem key={index} data={item} />
-                        ))}
-
-                        <div>
-                            Tổng tiền: <span className="">{formatCurrency(totalPrice)}</span>
-                        </div>
+                        {isLoading ? (
+                            <div className="d-flex justify-content-center w-100">
+                                <Spin size="large" />
+                            </div>
+                        ) : (
+                            <>
+                                {checkoutItems.map((item, index) => (
+                                    <CheckoutItem key={index} data={item} />
+                                ))}
+                                <div>
+                                    Tổng tiền: <span className="">{formatCurrency(totalPrice)}</span>
+                                </div>
+                            </>
+                        )}
                     </div>
 
-                    <div className="col-md-8 order-md-1">
+                    <div className="col-md-8 order-md-1 mb-4">
                         <div className="row g-3">
                             <div className="col-12">
                                 <h4 className="mb-3">Thông tin khách hàng</h4>
@@ -382,12 +386,24 @@ function Checkout() {
                             </div>
 
                             <div className="col-12">
-                                <Button block type="primary" htmlType="submit" size="large">
+                                <Button
+                                    block
+                                    type="primary"
+                                    htmlType="submit"
+                                    size="large"
+                                    loading={formik.isSubmitting}
+                                >
                                     ĐẶT HÀNG
                                 </Button>
                             </div>
                         </div>
                     </div>
+
+                    {errorMessage && (
+                        <div className="col-12 order-md-3">
+                            <Alert message="Lỗi" description={errorMessage} type="error" />
+                        </div>
+                    )}
                 </div>
             </form>
         </div>

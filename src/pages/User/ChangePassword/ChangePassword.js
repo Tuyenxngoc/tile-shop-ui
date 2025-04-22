@@ -55,13 +55,12 @@ function ChangePassword() {
             {contextHolder}
 
             <div className="col-6">
-                <h2>Đổi mật khẩu</h2>
+                <h3>Đổi mật khẩu</h3>
 
                 <form onSubmit={formik.handleSubmit}>
                     <div className="mb-3">
                         <label htmlFor="oldPassword">Mật khẩu cũ:</label>
                         <Input.Password
-                            size="large"
                             id="oldPassword"
                             name="oldPassword"
                             value={formik.values.oldPassword}
@@ -75,7 +74,6 @@ function ChangePassword() {
                     <div className="mb-3">
                         <label htmlFor="password">Mật khẩu mới:</label>
                         <Input.Password
-                            size="large"
                             id="password"
                             name="password"
                             value={formik.values.password}
@@ -89,7 +87,6 @@ function ChangePassword() {
                     <div className="mb-3">
                         <label htmlFor="repeatPassword">Xác nhận mật khẩu mới:</label>
                         <Input.Password
-                            size="large"
                             id="repeatPassword"
                             name="repeatPassword"
                             value={formik.values.repeatPassword}
@@ -105,7 +102,6 @@ function ChangePassword() {
                     <div className="mb-3">
                         <Button
                             style={{ width: '200px' }}
-                            size="large"
                             type="primary"
                             htmlType="submit"
                             loading={formik.isSubmitting}

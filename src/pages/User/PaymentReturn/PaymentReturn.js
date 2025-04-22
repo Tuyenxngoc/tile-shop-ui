@@ -74,50 +74,95 @@ const PaymentReturn = () => {
     return (
         <div className="container text-center">
             <div className="mx-auto col-md-8">
-                <img src={images.success} width={64} alt="order status" className="mt-5 mb-3" />
-                <h4 className="mb-4">Đặt hàng thành công</h4>
+                {result.paymentStatus === 'PAID' ? (
+                    <>
+                        <img src={images.success} width={64} alt="order status" className="mt-5 mb-3" />
+                        <h4 className="mb-4">Đặt hàng thành công</h4>
 
-                <div className={cx('success-box')}>
-                    <div className={cx('text-start', 'order-info')}>
-                        <p>
-                            <strong>Chào {user.fullName},</strong>
-                            <br />
-                            Chúc mừng bạn đã đặt hàng thành công sản phẩm của shop <strong>HUNGHUONG.COM.VN</strong>
-                        </p>
-                        <p>
-                            <strong> Mã đơn hàng: </strong> {result.orderId}
-                            <br />
-                            <strong> Phương thức thanh toán: </strong> {paymentMethodLabels[result.paymentMethod]}
-                            <br />
-                            <strong> Thời gian dự kiến giao hàng: </strong> 2 - 3 ngày
-                            <br />
-                            <strong> Tổng thanh toán: </strong>
-                            <span className={cx('total-price')}>{formatCurrency(result.totalAmount)}</span>
-                            <br />
-                            <strong> Tình trạng: </strong>
-                            <span className="text-danger">{paymentStatusLabels[result.paymentStatus]}</span>
-                        </p>
-                        <hr />
-                        <p>
-                            Mọi thông tin về đơn hàng sẽ được gửi tới email của bạn, vui lòng kiểm tra email để biết
-                            thêm chi tiết.
-                            <br />
-                            Cảm ơn bạn đã tin tưởng và giao dịch tại{' '}
-                            <a href="https://www.hunghuong.vn">www.hunghuong.vn</a>
-                        </p>
-                        <p>
-                            <strong>Ban quản trị</strong>
-                        </p>
-                    </div>
-                    <div className="d-flex justify-content-center mt-4 gap-3">
-                        <Link to="/" className={cx('btn', 'btn-outline-secondary', 'btn-custom')}>
-                            Tiếp tục mua sắm
-                        </Link>
-                        <Link to="/ho-so/don-hang" className={cx('btn', 'btn-outline-danger', 'btn-custom')}>
-                            Chi tiết đơn hàng
-                        </Link>
-                    </div>
-                </div>
+                        <div className={cx('box')}>
+                            <div className={cx('text-start', 'order-info')}>
+                                <p>
+                                    <strong>Chào {user.fullName || user.username},</strong>
+                                    <br />
+                                    Chúc mừng bạn đã đặt hàng thành công sản phẩm của shop
+                                    <strong>HUNGHUONG.COM.VN</strong>
+                                </p>
+                                <p>
+                                    <strong> Mã đơn hàng: </strong> {result.orderId || 'Không xác định'}
+                                    <br />
+                                    <strong> Phương thức thanh toán: </strong>
+                                    {paymentMethodLabels[result.paymentMethod] || 'Không xác định'}
+                                    <br />
+                                    <strong> Thời gian dự kiến giao hàng: </strong> 2 - 3 ngày
+                                    <br />
+                                    <strong> Tổng thanh toán: </strong>
+                                    <span className={cx('total-price')}>{formatCurrency(result.totalAmount)}</span>
+                                    <br />
+                                    <strong> Tình trạng: </strong>
+                                    <span className="text-danger">{paymentStatusLabels[result.paymentStatus]}</span>
+                                </p>
+                                <hr />
+                                <p>
+                                    Mọi thông tin về đơn hàng sẽ được gửi tới email của bạn, vui lòng kiểm tra email để
+                                    biết thêm chi tiết.
+                                    <br />
+                                    Cảm ơn bạn đã tin tưởng và giao dịch tại
+                                    <a href="https://www.hunghuong.vn">www.hunghuong.vn</a>
+                                </p>
+                                <p>
+                                    <strong>Ban quản trị</strong>
+                                </p>
+                            </div>
+                            <div className="d-flex justify-content-center mt-4 gap-3">
+                                <Link to="/" className={cx('btn', 'btn-outline-secondary', 'btn-custom')}>
+                                    Tiếp tục mua sắm
+                                </Link>
+                                <Link to="/ho-so/don-hang" className={cx('btn', 'btn-outline-danger', 'btn-custom')}>
+                                    Chi tiết đơn hàng
+                                </Link>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <img src={images.error} width={64} alt="order status" className="mt-5 mb-3" />
+                        <h4 className="mb-4 text-danger">Thanh toán thất bại</h4>
+
+                        <div className={cx('box')}>
+                            <div className={cx('text-start', 'order-info')}>
+                                <p>
+                                    <strong>Xin chào {user.fullName || user.username},</strong>
+                                    <br />
+                                    Rất tiếc, đơn hàng của bạn chưa được thanh toán thành công.
+                                </p>
+                                <p>
+                                    <strong> Mã đơn hàng: </strong> {result.orderId || 'Không xác định'}
+                                    <br />
+                                    <strong> Phương thức thanh toán: </strong>
+                                    {paymentMethodLabels[result.paymentMethod] || 'Không xác định'}
+                                    <br />
+                                    <strong> Tổng thanh toán: </strong>
+                                    {result.totalAmount ? formatCurrency(result.totalAmount) : 'Không xác định'}
+                                    <br />
+                                    <strong> Tình trạng: </strong>
+                                    <span className="text-danger">{paymentStatusLabels[result.paymentStatus]}</span>
+                                </p>
+                                <hr />
+                                <p>
+                                    Nếu bạn nghĩ đây là sự nhầm lẫn, vui lòng liên hệ với chúng tôi qua fanpage hoặc
+                                    hotline để được hỗ trợ.
+                                    <br />
+                                    <a href="https://www.hunghuong.vn">www.hunghuong.vn</a>
+                                </p>
+                            </div>
+                            <div className="d-flex justify-content-center mt-4">
+                                <Link to="/" className={cx('btn', 'btn-outline-primary', 'btn-custom')}>
+                                    Quay về trang chủ
+                                </Link>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

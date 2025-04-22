@@ -12,6 +12,10 @@ export const updateUser = (id, values) => {
     return axiosPrivate.put(`users/${id}`, values);
 };
 
+export const updateMyProfile = (values) => {
+    return axiosPrivate.put('users/me', values);
+};
+
 export const createUser = (values) => {
     return axiosPrivate.post('users', values);
 };

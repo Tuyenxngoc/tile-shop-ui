@@ -90,11 +90,22 @@ const AuthProvider = ({ children }) => {
         } catch (e) {}
     };
 
+    const updateUserInfo = (newUserInfo) => {
+        setAuthData((prev) => ({
+            ...prev,
+            user: {
+                ...prev.user,
+                ...newUserInfo,
+            },
+        }));
+    };
+
     const contextValues = {
         isAuthenticated: authData.isAuthenticated,
         user: authData.user,
         login,
         logout,
+        updateUserInfo,
     };
 
     if (loading) {
