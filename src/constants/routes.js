@@ -3,4 +3,6 @@ export const ROUTES = {
     FORGOT_PASSWORD: '/quen-mk',
     REGISTER: '/dang-ky',
     CART: '/gio-hang',
+    CHECKOUT: '/thanh-toan',
+    CHECKOUT_RESULT: '/thanh-toan/ket-qua',
 };

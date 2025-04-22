@@ -113,7 +113,7 @@ const PaymentReturn = () => {
                         <Link to="/" className={cx('btn', 'btn-outline-secondary', 'btn-custom')}>
                             Tiếp tục mua sắm
                         </Link>
-                        <Link to="/don-hang" className={cx('btn', 'btn-outline-danger', 'btn-custom')}>
+                        <Link to="/ho-so/don-hang" className={cx('btn', 'btn-outline-danger', 'btn-custom')}>
                             Chi tiết đơn hàng
                         </Link>
                     </div>

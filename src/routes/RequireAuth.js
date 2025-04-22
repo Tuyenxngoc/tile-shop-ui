@@ -20,7 +20,7 @@ function RequireAuth({ allowedRoles }) {
         if (location.pathname.startsWith('/admin')) {
             return <Navigate to="/admin/login" state={{ from: location }} replace />;
         }
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        return <Navigate to="/dang-nhap" state={{ from: location }} replace />;
     }
 }
 

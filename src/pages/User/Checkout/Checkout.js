@@ -124,7 +124,7 @@ function Checkout() {
                     setErrorMessage(error.response?.data?.message || 'Lỗi thanh toán qua VNPAY. Vui lòng thử lại sau.');
                 }
             } else {
-                navigate(`/thanh-toan/thanh-cong?orderId=${orderId}&paymentMethod=COD`);
+                navigate(`/thanh-toan/ket-qua?orderId=${orderId}&paymentMethod=COD`);
             }
         } catch (error) {
             setErrorMessage('Lỗi khi tạo đơn hàng. Vui lòng thử lại.');

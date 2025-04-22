@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import DefaultLayout from './layouts/DefaultLayout';
 import AdminLayout from './layouts/AdminLayout';
+import ProfileLayout from './layouts/ProfileLayout';
 
 import RequireAuth from './routes/RequireAuth';
 
@@ -18,6 +19,9 @@ import ProductDetail from './pages/User/ProductDetail';
 import ProductByCategory from './pages/User/ProductByCategory';
 import Checkout from './pages/User/Checkout';
 import PaymentReturn from './pages/User/PaymentReturn';
+import UserProfile from './pages/User/UserProfile';
+import Orders from './pages/User/Orders';
+import ChangePassword from './pages/User/ChangePassword';
 
 import Cart from './pages/User/Cart';
 
@@ -63,12 +67,18 @@ function App() {
 
                     <Route path="san-pham/:id" element={<ProductDetail />} />
                     <Route path="danh-muc/:id" element={<ProductByCategory />} />
-                    <Route path="thanh-toan" element={<Checkout />} />
-                    <Route path="thanh-toan/ket-qua" element={<PaymentReturn />} />
 
                     {/* Đường dẫn yêu cầu đăng nhập */}
                     <Route element={<RequireAuth />}>
                         <Route path={ROUTES.CART} element={<Cart />} />
+                        <Route path={ROUTES.CHECKOUT} element={<Checkout />} />
+                        <Route path={ROUTES.CHECKOUT_RESULT} element={<PaymentReturn />} />
+
+                        <Route path="ho-so" element={<ProfileLayout />}>
+                            <Route index element={<UserProfile />} />
+                            <Route path="don-hang" element={<Orders />} />
+                            <Route path="doi-mat-khau" element={<ChangePassword />} />
+                        </Route>
                     </Route>
                 </Route>
 

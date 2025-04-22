@@ -77,12 +77,12 @@ function Header() {
     const userMenuItems = [
         {
             key: 'profile',
-            label: <Link to="/tai-khoan">Trang cá nhân</Link>,
+            label: <Link to="/ho-so">Trang cá nhân</Link>,
             icon: <FaUser />,
         },
         {
             key: 'orders',
-            label: <Link to="/don-hang">Đơn hàng</Link>,
+            label: <Link to="/ho-so/don-hang">Đơn hàng</Link>,
             icon: <FaRegEdit />,
         },
         {
