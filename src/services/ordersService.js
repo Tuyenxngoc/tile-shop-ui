@@ -1,4 +1,4 @@
-import httpRequest, { axiosPrivate } from '~/utils/httpRequest';
+import { axiosPrivate } from '~/utils/httpRequest';
 
 // ---------- ADMIN ----------
 
@@ -17,13 +17,13 @@ export const getOrderById = (id) => {
 // ---------- USER ----------
 
 export const getAllOrdersForUser = (params) => {
-    return httpRequest.get(`orders/orders?${params}`);
+    return axiosPrivate.get(`orders?${params}`);
 };
 
 export const createOrder = (orderData) => {
-    return httpRequest.post('orders/orders', orderData);
+    return axiosPrivate.post('orders', orderData);
 };
 
 export const getOrderByIdForUser = (id) => {
-    return httpRequest.get(`orders/orders/${id}`);
+    return axiosPrivate.get(`orders/${id}`);
 };

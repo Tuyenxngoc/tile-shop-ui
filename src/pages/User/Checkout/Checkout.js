@@ -11,18 +11,19 @@ import { TextAreaInput, TextInput } from '~/components/FormInput';
 import { formatCurrency } from '~/utils';
 import useAuth from '~/hooks/useAuth';
 import useStore from '~/hooks/useStore';
-import { initiateVnpayPayment } from '~/services/paymentService';
-import queryString from 'query-string';
 import { createOrder } from '~/services/ordersService';
+import queryString from 'query-string';
+import { createVnpayPaymentUrl } from '~/services/paymentService';
+import { useNavigate } from 'react-router-dom';
 
 const deliveryMethodOptions = [
-    { value: 'home_delivery', label: 'Giao hàng tận nơi' },
-    { value: 'store_pickup', label: 'Nhận tại cửa hàng' },
+    { value: 'HOME_DELIVERY', label: 'Giao hàng tận nơi' },
+    { value: 'STORE_PICKUP', label: 'Nhận tại cửa hàng' },
 ];
 
 const paymentMethodOptions = [
-    { value: 'cod', label: 'Thanh toán khi nhận hàng (COD)' },
-    { value: 'vnpay', label: 'Thanh toán qua VNPAY' },
+    { value: 'COD', label: 'Thanh toán khi nhận hàng (COD)' },
+    { value: 'VNPAY', label: 'Thanh toán qua VNPAY' },
 ];
 
 const genderOptions = [
@@ -39,11 +40,11 @@ const defaultValue = {
     deliveryMethod: deliveryMethodOptions[0].value,
     shippingAddress: '',
     note: '',
-    needInvoice: false,
+    paymentMethod: paymentMethodOptions[0].value,
+    requestInvoice: false,
     invoiceCompanyName: '',
     invoiceTaxCode: '',
     invoiceCompanyAddress: '',
-    paymentMethod: paymentMethodOptions[0].value,
 };
 
 const validationSchema = yup.object({
@@ -69,21 +70,21 @@ const validationSchema = yup.object({
         otherwise: () => yup.string().notRequired(),
     }),
 
-    needInvoice: yup.boolean(),
+    requestInvoice: yup.boolean(),
 
-    invoiceCompanyName: yup.string().when('needInvoice', {
+    invoiceCompanyName: yup.string().when('requestInvoice', {
         is: true,
         then: () => yup.string().required('Vui lòng nhập tên công ty'),
         otherwise: () => yup.string().notRequired(),
     }),
 
-    invoiceTaxCode: yup.string().when('needInvoice', {
+    invoiceTaxCode: yup.string().when('requestInvoice', {
         is: true,
         then: () => yup.string().required('Vui lòng nhập mã số thuế'),
         otherwise: () => yup.string().notRequired(),
     }),
 
-    invoiceCompanyAddress: yup.string().when('needInvoice', {
+    invoiceCompanyAddress: yup.string().when('requestInvoice', {
         is: true,
         then: () => yup.string().required('Vui lòng nhập địa chỉ công ty'),
         otherwise: () => yup.string().notRequired(),
@@ -93,6 +94,7 @@ const validationSchema = yup.object({
 function Checkout() {
     const { user } = useAuth();
     const store = useStore();
+    const navigate = useNavigate();
 
     const [entityData, setEntityData] = useState(null);
 
@@ -104,24 +106,28 @@ function Checkout() {
     const handleSubmit = async (values, { setSubmitting }) => {
         setSubmitting(true);
 
-        if (values.paymentMethod === 'vnpay') {
-            // Initiate VNPAY payment
-            try {
-                const params = queryString.stringify({ amount: totalPrice });
-                const response = await initiateVnpayPayment(params);
-                const { url } = response.data.data;
+        try {
+            const orderResponse = await createOrder(values);
+            const {
+                data: { orderId },
+            } = orderResponse.data.data;
 
-                // Redirect user to the VNPAY payment page
-                window.location.href = url;
-            } catch (error) {
-                setErrorMessage(error.response?.data?.message || 'Lỗi thanh toán qua VNPAY. Vui lòng thử lại sau.');
+            if (values.paymentMethod === 'VNPAY') {
+                try {
+                    const params = queryString.stringify({ orderId: orderId });
+                    const response = await createVnpayPaymentUrl(params);
+                    const { url } = response.data.data;
+
+                    // Redirect người dùng đến trang thanh toán VNPAY
+                    window.location.href = url;
+                } catch (error) {
+                    setErrorMessage(error.response?.data?.message || 'Lỗi thanh toán qua VNPAY. Vui lòng thử lại sau.');
+                }
+            } else {
+                navigate(`/thanh-toan/thanh-cong?orderId=${orderId}&paymentMethod=COD`);
             }
-        } else {
-            // Handle other payment methods (e.g., COD)
-            // Process COD or other methods
-            try {
-                const response = await createOrder(values);
-            } catch (error) {}
+        } catch (error) {
+            setErrorMessage('Lỗi khi tạo đơn hàng. Vui lòng thử lại.');
         }
     };
 
@@ -131,7 +137,7 @@ function Checkout() {
             fullName: user.fullName || user.username || '',
             phoneNumber: user.phoneNumber || '',
             email: user.email || '',
-            address: user.address || '',
+            shippingAddress: user.address || '',
             gender: user.gender || genderOptions[0].value,
         },
         validationSchema: validationSchema,
@@ -266,14 +272,14 @@ function Checkout() {
                                     options={deliveryMethodOptions}
                                 />
 
-                                {formik.values.deliveryMethod === 'store_pickup' && (
+                                {formik.values.deliveryMethod === 'STORE_PICKUP' && (
                                     <div className="mt-2">
                                         <strong>Địa chỉ nhận hàng tại cửa hàng:</strong>
                                         <div>{store.address}</div>
                                     </div>
                                 )}
 
-                                {formik.values.deliveryMethod === 'home_delivery' && (
+                                {formik.values.deliveryMethod === 'HOME_DELIVERY' && (
                                     <ProvinceSelector
                                         onChange={({ fullAddress }) =>
                                             formik.setFieldValue('shippingAddress', fullAddress)
@@ -299,14 +305,14 @@ function Checkout() {
 
                             <div className="col-12">
                                 <Checkbox
-                                    checked={formik.values.needInvoice}
-                                    onChange={(e) => formik.setFieldValue('needInvoice', e.target.checked)}
+                                    checked={formik.values.requestInvoice}
+                                    onChange={(e) => formik.setFieldValue('requestInvoice', e.target.checked)}
                                 >
                                     Yêu cầu xuất hóa đơn công ty (Vui lòng điền email để nhận hóa đơn VAT)
                                 </Checkbox>
                             </div>
 
-                            {formik.values.needInvoice && (
+                            {formik.values.requestInvoice && (
                                 <>
                                     <TextInput
                                         className="col-12"

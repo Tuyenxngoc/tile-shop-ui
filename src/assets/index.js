@@ -35,6 +35,9 @@ const images = {
     pd6: require('./images/pd-6.png'),
 
     pdf0: require('./images/pdf0.png'),
+
+    success: require('./images/check.png'),
+    error: require('./images/close.png'),
 };
 
 export const backgrounds = {};
