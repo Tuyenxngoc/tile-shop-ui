@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Checkbox, Radio, Spin } from 'antd';
+import { Alert, Button, Checkbox, Input, Radio, Spin } from 'antd';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -65,7 +65,7 @@ const validationSchema = yup.object({
     deliveryMethod: yup.string().required('Vui lòng chọn phương thức giao hàng'),
 
     shippingAddress: yup.string().when('deliveryMethod', {
-        is: (val) => val === 'home_delivery',
+        is: (val) => val === 'HOME_DELIVERY',
         then: () => yup.string().required('Vui lòng chọn địa chỉ giao hàng'),
         otherwise: () => yup.string().notRequired(),
     }),
@@ -102,6 +102,7 @@ function Checkout() {
     const [errorMessage, setErrorMessage] = useState(null);
 
     const [totalPrice, setTotalPrice] = useState(0);
+    const [shippingFee, setShippingFee] = useState(0);
 
     const handleSubmit = async (values, { setSubmitting }) => {
         setSubmitting(true);
@@ -130,7 +131,7 @@ function Checkout() {
                     setErrorMessage(error.response?.data?.message || 'Lỗi thanh toán qua VNPAY. Vui lòng thử lại sau.');
                 }
             } else {
-                navigate(`/thanh-toan/ket-qua?orderId=${orderId}&paymentMethod=COD`);
+                navigate(`/thanh-toan/ket-qua?orderId=${orderId}&paymentMethod=COD&totalAmount=${totalPrice}`);
             }
         } catch (error) {
             setErrorMessage('Lỗi khi tạo đơn hàng. Vui lòng thử lại.');
@@ -198,32 +199,61 @@ function Checkout() {
                             </div>
                         ) : (
                             <>
-                                {checkoutItems.map((item, index) => (
-                                    <CheckoutItem key={index} data={item} />
-                                ))}
-                                <div>
-                                    Tổng tiền: <span className="">{formatCurrency(totalPrice)}</span>
+                                <div className="mb-3">
+                                    {checkoutItems.map((item, index) => (
+                                        <CheckoutItem key={index} data={item} />
+                                    ))}
+                                </div>
+
+                                {/* Mã giảm giá */}
+                                <div className="d-flex gap-2 mb-3">
+                                    <Input placeholder="Mã giảm giá" />
+                                    <Button type="primary">Sử dụng</Button>
+                                </div>
+
+                                {/* Tạm tính & phí ship */}
+                                <div className="d-flex justify-content-between mb-2">
+                                    <span>Tạm tính</span>
+                                    <span>{formatCurrency(totalPrice)}</span>
+                                </div>
+                                <div className="d-flex justify-content-between mb-3">
+                                    <span>Phí ship</span>
+                                    <span>{formatCurrency(shippingFee)}</span>
+                                </div>
+
+                                <hr />
+
+                                {/* Tổng tiền */}
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <span className="fw-semibold">Tổng tiền</span>
+                                    <div>
+                                        <span className="text-muted small me-1">VND</span>
+                                        <span className="text-danger fw-bold fs-5">
+                                            {formatCurrency(totalPrice + shippingFee)}
+                                        </span>
+                                    </div>
                                 </div>
                             </>
                         )}
                     </div>
 
-                    <div className="col-md-8 order-md-1 mb-4">
+                    <div className="col-md-8 order-md-1 mb-4 border-end">
                         <div className="row g-3">
                             <div className="col-12">
                                 <h4 className="mb-3">Thông tin khách hàng</h4>
                             </div>
 
-                            <Radio.Group
-                                name="gender"
-                                value={formik.values.gender}
-                                onChange={(e) => formik.setFieldValue('gender', e.target.value)}
-                                options={genderOptions}
-                            />
+                            <div className="col-12">
+                                <Radio.Group
+                                    name="gender"
+                                    value={formik.values.gender}
+                                    onChange={(e) => formik.setFieldValue('gender', e.target.value)}
+                                    options={genderOptions}
+                                />
+                            </div>
 
                             <TextInput
                                 className="col-12"
-                                size="large"
                                 label="Nhập họ tên"
                                 id="fullName"
                                 required
@@ -238,7 +268,6 @@ function Checkout() {
 
                             <TextInput
                                 className="col-12"
-                                size="large"
                                 label="Nhập số điện thoại"
                                 id="phoneNumber"
                                 required
@@ -255,7 +284,6 @@ function Checkout() {
 
                             <TextInput
                                 className="col-12"
-                                size="large"
                                 id="email"
                                 required
                                 label="Email"
@@ -265,7 +293,9 @@ function Checkout() {
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.email && formik.errors.email ? formik.errors.email : null}
                             />
+                        </div>
 
+                        <div className="row g-3 mt-4">
                             <div className="col-12">
                                 <h4 className="mb-3">Chọn cách thức giao hàng</h4>
 
@@ -298,6 +328,8 @@ function Checkout() {
 
                             <TextAreaInput
                                 rows={2}
+                                maxLength={255}
+                                showCount
                                 id="note"
                                 className="col-12"
                                 label="Yêu cầu khác"
@@ -320,7 +352,6 @@ function Checkout() {
                                 <>
                                     <TextInput
                                         className="col-12"
-                                        size="large"
                                         label="Tên công ty"
                                         id="invoiceCompanyName"
                                         required
@@ -336,7 +367,6 @@ function Checkout() {
 
                                     <TextInput
                                         className="col-12"
-                                        size="large"
                                         label="Địa chỉ công ty"
                                         id="invoiceCompanyAddress"
                                         required
@@ -352,7 +382,6 @@ function Checkout() {
 
                                     <TextInput
                                         className="col-12"
-                                        size="large"
                                         label="Mã số thuế"
                                         id="invoiceTaxCode"
                                         required
@@ -367,7 +396,9 @@ function Checkout() {
                                     />
                                 </>
                             )}
+                        </div>
 
+                        <div className="row g-3 mt-4">
                             <div className="col-12">
                                 <h4 className="mb-3">Chọn phương thức thanh toán</h4>
 
@@ -380,7 +411,6 @@ function Checkout() {
                                     name="paymentMethod"
                                     value={formik.values.paymentMethod}
                                     onChange={(e) => formik.setFieldValue('paymentMethod', e.target.value)}
-                                    size="large"
                                     options={paymentMethodOptions}
                                 />
                             </div>
@@ -388,9 +418,9 @@ function Checkout() {
                             <div className="col-12">
                                 <Button
                                     block
+                                    size="large"
                                     type="primary"
                                     htmlType="submit"
-                                    size="large"
                                     loading={formik.isSubmitting}
                                 >
                                     ĐẶT HÀNG

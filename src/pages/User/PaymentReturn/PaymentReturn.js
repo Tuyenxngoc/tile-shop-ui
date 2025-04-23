@@ -39,10 +39,21 @@ const PaymentReturn = () => {
             setErrorMessage(null);
             try {
                 const queryParams = new URLSearchParams(location.search);
-                const response = await handleVnpayReturn(queryParams);
-
-                const { data } = response.data;
-                setResult(data);
+                const paymentMethod = queryParams.get('paymentMethod');
+                if (paymentMethod === 'COD') {
+                    const totalAmount = queryParams.get('totalAmount');
+                    const orderId = queryParams.get('orderId');
+                    setResult({
+                        orderId,
+                        paymentMethod,
+                        paymentStatus: 'PENDING',
+                        totalAmount: totalAmount,
+                    });
+                } else {
+                    const response = await handleVnpayReturn(queryParams);
+                    const { data } = response.data;
+                    setResult(data);
+                }
             } catch (error) {
                 const errorMessage =
                     error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
@@ -74,7 +85,7 @@ const PaymentReturn = () => {
     return (
         <div className="container text-center">
             <div className="mx-auto col-md-8">
-                {result.paymentStatus === 'PAID' ? (
+                {result.paymentMethod === 'COD' || result.paymentStatus === 'PAID' ? (
                     <>
                         <img src={images.success} width={64} alt="order status" className="mt-5 mb-3" />
                         <h4 className="mb-4">Đặt hàng thành công</h4>
@@ -85,7 +96,7 @@ const PaymentReturn = () => {
                                     <strong>Chào {user.fullName || user.username},</strong>
                                     <br />
                                     Chúc mừng bạn đã đặt hàng thành công sản phẩm của shop
-                                    <strong>HUNGHUONG.COM.VN</strong>
+                                    <strong> HUNGHUONG.COM.VN </strong>
                                 </p>
                                 <p>
                                     <strong> Mã đơn hàng: </strong> {result.orderId || 'Không xác định'}

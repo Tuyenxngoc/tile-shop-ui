@@ -90,7 +90,6 @@ const AddressSelector = ({ onChange }) => {
             {/* Tỉnh/Thành */}
             <div className="col-12 col-md-6">
                 <Select
-                    size="large"
                     placeholder="Chọn tỉnh/thành"
                     value={selectedProvince}
                     onChange={handleProvinceChange}
@@ -104,7 +103,6 @@ const AddressSelector = ({ onChange }) => {
             {/* Quận/Huyện */}
             <div className="col-12 col-md-6">
                 <Select
-                    size="large"
                     disabled={districts.length === 0}
                     placeholder="Chọn quận/huyện"
                     value={selectedDistrict}
@@ -119,7 +117,6 @@ const AddressSelector = ({ onChange }) => {
             {/* Phường/Xã */}
             <div className="col-12 col-md-6">
                 <Select
-                    size="large"
                     disabled={wards.length === 0}
                     placeholder="Chọn phường/xã"
                     value={selectedWard}
@@ -134,7 +131,6 @@ const AddressSelector = ({ onChange }) => {
             {/* Số nhà */}
             <div className="col-12 col-md-6">
                 <Input
-                    size="large"
                     disabled={selectedWard === null}
                     placeholder="Nhập số nhà, tên đường..."
                     value={houseNumber}
