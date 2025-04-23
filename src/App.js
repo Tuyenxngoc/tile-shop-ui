@@ -22,7 +22,8 @@ import PaymentReturn from './pages/User/PaymentReturn';
 import UserProfile from './pages/User/UserProfile';
 import Orders from './pages/User/Orders';
 import ChangePassword from './pages/User/ChangePassword';
-
+import NewsDetail from './pages/User/NewsDetail';
+import NewsList from './pages/User/NewsList';
 import Cart from './pages/User/Cart';
 
 import AccessDenied from './pages/Common/AccessDenied';
@@ -67,6 +68,9 @@ function App() {
 
                     <Route path="san-pham/:id" element={<ProductDetail />} />
                     <Route path="danh-muc/:id" element={<ProductByCategory />} />
+
+                    <Route path="tin-tuc" element={<NewsList />} />
+                    <Route path="tin-tuc/:id" element={<NewsDetail />} />
 
                     {/* Đường dẫn yêu cầu đăng nhập */}
                     <Route element={<RequireAuth />}>

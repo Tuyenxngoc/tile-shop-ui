@@ -10,8 +10,8 @@ function New({ data }) {
     return (
         <div className={cx('wrapper')}>
             <div className={cx('hover-mask')}>
-                <Link to={`/tin-tuc/${data.id}`} className="rounded">
-                    <img src={data.image} alt={data.title} className="img-fluid" />
+                <Link to={`/tin-tuc/${data.slug}`} className="rounded">
+                    <img src={data.imageUrl} alt={data.title} className="img-fluid" />
                     <div>
                         <i>
                             <FaEye />
@@ -21,7 +21,7 @@ function New({ data }) {
             </div>
 
             <div className={cx('content')}>
-                <Link to={`/tin-tuc/${data.id}`}>
+                <Link to={`/tin-tuc/${data.slug}`}>
                     <h3>{data.title}</h3>
                 </Link>
             </div>
