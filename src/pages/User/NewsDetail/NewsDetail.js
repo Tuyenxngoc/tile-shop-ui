@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Alert, Breadcrumb, Menu, Spin } from 'antd';
+import dayjs from 'dayjs';
+import queryString from 'query-string';
+import { FaClock } from 'react-icons/fa6';
 import Policy from '~/components/Policy';
 import { getNewsCategories } from '~/services/newsCategoryService';
-import { getNewsBySlug } from '~/services/newsService';
+import { getNews, getNewsBySlug } from '~/services/newsService';
 
 function NewsDetail() {
     const { id } = useParams();
 
     const [entityData, setEntityData] = useState(null);
     const [categories, setCategories] = useState([]);
+    const [relatedNews, setRelatedNews] = useState([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -47,9 +51,30 @@ function NewsDetail() {
         fetchCategories();
     }, []);
 
+    useEffect(() => {
+        const fetchRelated = async () => {
+            if (entityData?.category?.id) {
+                try {
+                    const params = queryString.stringify({
+                        excludeId: entityData.id,
+                        searchBy: 'categoryId',
+                        keyword: entityData.category.id,
+                    });
+                    const response = await getNews(params);
+                    const { items } = response.data.data;
+                    setRelatedNews(items);
+                } catch (error) {
+                    console.error('Lỗi tải bài viết liên quan:', error);
+                }
+            }
+        };
+
+        fetchRelated();
+    }, [entityData, id]);
+
     const menuItems = categories.map((category) => ({
         key: category.id,
-        label: <Link to={`/tin-tuc/${category.slug}`}>{category.name}</Link>,
+        label: <Link to={`/tin-tuc?danh-muc=${category.id}`}>{category.name}</Link>,
     }));
 
     if (isLoading) {
@@ -98,43 +123,43 @@ function NewsDetail() {
 
             <div className="container" style={{ position: 'relative', zIndex: 1 }}>
                 <div className="row">
-                    <div className="col-md-12" style={{ maxWidth: 700, marginRight: 'auto', marginLeft: 'auto' }}>
-                        <div className="title-block-page text-center">
-                            <h1 className="title-head uppercase mb-0 pb-1 pt-5 fs-40 " style={{ borderBottom: 'none' }}>
-                                {entityData.title}
-                            </h1>
+                    <div className="col-12" style={{ maxWidth: 700, marginRight: 'auto', marginLeft: 'auto' }}>
+                        <div className="text-center">
+                            <h1 className="mt-5">{entityData.title}</h1>
                         </div>
-                        <div className="row py-2 text-center">
-                            <div className="col-12">
-                                <div style={{ width: 45, paddingRight: 0, display: 'inline-block' }}>
-                                    <img
-                                        src="https://nshpos.com/Web/Resources/Uploaded/18/images/tintuc/blog/p4(1).jpg"
-                                        className="img-fluid rounded-50"
-                                        alt="avt"
-                                    />
-                                </div>
-                                <div style={{ paddingTop: 5, display: 'inline-block' }}>
-                                    <div className="fs-7">
-                                        <i className="fa fa-clock-o" aria-hidden="true" />
-                                        &nbsp;04/04/2025 &nbsp;
-                                        <i className="fa fa-circle" aria-hidden="true">
-                                            &nbsp;
-                                        </i>
-                                        Lã Anh Thơ
-                                    </div>
-                                </div>
-                            </div>
+
+                        <div className="small text-muted d-flex align-items-center justify-content-center gap-2">
+                            <FaClock />
+                            {dayjs(entityData.createdDate).format('DD/MM/YYYY')}
+                            &nbsp;&nbsp; Admin
                         </div>
+
                         <img src={entityData.imageUrl} className="img-fluid rounded-3 my-3" alt={entityData.title} />
-                        <div
-                            className="content-page v-base article-content"
-                            dangerouslySetInnerHTML={{ __html: entityData.content }}
-                        />
+                        <div>{entityData.description}</div>
+                        <div className="rich-text-content" dangerouslySetInnerHTML={{ __html: entityData.content }} />
                     </div>
                 </div>
 
                 <div className="row mb-3">
                     <h4 className="mt-3 mb-4">Bài viết liên quan</h4>
+                    {relatedNews.map((news, index) => (
+                        <div key={index} className="col-md-3 mb-4">
+                            <Link to={`/tin-tuc/${news.slug}`}>
+                                <img src={news.imageUrl} alt={news.title} className="img-fluid rounded-3" />
+                            </Link>
+
+                            <div>
+                                <Link to={`/tin-tuc/${news.slug}`} className="text-dark fs-5 text-decoration-none">
+                                    <h3 className="fw-semibold fs-6 mb-3">{news.title}</h3>
+                                </Link>
+                                <div className="small text-muted d-flex align-items-center gap-2">
+                                    <FaClock />
+                                    {dayjs(news.createdDate).format('DD/MM/YYYY')}
+                                    &nbsp;&nbsp; Admin
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
                 <div className="row">
