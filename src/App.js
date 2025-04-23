@@ -55,6 +55,8 @@ import User from './pages/Admin/User';
 import CreateUserForm from './pages/Admin/User/CreateUserForm';
 import UpdateUserForm from './pages/Admin/User/UpdateUserForm';
 
+import Order from './pages/Admin/Order';
+
 function App() {
     return (
         <BrowserRouter>
@@ -117,6 +119,11 @@ function App() {
                         {/* Quản lý đánh giá */}
                         <Route path="reviews">
                             <Route index element={<Review />} />
+                        </Route>
+
+                        {/* Quản lý đơn hàng */}
+                        <Route path="orders">
+                            <Route index element={<Order />} />
                         </Route>
 
                         {/* Quản lý thuộc tính */}

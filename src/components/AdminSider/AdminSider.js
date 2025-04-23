@@ -51,7 +51,6 @@ const menuConfig = [
         label: 'Quản lý đơn hàng',
         key: '/admin/orders',
         icon: <FaShoppingCart />,
-        children: [{ label: 'Báo cáo', key: '/admin/reports/statistics' }],
     },
     {
         label: 'Thống kê & Báo cáo',
