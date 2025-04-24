@@ -146,11 +146,17 @@ function ProductDetail() {
             <Breadcrumb
                 className="py-4"
                 separator=">"
+                itemRender={(route) => {
+                    if (route.to) {
+                        return <Link to={route.to}>{route.title}</Link>;
+                    }
+                    return <span>{route.title}</span>;
+                }}
                 items={[
-                    { title: 'Trang chủ', href: '/' },
+                    { title: 'Trang chủ', to: '/' },
                     ...entityData.categoryPath.map((cat) => ({
                         title: cat.name,
-                        href: `/danh-muc/${cat.id}`,
+                        to: `/danh-muc/${cat.id}`,
                     })),
                 ]}
             />

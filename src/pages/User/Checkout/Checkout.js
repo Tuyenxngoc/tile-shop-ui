@@ -107,8 +107,8 @@ function Checkout() {
     const handleSubmit = async (values, { setSubmitting }) => {
         setSubmitting(true);
 
-        if (values.paymentMethod === 'VNPAY' && totalPrice < 5000) {
-            setErrorMessage('Giá trị đơn hàng phải từ 5.000đ để thanh toán qua VNPAY.');
+        if (values.paymentMethod === 'VNPAY' && totalPrice < 10000) {
+            setErrorMessage('Giá trị đơn hàng phải từ 10.000đ để thanh toán qua VNPAY.');
             setSubmitting(false);
             return;
         }

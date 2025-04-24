@@ -100,10 +100,16 @@ function NewsDetail() {
                     <Breadcrumb
                         className="py-4"
                         separator=">"
+                        itemRender={(route) => {
+                            if (route.to) {
+                                return <Link to={route.to}>{route.title}</Link>;
+                            }
+                            return <span>{route.title}</span>;
+                        }}
                         items={[
-                            { title: 'Trang chủ', href: '/' },
-                            { title: 'Tin tức', href: '/tin-tuc' },
-                            { title: entityData.category.name, href: `/tin-tuc?danh-muc=${entityData.category.id}` },
+                            { title: 'Trang chủ', to: '/' },
+                            { title: 'Tin tức', to: '/tin-tuc' },
+                            { title: entityData.category.name, to: `/tin-tuc?danh-muc=${entityData.category.id}` },
                             { title: entityData.title },
                         ]}
                     />
