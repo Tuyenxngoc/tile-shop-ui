@@ -7,6 +7,7 @@ import queryString from 'query-string';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { getOrders } from '~/services/ordersService';
+import { formatCurrency } from '~/utils';
 
 const orderFilterOptions = [
     { value: 'orderId', label: 'Mã đơn hàng' },
@@ -117,6 +118,7 @@ function Order() {
             key: 'totalAmount',
             sorter: true,
             showSorterTooltip: false,
+            render: (amountValue) => formatCurrency(amountValue),
         },
         {
             title: 'Trạng thái',
