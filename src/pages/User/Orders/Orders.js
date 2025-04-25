@@ -7,15 +7,7 @@ import { formatCurrency } from '~/utils';
 import useDebounce from '~/hooks/useDebounce';
 
 import { getAllOrdersForUser } from '~/services/ordersService';
-
-const orderStatusOptions = [
-    { key: 'ALL', label: 'Tất cả' },
-    { key: 'PENDING', label: 'Chờ xác nhận' },
-    { key: 'PROCESSING', label: 'Đang xử lý' },
-    { key: 'DELIVERING', label: 'Đang giao' },
-    { key: 'DELIVERED', label: 'Đã giao' },
-    { key: 'CANCELLED', label: 'Đã huỷ' },
-];
+import { orderStatusOptions } from '~/constants';
 
 function Orders() {
     const [filters, setFilters] = useState({ status: null, keyword: '' });

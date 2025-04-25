@@ -1,13 +1,32 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, Flex, Input, message, Select, Space, Table, Tabs } from 'antd';
+import {
+    Alert,
+    Button,
+    Col,
+    DatePicker,
+    Dropdown,
+    Flex,
+    Input,
+    InputNumber,
+    message,
+    Row,
+    Select,
+    Space,
+    Table,
+    Tabs,
+    Tag,
+} from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
-
+import { DownOutlined, EyeOutlined, PrinterOutlined, SearchOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import queryString from 'query-string';
 
-import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
-import { getOrders } from '~/services/ordersService';
 import { formatCurrency } from '~/utils';
+import { INITIAL_FILTERS, INITIAL_META, orderStatusOptions } from '~/constants';
+import { getOrders } from '~/services/ordersService';
+
+const { RangePicker } = DatePicker;
 
 const orderFilterOptions = [
     { value: 'id', label: 'Mã đơn hàng' },
@@ -15,14 +34,34 @@ const orderFilterOptions = [
     { value: 'productName', label: 'Sản phẩm' },
 ];
 
-const orderStatusOptions = [
-    { key: 'ALL', label: 'Tất cả' },
-    { key: 'PENDING', label: 'Chờ xác nhận' },
-    { key: 'PROCESSING', label: 'Đang xử lý' },
-    { key: 'DELIVERING', label: 'Đang giao' },
-    { key: 'DELIVERED', label: 'Đã giao' },
-    { key: 'CANCELLED', label: 'Đã huỷ' },
+const paymentOptions = [
+    { value: 'COD', label: 'Thanh toán khi nhận hàng (COD)' },
+    { value: 'VNPAY', label: 'Thanh toán qua VNPAY' },
+    { value: 'MOMO', label: 'Thanh toán qua MOMO' },
+    { value: 'ZALOPAY', label: 'Thanh toán qua ZALOPAY' },
 ];
+
+export const orderStatusTags = {
+    PENDING: <Tag color="gold">Chờ xác nhận</Tag>,
+    CONFIRMED: <Tag color="blue">Đã xác nhận</Tag>,
+    DELIVERING: <Tag color="geekblue">Đang giao</Tag>,
+    DELIVERED: <Tag color="green">Đã giao</Tag>,
+    RETURNED: <Tag color="volcano">Trả hàng</Tag>,
+    CANCELLED: <Tag color="red">Đã hủy</Tag>,
+};
+
+const allowedTransitions = {
+    PENDING: ['CONFIRMED', 'CANCELLED'],
+    CONFIRMED: ['DELIVERING', 'CANCELLED'],
+    DELIVERING: ['DELIVERED', 'RETURNED'],
+    DELIVERED: ['RETURNED'],
+    CANCELLED: [],
+    RETURNED: [],
+};
+
+const getAvailableStatuses = (currentStatus) => {
+    return allowedTransitions[currentStatus] || [];
+};
 
 function Order() {
     const navigate = useNavigate();
@@ -34,6 +73,10 @@ function Order() {
 
     const [searchInput, setSearchInput] = useState('');
     const [activeFilterOption, setActiveFilterOption] = useState(orderFilterOptions[0].value);
+    const [createdAtRange, setCreatedAtRange] = useState([]);
+    const [paymentMethod, setPaymentMethod] = useState(null);
+    const [minTotalAmount, setMinTotalAmount] = useState(null);
+    const [maxTotalAmount, setMaxTotalAmount] = useState(null);
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -61,21 +104,49 @@ function Order() {
         }));
     };
 
-    const handleSearch = (searchBy, keyword) => {
-        setFilters((prev) => ({
-            ...prev,
-            pageNum: 1,
-            searchBy: searchBy || activeFilterOption,
-            keyword: keyword || searchInput,
-        }));
-    };
-
     const updateOrderStatus = (key) => {
         setFilters((prev) => ({
             ...prev,
             status: key === 'ALL' ? null : key,
         }));
     };
+
+    const handleApplyFilters = () => {
+        if (minTotalAmount !== null && maxTotalAmount !== null && minTotalAmount > maxTotalAmount) {
+            messageApi.error('Giá từ không được lớn hơn giá đến.');
+            return;
+        }
+
+        setFilters((prev) => ({
+            ...prev,
+            pageNum: 1,
+            searchBy: activeFilterOption,
+            keyword: searchInput,
+            paymentMethod: paymentMethod || null,
+            minTotalAmount: minTotalAmount !== null ? minTotalAmount : null,
+            maxTotalAmount: maxTotalAmount !== null ? maxTotalAmount : null,
+            fromDate: createdAtRange?.[0]
+                ? dayjs(createdAtRange[0]).startOf('day').format('YYYY-MM-DDTHH:mm:ss')
+                : null,
+            toDate: createdAtRange?.[1] ? dayjs(createdAtRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss') : null,
+        }));
+    };
+
+    const handleResetFilters = () => {
+        setSearchInput('');
+        setActiveFilterOption(orderFilterOptions[0].value);
+        setCreatedAtRange([]);
+        setPaymentMethod(null);
+        setMinTotalAmount(null);
+        setMaxTotalAmount(null);
+        setFilters(INITIAL_FILTERS);
+    };
+
+    const handlePrintInvoice = (orderId) => {};
+
+    const handleMarkDelivered = (orderId) => {};
+
+    const handleCancelOrder = (orderId) => {};
 
     useEffect(() => {
         const fetchEntities = async () => {
@@ -127,16 +198,41 @@ function Order() {
             sorter: true,
             showSorterTooltip: false,
             align: 'center',
+            render: (status) => orderStatusTags[status] || '-',
         },
         {
             title: 'Thao tác',
             key: 'action',
             fixed: 'right',
-            render: (_, record) => (
-                <Space>
-                    <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
-                </Space>
-            ),
+            render: (_, record) => {
+                const statusItems = getAvailableStatuses(record.status).map((status) => ({
+                    key: status,
+                    label: orderStatusTags[status]?.props?.children || status,
+                }));
+                return (
+                    <Space>
+                        <Dropdown
+                            trigger={['click']}
+                            menu={{
+                                items: statusItems,
+                                onClick: ({ key }) => console.log(record.id, key),
+                            }}
+                        >
+                            <Button type="text">
+                                {record.status} <DownOutlined />
+                            </Button>
+                        </Dropdown>
+                        <Button type="text" icon={<EyeOutlined />} onClick={() => navigate(`detail/${record.id}`)} />
+                        <Button type="text" icon={<PrinterOutlined />} onClick={() => handlePrintInvoice(record.id)} />
+
+                        <Button
+                            type="text"
+                            icon={<MdOutlineModeEdit />}
+                            onClick={() => navigate(`edit/${record.id}`)}
+                        />
+                    </Space>
+                );
+            },
         },
     ];
 
@@ -157,30 +253,112 @@ function Order() {
 
             <Tabs activeKey={filters.status || 'ALL'} onChange={updateOrderStatus} items={orderStatusOptions} />
 
-            <Flex justify="space-between">
-                <Space.Compact className="my-2">
-                    <Select
-                        options={orderFilterOptions}
-                        disabled={isLoading}
-                        value={activeFilterOption}
-                        onChange={(value) => setActiveFilterOption(value)}
-                    />
-                    <Input
-                        allowClear
-                        name="searchInput"
-                        placeholder="Nhập từ cần tìm..."
-                        value={searchInput}
-                        disabled={isLoading}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                    />
-                </Space.Compact>
+            <Row gutter={[16, 16]} className="mb-3">
+                <Col xs={24} md={12}>
+                    <Space.Compact className="my-2 w-100">
+                        <Select
+                            options={orderFilterOptions}
+                            disabled={isLoading}
+                            value={activeFilterOption}
+                            onChange={(value) => setActiveFilterOption(value)}
+                        />
+                        <Input
+                            allowClear
+                            name="searchInput"
+                            placeholder="Nhập từ cần tìm..."
+                            disabled={isLoading}
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            suffix={<SearchOutlined />}
+                            className="w-100"
+                        />
+                    </Space.Compact>
+                </Col>
 
-                <Space>
-                    <Button type="primary">Áp dụng</Button>
+                <Col xs={24} md={12}>
+                    <Row align="middle" gutter={8}>
+                        <Col>
+                            <label htmlFor="createdAtRange">Ngày tạo đơn</label>
+                        </Col>
+                        <Col flex="auto">
+                            <RangePicker
+                                id="createdAtRange"
+                                name="createdAtRange"
+                                className="w-100"
+                                disabled={isLoading}
+                                value={createdAtRange}
+                                onChange={(values) => setCreatedAtRange(values)}
+                            />
+                        </Col>
+                    </Row>
+                </Col>
 
-                    <Button type="default">Đặt lại</Button>
-                </Space>
-            </Flex>
+                <Col xs={24} md={12}>
+                    <Row align="middle" gutter={8}>
+                        <Col>
+                            <label htmlFor="paymentOptions">Phương thức thanh toán</label>
+                        </Col>
+                        <Col flex="auto">
+                            <Select
+                                id="paymentOptions"
+                                options={paymentOptions}
+                                allowClear
+                                className="w-100"
+                                disabled={isLoading}
+                                value={paymentMethod}
+                                onChange={(value) => setPaymentMethod(value)}
+                            />
+                        </Col>
+                    </Row>
+                </Col>
+
+                <Col xs={24} md={6}>
+                    <Row align="middle" gutter={8}>
+                        <Col>
+                            <label htmlFor="minTotalAmount">Giá từ</label>
+                        </Col>
+                        <Col flex="auto">
+                            <InputNumber
+                                id="minTotalAmount"
+                                placeholder="Giá từ"
+                                className="w-100"
+                                disabled={isLoading}
+                                value={minTotalAmount}
+                                onChange={(value) => setMinTotalAmount(value)}
+                            />
+                        </Col>
+                    </Row>
+                </Col>
+
+                <Col xs={24} md={6}>
+                    <Row align="middle" gutter={8}>
+                        <Col>
+                            <label htmlFor="maxTotalAmount">Giá đến</label>
+                        </Col>
+                        <Col flex="auto">
+                            <InputNumber
+                                id="maxTotalAmount"
+                                placeholder="Giá đến"
+                                className="w-100"
+                                disabled={isLoading}
+                                value={maxTotalAmount}
+                                onChange={(value) => setMaxTotalAmount(value)}
+                            />
+                        </Col>
+                    </Row>
+                </Col>
+
+                <Col span={24} style={{ textAlign: 'right' }}>
+                    <Space>
+                        <Button type="primary" loading={isLoading} onClick={handleApplyFilters}>
+                            Áp dụng
+                        </Button>
+                        <Button type="default" loading={isLoading} onClick={handleResetFilters}>
+                            Đặt lại
+                        </Button>
+                    </Space>
+                </Col>
+            </Row>
 
             <Table
                 bordered
