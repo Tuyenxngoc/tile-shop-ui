@@ -10,8 +10,8 @@ import { getOrders } from '~/services/ordersService';
 import { formatCurrency } from '~/utils';
 
 const orderFilterOptions = [
-    { value: 'orderId', label: 'Mã đơn hàng' },
-    { value: 'customerName', label: 'Tên người mua' },
+    { value: 'id', label: 'Mã đơn hàng' },
+    { value: 'fullName', label: 'Tên người mua' },
     { value: 'productName', label: 'Sản phẩm' },
 ];
 
