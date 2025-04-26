@@ -216,7 +216,7 @@ function Product() {
             {contextHolder}
 
             <Flex wrap justify="space-between" align="center">
-                <h2>Sản phẩm</h2>
+                <h2>Quản lý sản phẩm</h2>
                 <Space>
                     <Space.Compact className="my-2">
                         <Select

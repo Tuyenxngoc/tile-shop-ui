@@ -3,7 +3,7 @@ import { axiosPrivate } from '~/utils/httpRequest';
 // ---------- ADMIN ----------
 
 export const updateOrderStatus = (id, status) => {
-    return axiosPrivate.put(`admin/orders/${id}/status`, { status });
+    return axiosPrivate.put(`admin/orders/${id}/status?status=${status}`);
 };
 
 export const getOrders = (params) => {
@@ -12,6 +12,10 @@ export const getOrders = (params) => {
 
 export const getOrderById = (id) => {
     return axiosPrivate.get(`admin/orders/${id}`);
+};
+
+export const getOrderCountByStatus = () => {
+    return axiosPrivate.get(`admin/orders/count-by-status`);
 };
 
 // ---------- USER ----------

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Alert,
@@ -16,15 +16,17 @@ import {
     Table,
     Tabs,
     Tag,
+    Tooltip,
+    Typography,
 } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
-import { DownOutlined, EyeOutlined, PrinterOutlined, SearchOutlined } from '@ant-design/icons';
+import { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import queryString from 'query-string';
 
 import { formatCurrency } from '~/utils';
-import { INITIAL_FILTERS, INITIAL_META, orderStatusOptions } from '~/constants';
-import { getOrders } from '~/services/ordersService';
+import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
+import { getOrderCountByStatus, getOrders, updateOrderStatus } from '~/services/ordersService';
 
 const { RangePicker } = DatePicker;
 
@@ -63,12 +65,24 @@ const getAvailableStatuses = (currentStatus) => {
     return allowedTransitions[currentStatus] || [];
 };
 
+const renderTabLabel = (label, count) => (
+    <span>
+        {label}
+        {count > 0 && (
+            <Typography.Text type="secondary" style={{ marginLeft: 6, opacity: 0.65 }}>
+                ({count})
+            </Typography.Text>
+        )}
+    </span>
+);
+
 function Order() {
     const navigate = useNavigate();
 
     const [meta, setMeta] = useState(INITIAL_META);
     const [filters, setFilters] = useState(INITIAL_FILTERS);
 
+    const [orderCounts, setOrderCounts] = useState({});
     const [entityData, setEntityData] = useState(null);
 
     const [searchInput, setSearchInput] = useState('');
@@ -104,7 +118,7 @@ function Order() {
         }));
     };
 
-    const updateOrderStatus = (key) => {
+    const filterOrdersByStatus = (key) => {
         setFilters((prev) => ({
             ...prev,
             status: key === 'ALL' ? null : key,
@@ -142,11 +156,32 @@ function Order() {
         setFilters(INITIAL_FILTERS);
     };
 
-    const handlePrintInvoice = (orderId) => {};
+    const handleChangeStatus = async (orderId, newStatus) => {
+        try {
+            const response = await updateOrderStatus(orderId, newStatus);
+            if (response.status === 200) {
+                const { data, message } = response.data.data;
+                messageApi.success(message);
 
-    const handleMarkDelivered = (orderId) => {};
+                setEntityData((prevData) => prevData.map((item) => (item.id === orderId ? data : item)));
+            }
+        } catch (error) {
+            messageApi.error('Lỗi: ' + error.message);
+        }
+    };
 
-    const handleCancelOrder = (orderId) => {};
+    useEffect(() => {
+        const fetchOrderCounts = async () => {
+            try {
+                const response = await getOrderCountByStatus();
+                setOrderCounts(response.data.data);
+            } catch (error) {
+                console.error('Lỗi khi lấy số lượng đơn hàng:', error);
+            }
+        };
+
+        fetchOrderCounts();
+    }, []);
 
     useEffect(() => {
         const fetchEntities = async () => {
@@ -177,19 +212,33 @@ function Order() {
             key: 'id',
             sorter: true,
             showSorterTooltip: false,
+            render: (id) => <strong>{id}</strong>,
         },
         {
-            title: 'Sản phẩm',
-            dataIndex: 'product',
-            key: 'product',
+            title: 'Thời gian đặt hàng',
+            dataIndex: 'createdDate',
+            key: 'createdDate',
+            render: (createdDate) => dayjs(createdDate).format('YYYY-MM-DD HH:mm:ss'),
         },
         {
-            title: 'Tổng cộng',
+            title: 'Tên khách hàng',
+            dataIndex: 'user',
+            key: 'user',
+            render: (user) => user.fullName || user.username,
+        },
+        {
+            title: 'Phương thức',
+            dataIndex: 'paymentMethod',
+            key: 'paymentMethod',
+            render: (paymentMethod) => <strong>{paymentMethod}</strong>,
+        },
+        {
+            title: 'Số tiền',
             dataIndex: 'totalAmount',
             key: 'totalAmount',
             sorter: true,
             showSorterTooltip: false,
-            render: (amountValue) => formatCurrency(amountValue),
+            render: (amountValue) => <strong>{formatCurrency(amountValue)}</strong>,
         },
         {
             title: 'Trạng thái',
@@ -198,7 +247,7 @@ function Order() {
             sorter: true,
             showSorterTooltip: false,
             align: 'center',
-            render: (status) => orderStatusTags[status] || '-',
+            render: (status) => orderStatusTags[status],
         },
         {
             title: 'Thao tác',
@@ -215,26 +264,39 @@ function Order() {
                             trigger={['click']}
                             menu={{
                                 items: statusItems,
-                                onClick: ({ key }) => console.log(record.id, key),
+                                onClick: ({ key }) => handleChangeStatus(record.id, key),
                             }}
                         >
-                            <Button type="text">
-                                {record.status} <DownOutlined />
+                            <Button type="default">
+                                Cập nhật <DownOutlined />
                             </Button>
                         </Dropdown>
-                        <Button type="text" icon={<EyeOutlined />} onClick={() => navigate(`detail/${record.id}`)} />
-                        <Button type="text" icon={<PrinterOutlined />} onClick={() => handlePrintInvoice(record.id)} />
 
-                        <Button
-                            type="text"
-                            icon={<MdOutlineModeEdit />}
-                            onClick={() => navigate(`edit/${record.id}`)}
-                        />
+                        <Tooltip title="Chỉnh sửa đơn hàng">
+                            <Button
+                                type="text"
+                                icon={<MdOutlineModeEdit />}
+                                onClick={() => navigate(`edit/${record.id}`)}
+                            />
+                        </Tooltip>
                     </Space>
                 );
             },
         },
     ];
+
+    const orderStatusOptions = useMemo(
+        () => [
+            { key: 'ALL', label: renderTabLabel('Tất cả', 0) },
+            { key: 'PENDING', label: renderTabLabel('Chờ xác nhận', orderCounts.PENDING || 0) },
+            { key: 'CONFIRMED', label: renderTabLabel('Đã xác nhận', orderCounts.CONFIRMED || 0) },
+            { key: 'DELIVERING', label: renderTabLabel('Đang giao', orderCounts.DELIVERING || 0) },
+            { key: 'DELIVERED', label: renderTabLabel('Đã giao', orderCounts.DELIVERED || 0) },
+            { key: 'RETURNED', label: renderTabLabel('Trả hàng', orderCounts.RETURNED || 0) },
+            { key: 'CANCELLED', label: renderTabLabel('Đã hủy', orderCounts.CANCELLED || 0) },
+        ],
+        [orderCounts],
+    );
 
     if (errorMessage) {
         return <Alert message="Lỗi" description={errorMessage} type="error" />;
@@ -243,16 +305,13 @@ function Order() {
     return (
         <div>
             {contextHolder}
-
             <Flex wrap justify="space-between" align="center">
-                <h2>Đơn hàng</h2>
+                <h2>Quản lý đơn hàng</h2>
                 <Button type="primary" onClick={() => navigate('new')}>
                     Xuất báo cáo
                 </Button>
             </Flex>
-
-            <Tabs activeKey={filters.status || 'ALL'} onChange={updateOrderStatus} items={orderStatusOptions} />
-
+            <Tabs activeKey={filters.status || 'ALL'} onChange={filterOrdersByStatus} items={orderStatusOptions} />
             <Row gutter={[16, 16]} className="mb-3">
                 <Col xs={24} md={12}>
                     <Space.Compact className="my-2 w-100">
@@ -359,6 +418,8 @@ function Order() {
                     </Space>
                 </Col>
             </Row>
+
+            <div class="fw-bold fs-5">{orderCounts.ALL || 0} Đơn hàng</div>
 
             <Table
                 bordered
