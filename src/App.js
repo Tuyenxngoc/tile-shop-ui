@@ -57,6 +57,8 @@ import UpdateUserForm from './pages/Admin/User/UpdateUserForm';
 
 import Order from './pages/Admin/Order';
 
+import Slide from './pages/Admin/Slide';
+
 function App() {
     return (
         <BrowserRouter>
@@ -148,6 +150,11 @@ function App() {
                         {/* Quản lý danh mục tin tức */}
                         <Route path="news-categories">
                             <Route index element={<NewsCategory />} />
+                        </Route>
+
+                        {/* Thiết lập hệ thống */}
+                        <Route path="system-settings">
+                            <Route path="slider" element={<Slide />} />
                         </Route>
                     </Route>
                 </Route>
