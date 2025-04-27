@@ -57,8 +57,9 @@ import UpdateUserForm from './pages/Admin/User/UpdateUserForm';
 
 import Order from './pages/Admin/Order';
 
-import Slide from './pages/Admin/Slide';
 import StoreInfo from './pages/Admin/StoreInfo';
+import General from './pages/Admin/General';
+import Slide from './pages/Admin/Slide';
 
 function App() {
     return (
@@ -155,8 +156,9 @@ function App() {
 
                         {/* Thiết lập hệ thống */}
                         <Route path="system-settings">
-                            <Route path="slider" element={<Slide />} />
                             <Route path="store-info" element={<StoreInfo />} />
+                            <Route path="general" element={<General />} />
+                            <Route path="slider" element={<Slide />} />
                         </Route>
                     </Route>
                 </Route>
