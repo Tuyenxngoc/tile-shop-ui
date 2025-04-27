@@ -7,8 +7,8 @@ import { IoMdSettings } from 'react-icons/io';
 import { BsNewspaper } from 'react-icons/bs';
 import { FaUsers, FaChartBar, FaShoppingCart } from 'react-icons/fa';
 
-import images from '~/assets';
 import useAuth from '~/hooks/useAuth';
+import useStore from '~/hooks/useStore';
 import { checkUserHasRequiredRole } from '~/utils/helper';
 import { FaBoxOpen } from 'react-icons/fa6';
 
@@ -89,6 +89,10 @@ function AdminSider() {
         user: { roleNames },
     } = useAuth();
 
+    const {
+        storeInfo: { logo, logoSmall },
+    } = useStore();
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -109,7 +113,7 @@ function AdminSider() {
         <Sider collapsible width={220} collapsed={collapsed} onCollapse={setCollapsed}>
             <div className="text-center py-2">
                 <Link to="/" className="d-block">
-                    <img src={collapsed ? images.logoSmall : images.logo} alt="logo" width={collapsed ? 30 : 200} />
+                    <img src={collapsed ? logoSmall : logo} alt="logo" width={collapsed ? 30 : 200} />
                 </Link>
             </div>
             <Menu

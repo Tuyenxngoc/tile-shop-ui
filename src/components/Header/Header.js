@@ -19,15 +19,16 @@ import { IoIosLogOut } from 'react-icons/io';
 import classNames from 'classnames/bind';
 import styles from './Header.module.scss';
 
-import images from '~/assets';
-import useStore from '~/hooks/useStore';
 import useAuth from '~/hooks/useAuth';
+import useStore from '~/hooks/useStore';
 import { useState } from 'react';
 
 const cx = classNames.bind(styles);
 
 function Header() {
-    const { phone } = useStore();
+    const {
+        storeInfo: { phone, logo },
+    } = useStore();
     const { isAuthenticated, user, logout } = useAuth();
 
     const navigate = useNavigate();
@@ -123,7 +124,7 @@ function Header() {
                     <div className="row">
                         <div className="col col-3">
                             <Link to="/">
-                                <img src={images.logo} className="img-fluid" alt="logo" style={{ maxWidth: 220 }} />
+                                <img src={logo} className="img-fluid" alt="logo" style={{ maxWidth: 220 }} />
                             </Link>
                         </div>
                         <div className="col col-lg-4 col-md-4 col-3">

@@ -11,11 +11,6 @@ import useStore from '~/hooks/useStore';
 
 const cx = classNames.bind(styles);
 
-const socialLinks = [
-    { href: 'https://www.facebook.com/hunghuong', img: images.facebook, alt: 'facebook' },
-    { href: 'https://www.youtube.com/@hunghuong', img: images.youtube, alt: 'youtube' },
-];
-
 const newsLinks = [{ id: 1, name: 'Tuyển dụng', nameSlug: '/tin-tuc/tuyen-dung' }];
 
 const supportLinks = [
@@ -35,7 +30,9 @@ const supportLinks = [
 ];
 
 function Footer() {
-    const { name, address, phone, phoneSupport, email } = useStore();
+    const {
+        storeInfo: { name, address, phone, phoneSupport, email, facebookUrl, youtubeUrl },
+    } = useStore();
 
     return (
         <footer className={cx('wrapper')}>
@@ -81,11 +78,23 @@ function Footer() {
                                 <strong>Kết nối với chúng tôi:</strong>
                             </div>
                             <div className="col col-12">
-                                {socialLinks.map(({ href, img, alt }, index) => (
-                                    <a key={index} href={href} target="_blank" rel="noreferrer">
-                                        <img className="img-fluid me-3" width={35} alt={alt} src={img} />
-                                    </a>
-                                ))}
+                                <a href={facebookUrl} target="_blank" rel="noreferrer">
+                                    <img
+                                        className="img-fluid me-3"
+                                        width={35}
+                                        alt="facebook icon"
+                                        src={images.facebook}
+                                    />
+                                </a>
+
+                                <a href={youtubeUrl} target="_blank" rel="noreferrer">
+                                    <img
+                                        className="img-fluid me-3"
+                                        width={35}
+                                        alt="youtube icon"
+                                        src={images.youtube}
+                                    />
+                                </a>
                             </div>
                         </div>
                     </div>

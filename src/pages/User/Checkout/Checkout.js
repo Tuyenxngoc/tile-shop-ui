@@ -93,7 +93,7 @@ const validationSchema = yup.object({
 
 function Checkout() {
     const { user } = useAuth();
-    const store = useStore();
+    const { storeInfo } = useStore();
     const navigate = useNavigate();
 
     const [checkoutItems, setCheckoutItems] = useState(null);
@@ -309,7 +309,7 @@ function Checkout() {
                                 {formik.values.deliveryMethod === 'STORE_PICKUP' && (
                                     <div className="mt-2">
                                         <strong>Địa chỉ nhận hàng tại cửa hàng:</strong>
-                                        <div>{store.address}</div>
+                                        <div>{storeInfo.address}</div>
                                     </div>
                                 )}
 

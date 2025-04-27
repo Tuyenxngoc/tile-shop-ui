@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 
 import { createContext, useEffect, useState } from 'react';
+import { getStoreInfo } from '~/services/storeService';
 
 const StoreContext = createContext();
 
@@ -11,6 +12,14 @@ const defaultStore = {
     phoneSupport: '',
     email: '',
     openingHours: '',
+    facebookUrl: '',
+    youtubeUrl: '',
+    zaloUrl: '',
+    bannerLink: '',
+    logo: '',
+    logoSmall: '',
+    bannerImage: '',
+    backgroundImage: '',
 };
 
 const StoreProvider = ({ children }) => {
@@ -18,20 +27,18 @@ const StoreProvider = ({ children }) => {
 
     useEffect(() => {
         const fetchStoreInfo = async () => {
-            setStoreInfo({
-                name: 'Cửa hàng Hùng Hương',
-                address: '308 Tây Tựu, Quận Bắc Từ Liêm, Thành Phố Hà Nội, Xuân Phương, Hà Nội',
-                phone: '0988 027 222',
-                phoneSupport: '19000.55555',
-                email: 'contact@hhuong.com',
-                openingHours: '8:00 AM - 10:00 PM',
-            });
+            try {
+                const response = await getStoreInfo();
+                setStoreInfo(response.data.data);
+            } catch (error) {
+                setStoreInfo(defaultStore);
+            }
         };
 
         fetchStoreInfo();
     }, []);
 
-    return <StoreContext.Provider value={storeInfo}>{children}</StoreContext.Provider>;
+    return <StoreContext.Provider value={{ storeInfo, setStoreInfo }}>{children}</StoreContext.Provider>;
 };
 
 StoreProvider.propTypes = {

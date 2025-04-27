@@ -7,6 +7,7 @@ import styles from './Home.module.scss';
 import SlideProduct from '~/components/SlideProduct';
 import Policy from '~/components/Policy';
 import SlideNew from '~/components/SlideNew';
+import useStore from '~/hooks/useStore';
 
 const cx = classNames.bind(styles);
 
@@ -74,12 +75,21 @@ const categories = [
 ];
 
 function Home() {
+    const {
+        storeInfo: { bannerLink, bannerImage, backgroundImage },
+    } = useStore();
+
     return (
         <>
-            <div className={cx('banner')}>
+            <div
+                className={cx('banner')}
+                style={{
+                    backgroundImage: `url(${backgroundImage})`,
+                }}
+            >
                 <div className="container pb-3">
-                    <Link>
-                        <img src="https://nshpos.com/Web/Resources/Uploaded/18/images/1200x250(12).png" alt="" />
+                    <Link to={bannerLink}>
+                        <img src={bannerImage} alt="Hình ảnh banner" />
                     </Link>
                     <Carousel />
                 </div>

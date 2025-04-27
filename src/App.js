@@ -58,6 +58,7 @@ import UpdateUserForm from './pages/Admin/User/UpdateUserForm';
 import Order from './pages/Admin/Order';
 
 import Slide from './pages/Admin/Slide';
+import StoreInfo from './pages/Admin/StoreInfo';
 
 function App() {
     return (
@@ -155,6 +156,7 @@ function App() {
                         {/* Thiết lập hệ thống */}
                         <Route path="system-settings">
                             <Route path="slider" element={<Slide />} />
+                            <Route path="store-info" element={<StoreInfo />} />
                         </Route>
                     </Route>
                 </Route>
