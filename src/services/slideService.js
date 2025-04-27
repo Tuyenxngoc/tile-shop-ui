@@ -1,11 +1,11 @@
-import { axiosPrivate } from '~/utils/httpRequest';
+import httpRequest, { axiosPrivate } from '~/utils/httpRequest';
 
 export const getSlideById = (id) => {
-    return axiosPrivate.get(`slides/${id}`);
+    return httpRequest.get(`slides/${id}`);
 };
 
 export const getSlides = () => {
-    return axiosPrivate.get('slides');
+    return httpRequest.get('slides');
 };
 
 export const updateSlide = (id, values, image) => {

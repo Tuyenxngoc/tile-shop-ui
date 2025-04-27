@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     Alert,
     Button,
@@ -21,7 +20,7 @@ import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import ImgCrop from 'antd-img-crop';
 
-import { createSlide, deleteSlide, getSlides } from '~/services/slideService';
+import { createSlide, deleteSlide, getSlides, updateSlide } from '~/services/slideService';
 import { getBase64, validateFile } from '~/utils';
 
 const maxImageCount = 1;
@@ -34,21 +33,21 @@ const uploadButton = (
 );
 
 function Slide() {
-    const navigate = useNavigate();
-
     const [entityData, setEntityData] = useState(null);
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
 
-    const [messageApi, contextHolder] = message.useMessage();
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [editingSlide, setEditingSlide] = useState(null);
 
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [fileList, setFileList] = useState([]);
+
+    const [messageApi, contextHolder] = message.useMessage();
 
     const handlePreview = async (file) => {
         if (!file.url && !file.preview) {
@@ -95,22 +94,39 @@ function Slide() {
         }, 0);
     };
 
-    const showModal = () => {
+    const openCreateModal = () => {
         setIsModalOpen(true);
-    };
-
-    const handleCancel = () => {
-        setIsModalOpen(false);
+        setEditingSlide(null);
         form.resetFields();
         setFileList([]);
     };
 
-    const handleAddSlide = async (values) => {
-        if (!fileList) {
-            messageApi.error('Vui lòng chọn ảnh slide!');
-            return;
-        }
+    const openEditModal = (record) => {
+        setIsModalOpen(true);
+        setEditingSlide(record);
+        form.setFieldsValue({
+            index: record.index,
+            link: record.link,
+            description: record.description,
+        });
+        setFileList([
+            {
+                uid: '-1',
+                name: 'image.png',
+                status: 'done',
+                url: record.imageUrl,
+            },
+        ]);
+    };
 
+    const handleCancel = () => {
+        setIsModalOpen(false);
+        setEditingSlide(null);
+        form.resetFields();
+        setFileList([]);
+    };
+
+    const handleSaveSlide = async (values) => {
         const image = fileList?.[0];
 
         const slideData = {
@@ -119,18 +135,35 @@ function Slide() {
             description: values.description,
         };
 
-        try {
-            const response = await createSlide(slideData, image);
-            if (response.status === 201) {
-                messageApi.success('Thêm slide thành công!');
+        setIsSubmitting(true);
 
-                setIsModalOpen(false);
-                form.resetFields();
-                setFileList([]);
+        try {
+            if (editingSlide) {
+                const response = await updateSlide(editingSlide.id, slideData, image);
+                if (response.status === 200) {
+                    const { message, data } = response.data.data;
+                    messageApi.success(message);
+                    setEntityData((prev) => prev.map((item) => (item.id === editingSlide.id ? data : item)));
+                    handleCancel();
+                }
+            } else {
+                if (!image) {
+                    messageApi.error('Vui lòng chọn ảnh slide!');
+                    return;
+                }
+                const response = await createSlide(slideData, image);
+                if (response.status === 201) {
+                    const { message, data } = response.data.data;
+                    messageApi.success(message);
+                    setEntityData((prev) => [...prev, data]);
+                    handleCancel();
+                }
             }
         } catch (error) {
             const errMsg = error.response?.data?.message || 'Có lỗi xảy ra khi thêm slide.';
             messageApi.error(errMsg);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -173,15 +206,9 @@ function Slide() {
             title: 'Hình ảnh',
             dataIndex: 'imageUrl',
             key: 'imageUrl',
+            align: 'center',
             render: (text) => (
-                <Image
-                    src={text}
-                    alt="review"
-                    width={56}
-                    height={56}
-                    preview={{ mask: 'Xem ảnh' }}
-                    className="rounded-2"
-                />
+                <Image src={text} alt="review" width={200} preview={{ mask: 'Xem ảnh' }} className="rounded-2" />
             ),
         },
         {
@@ -212,6 +239,7 @@ function Slide() {
             title: 'Số thứ tự hiển thị',
             dataIndex: 'index',
             key: 'index',
+            align: 'center',
         },
         {
             title: 'Thao tác',
@@ -219,10 +247,10 @@ function Slide() {
             fixed: 'right',
             render: (_, record) => (
                 <Space>
-                    <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
+                    <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => openEditModal(record)} />
                     <Popconfirm
                         title="Thông báo"
-                        description={'Bạn có chắc muốn xóa tin tức này không?'}
+                        description={'Bạn có chắc muốn xóa slide này không?'}
                         onConfirm={() => handleDeleteEntity(record.id)}
                         okText="Xóa"
                         cancelText="Hủy"
@@ -243,15 +271,16 @@ function Slide() {
             {contextHolder}
 
             <Modal
-                title="Thêm mới Slide"
+                title={editingSlide ? 'Cập nhật Slide' : 'Thêm mới Slide'}
                 open={isModalOpen}
                 onCancel={handleCancel}
                 onOk={() => form.submit()}
-                okText="Lưu"
+                okText={editingSlide ? 'Cập nhật' : 'Lưu'}
                 cancelText="Hủy"
+                confirmLoading={isSubmitting}
             >
-                <Form form={form} layout="vertical" onFinish={handleAddSlide}>
-                    <Form.Item label="Ảnh Slide" rules={[{ required: true }]}>
+                <Form form={form} layout="vertical" onFinish={handleSaveSlide}>
+                    <Form.Item label="Ảnh Slide">
                         <ImgCrop
                             rotationSlider
                             aspect={1190 / 400}
@@ -313,7 +342,7 @@ function Slide() {
 
             <Flex wrap justify="space-between" align="center">
                 <h2>Quản lý Slide</h2>
-                <Button type="primary" onClick={showModal}>
+                <Button type="primary" onClick={openCreateModal}>
                     Thêm mới
                 </Button>
             </Flex>
