@@ -3,11 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import queryString from 'query-string';
 import ImgCrop from 'antd-img-crop';
-import { PlusOutlined } from '@ant-design/icons';
+import { ArrowDownOutlined, ArrowRightOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Image, message, Space, Upload } from 'antd';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import slugify from 'slugify';
 
 import useDebounce from '~/hooks/useDebounce';
 import { getBase64, validateFile } from '~/utils';
@@ -22,6 +23,7 @@ const maxImageCount = 1;
 
 const defaultValue = {
     title: '',
+    slug: '',
     description: '',
     content: '',
     categoryId: null,
@@ -29,6 +31,7 @@ const defaultValue = {
 
 const validationSchema = yup.object({
     title: yup.string().required('Tiêu đề là bắt buộc'),
+    slug: yup.string().required('Slug bài viết là bắt buộc'),
     description: yup.string().required('Mô tả là bắt buộc'),
     content: yup.string().required('Nội dung là bắt buộc'),
     categoryId: yup.number().required('Loại tin tức là bắt buộc'),
@@ -134,6 +137,14 @@ function NewsForm() {
     });
 
     useEffect(() => {
+        if (formik.values.title) {
+            const generatedSlug = slugify(formik.values.title, { lower: true, strict: true });
+            formik.setFieldValue('slug', generatedSlug);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formik.values.title]);
+
+    useEffect(() => {
         const fetchCategories = async () => {
             setIsCategoryLoading(true);
             try {
@@ -166,10 +177,11 @@ function NewsForm() {
         const fetchEntity = async () => {
             try {
                 const response = await getNewsById(id);
-                const { title, description, content, category, imageUrl } = response.data.data;
+                const { title, slug, description, content, category, imageUrl } = response.data.data;
 
                 formik.setValues({
                     title,
+                    slug,
                     description,
                     content,
                     categoryId: category ? category.id : null,
@@ -243,23 +255,40 @@ function NewsForm() {
                     <TextInput
                         required
                         id="title"
-                        className="col-12"
+                        className="col-12 col-md-5"
                         label="Tiêu đề"
-                        placeholder="Nhập tiêu đề"
-                        helperText="Tiêu đề từ 3-500 kí tự"
                         value={formik.values.title}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         error={formik.touched.title && formik.errors.title ? formik.errors.title : null}
                     />
 
+                    {/* Mũi tên ngang: chỉ hiện khi md trở lên */}
+                    <div className="col-12 col-md-2 d-none d-md-flex justify-content-center align-items-center">
+                        <ArrowRightOutlined size={24} />
+                    </div>
+
+                    {/* Mũi tên xuống: chỉ hiện khi nhỏ hơn md */}
+                    <div className="col-12 d-flex d-md-none justify-content-center align-items-center my-2">
+                        <ArrowDownOutlined size={24} />
+                    </div>
+
+                    <TextInput
+                        required
+                        id="slug"
+                        className="col-12 col-md-5"
+                        label="Slug bài viết"
+                        value={formik.values.slug}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.slug && formik.errors.slug ? formik.errors.slug : null}
+                    />
+
                     <TextAreaInput
                         required
                         id="description"
                         className="col-12"
-                        label="Mô tả"
-                        placeholder="Nhập mô tả"
-                        helperText="Mô tả từ 3-1500 kí tự"
+                        label="Mô tả chi tiết"
                         value={formik.values.description}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
@@ -271,8 +300,7 @@ function NewsForm() {
                     <SelectInput
                         required
                         id="categoryId"
-                        label="Danh mục"
-                        placeholder="Chọn danh mục cho tin tức"
+                        label="Chọn loại tin tức"
                         className="col-12"
                         loading={isCategoryLoading}
                         onSearch={setCategorySearchTerm}
@@ -289,7 +317,6 @@ function NewsForm() {
                         required
                         className="col-12"
                         label="Nội dung bài viết"
-                        placeholder="Nhập nội dung bài viết"
                         value={formik.values.content}
                         onChange={(value) => formik.setFieldValue('content', value)}
                         onBlur={() => formik.setFieldTouched('content', true)}

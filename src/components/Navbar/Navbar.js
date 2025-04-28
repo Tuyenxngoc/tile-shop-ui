@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { FaBars } from 'react-icons/fa';
@@ -6,10 +6,11 @@ import images from '~/assets';
 
 import classNames from 'classnames/bind';
 import styles from './Navbar.module.scss';
+import { getCategoriesTree } from '~/services/categoryService';
 
 const cx = classNames.bind(styles);
 
-const categories = [
+const categories1 = [
     { name: 'Combo Thiết Bị Vệ Sinh', id: '/combo-thiet-bi-ve-sinh-nha-tam' },
     { name: 'Combo Thiết Bị Nhà Bếp', id: '/combo-thiet-bi-nha-bep' },
     { name: 'Bồn Cầu', id: '/bon-cau' },
@@ -22,42 +23,33 @@ const categories = [
     { name: 'Máy Rửa Bát', id: '/may-rua-bat' },
 ];
 
-const categoryTree = [
-    {
-        id: 1,
-        name: 'category1',
-        sub: [
-            {
-                id: 2,
-                name: 'sub_category1',
-                sub: null,
-            },
-            {
-                id: 3,
-                name: 'sub_category3',
-                sub: null,
-            },
-        ],
-    },
-    {
-        id: 10,
-        name: 'category2',
-        sub: [
-            {
-                id: 12,
-                name: '2sub_category1',
-                sub: null,
-            },
-            {
-                id: 13,
-                name: '2sub_category3',
-                sub: null,
-            },
-        ],
-    },
-];
-
 function Navbar() {
+    const [categories, setCategories] = useState(categories1);
+    const [categoryTree, setCategoryTree] = useState([]);
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState(null);
+
+    useEffect(() => {
+        const fetchEntities = async () => {
+            setIsLoading(true);
+            setErrorMessage(null);
+            try {
+                const response = await getCategoriesTree();
+                const { data } = response.data;
+                setCategoryTree(data);
+            } catch (error) {
+                const errorMessage =
+                    error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+                setErrorMessage(errorMessage);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchEntities();
+    }, []);
+
     return (
         <nav className={cx('wrapper')}>
             <div className="container">
@@ -69,9 +61,9 @@ function Navbar() {
                         </Link>
 
                         <ul className={cx('list-group')}>
-                            {categoryTree.map((category, i) => {
+                            {categoryTree.map((category) => {
                                 return (
-                                    <React.Fragment key={i}>
+                                    <React.Fragment key={category.id}>
                                         <li className={cx('list-group-item', 'list-master-group-item')}>
                                             <div className={cx('row-menu-category')}>
                                                 <span>
@@ -83,9 +75,9 @@ function Navbar() {
                                             </div>
                                         </li>
 
-                                        {category.sub &&
-                                            category.sub.map((subCategory, j) => (
-                                                <li key={j} className={cx('list-group-item')}>
+                                        {category.subCategories &&
+                                            category.subCategories.map((subCategory) => (
+                                                <li key={subCategory.id} className={cx('list-group-item')}>
                                                     <div className={cx('row-menu-category')}>
                                                         <span>
                                                             <a href={subCategory.id}>{subCategory.name}</a>
