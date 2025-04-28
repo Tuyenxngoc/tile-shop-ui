@@ -3,11 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import queryString from 'query-string';
 import ImgCrop from 'antd-img-crop';
-import { PlusOutlined } from '@ant-design/icons';
+import { ArrowDownOutlined, ArrowRightOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Image, Menu, message, Space, Upload, theme, TreeSelect } from 'antd';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import slugify from 'slugify';
 
 import useDebounce from '~/hooks/useDebounce';
 import { checkIdIsNumber } from '~/utils/helper';
@@ -24,6 +25,7 @@ const maxImageCount = 10;
 
 const defaultValue = {
     name: '',
+    slug: '',
     description: '',
     price: 0,
     discountPercentage: 0,
@@ -35,6 +37,12 @@ const defaultValue = {
 
 const validationSchema = yup.object({
     name: yup
+        .string()
+        .required('Không được để trống ô')
+        .min(3, 'Độ dài tối thiểu là 3 ký tự')
+        .max(255, 'Độ dài tối đa là 255 ký tự'),
+
+    slug: yup
         .string()
         .required('Không được để trống ô')
         .min(3, 'Độ dài tối thiểu là 3 ký tự')
@@ -236,6 +244,14 @@ function ProductForm() {
     });
 
     useEffect(() => {
+        if (formik.values.name) {
+            const generatedSlug = slugify(formik.values.name, { lower: true, strict: true });
+            formik.setFieldValue('slug', generatedSlug);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formik.values.name]);
+
+    useEffect(() => {
         const fetchCategories = async () => {
             setIsCategoryLoading(true);
             try {
@@ -328,6 +344,7 @@ function ProductForm() {
                 const response = await getProductById(id);
                 const {
                     name,
+                    slug,
                     description,
                     price,
                     discountPercentage,
@@ -340,6 +357,7 @@ function ProductForm() {
 
                 formik.setValues({
                     name,
+                    slug,
                     description,
                     price,
                     discountPercentage,
@@ -444,7 +462,7 @@ function ProductForm() {
                         <TextInput
                             required
                             id="name"
-                            className="col-12"
+                            className="col-12 col-md-5"
                             label="Tên sản phẩm"
                             placeholder="Nhập tên sản phẩm"
                             helperText="Tên sản phẩm từ 3-255 kí tự"
@@ -453,6 +471,29 @@ function ProductForm() {
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={formik.touched.name && formik.errors.name ? formik.errors.name : null}
+                        />
+
+                        {/* Mũi tên ngang: chỉ hiện khi md trở lên */}
+                        <div className="col-12 col-md-2 d-none d-md-flex justify-content-center align-items-center">
+                            <ArrowRightOutlined size={24} />
+                        </div>
+
+                        {/* Mũi tên xuống: chỉ hiện khi nhỏ hơn md */}
+                        <div className="col-12 d-flex d-md-none justify-content-center align-items-center my-2">
+                            <ArrowDownOutlined size={24} />
+                        </div>
+
+                        <TextInput
+                            required
+                            id="slug"
+                            className="col-12 col-md-5"
+                            label="Đường dẫn sản phẩm"
+                            placeholder="Ví dụ: ao-thun-nam-tron"
+                            helperText="Chuỗi không dấu, cách nhau bằng dấu gạch ngang (-), từ 3-255 ký tự."
+                            value={formik.values.slug}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.slug && formik.errors.slug ? formik.errors.slug : null}
                         />
 
                         <div className="col-12">

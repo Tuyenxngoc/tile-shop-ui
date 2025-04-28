@@ -30,11 +30,27 @@ const defaultValue = {
 };
 
 const validationSchema = yup.object({
-    title: yup.string().required('Tiêu đề là bắt buộc'),
-    slug: yup.string().required('Slug bài viết là bắt buộc'),
-    description: yup.string().required('Mô tả là bắt buộc'),
+    title: yup
+        .string()
+        .required('Tiêu đề là bắt buộc')
+        .min(3, 'Tiêu đề phải có ít nhất 3 ký tự')
+        .max(500, 'Tiêu đề không được vượt quá 500 ký tự'),
+
+    slug: yup
+        .string()
+        .required('Slug bài viết là bắt buộc')
+        .min(3, 'Slug phải có ít nhất 3 ký tự')
+        .max(500, 'Slug không được vượt quá 500 ký tự'),
+
+    description: yup
+        .string()
+        .required('Mô tả là bắt buộc')
+        .min(3, 'Mô tả phải có ít nhất 3 ký tự')
+        .max(1500, 'Mô tả không được vượt quá 1500 ký tự'),
+
     content: yup.string().required('Nội dung là bắt buộc'),
-    categoryId: yup.number().required('Loại tin tức là bắt buộc'),
+
+    categoryId: yup.number().required('Loại tin tức là bắt buộc').typeError('Loại tin tức không hợp lệ'),
 });
 
 const uploadButton = (
@@ -257,6 +273,8 @@ function NewsForm() {
                         id="title"
                         className="col-12 col-md-5"
                         label="Tiêu đề"
+                        placeholder="Nhập tiêu đề bài viết"
+                        helperText="Tiêu đề bài viết, tối đa 500 ký tự."
                         value={formik.values.title}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
@@ -277,7 +295,9 @@ function NewsForm() {
                         required
                         id="slug"
                         className="col-12 col-md-5"
-                        label="Slug bài viết"
+                        label="Đường dẫn bài viết"
+                        placeholder="Ví dụ: chinh-sach-bao-hanh"
+                        helperText="Chuỗi không dấu, cách nhau bằng dấu gạch ngang (-), từ 3-500 ký tự"
                         value={formik.values.slug}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
