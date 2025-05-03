@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Alert, Button, Flex, Form, Input, message, Modal, Popconfirm, Select, Space, Table } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
-import queryString from 'query-string';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import {
@@ -143,8 +142,7 @@ function NewsCategory() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const params = queryString.stringify(filters);
-                const response = await getNewsCategories(params);
+                const response = await getNewsCategories(filters);
                 const { meta, items } = response.data.data;
                 setEntityData(items);
                 setMeta(meta);

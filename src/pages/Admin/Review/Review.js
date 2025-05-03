@@ -20,8 +20,6 @@ import { FaStar } from 'react-icons/fa6';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 
-import queryString from 'query-string';
-
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { approveReview, deleteReview, getReviews, rejectReview } from '~/services/reviewService';
 
@@ -182,8 +180,7 @@ function Review() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const params = queryString.stringify(filters);
-                const response = await getReviews(params);
+                const response = await getReviews(filters);
                 const { meta, items } = response.data.data;
                 setEntityData(items);
                 setMeta(meta);

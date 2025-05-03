@@ -16,7 +16,6 @@ import {
 } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
-import queryString from 'query-string';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { createAttribute, deleteAttribute, updateAttribute, getAttributes } from '~/services/attributeService';
@@ -149,8 +148,7 @@ function Attribute() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const params = queryString.stringify(filters);
-                const response = await getAttributes(params);
+                const response = await getAttributes(filters);
                 const { meta, items } = response.data.data;
                 setEntityData(items);
                 setMeta(meta);

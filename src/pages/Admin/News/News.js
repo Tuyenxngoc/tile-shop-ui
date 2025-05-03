@@ -4,8 +4,6 @@ import { Alert, Button, Flex, Image, Input, message, Popconfirm, Select, Space, 
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 
-import queryString from 'query-string';
-
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { deleteNews, getNews } from '~/services/newsService';
 
@@ -80,8 +78,7 @@ function News() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const params = queryString.stringify(filters);
-                const response = await getNews(params);
+                const response = await getNews(filters);
                 const { meta, items } = response.data.data;
                 setEntityData(items);
                 setMeta(meta);

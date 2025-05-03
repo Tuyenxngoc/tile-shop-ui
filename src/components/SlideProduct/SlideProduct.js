@@ -15,8 +15,8 @@ import styles from './SlideProduct.module.scss';
 import Product from '../Product';
 import { getProductsForUser } from '~/services/productService';
 import { Alert, Spin } from 'antd';
-import { getBrandsForUser } from '~/services/brandService';
 import { addToCart } from '~/services/cartService';
+import { getBrands } from '~/services/brandService';
 
 const cx = classNames.bind(styles);
 
@@ -59,7 +59,7 @@ function SlideProduct() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const [productsRes, brandsRes] = await Promise.all([getProductsForUser(), getBrandsForUser()]);
+                const [productsRes, brandsRes] = await Promise.all([getProductsForUser(), getBrands()]);
 
                 const { items: productItems } = productsRes.data.data;
                 setEntityData(productItems);

@@ -5,7 +5,7 @@ export const getUserById = (id) => {
 };
 
 export const getUsers = (params) => {
-    return axiosPrivate.get(`users?${params}`);
+    return axiosPrivate.get('users', { params });
 };
 
 export const updateUser = (id, values) => {

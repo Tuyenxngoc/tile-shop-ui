@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Form, Image, Input, Modal, Pagination, Progress, Rate, Space, Spin, Upload } from 'antd';
 
-import queryString from 'query-string';
 import { FaStar } from 'react-icons/fa6';
 import { PlusOutlined } from '@ant-design/icons';
 
@@ -146,8 +145,7 @@ function ReviewSection({ id, productId, message }) {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const params = queryString.stringify(filters);
-                const response = await getReviewsByProductId(productId, params);
+                const response = await getReviewsByProductId(productId, filters);
 
                 const { meta, items } = response.data.data;
                 setReviews(items);

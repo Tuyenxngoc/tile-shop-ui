@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Alert, Input, Table, Tabs, Tooltip } from 'antd';
 
-import queryString from 'query-string';
-
 import { formatCurrency } from '~/utils';
 import useDebounce from '~/hooks/useDebounce';
 
@@ -39,8 +37,7 @@ function Orders() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const params = queryString.stringify(filters);
-                const response = await getAllOrdersForUser(params);
+                const response = await getAllOrdersForUser(filters);
                 const { data } = response.data;
                 setEntityData(data);
             } catch (error) {

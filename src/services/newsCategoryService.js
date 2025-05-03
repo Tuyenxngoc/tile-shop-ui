@@ -1,11 +1,11 @@
-import { axiosPrivate } from '~/utils/httpRequest';
+import httpRequest, { axiosPrivate } from '~/utils/httpRequest';
 
 export const getNewsCategoryById = (id) => {
-    return axiosPrivate.get(`news-categories/${id}`);
+    return httpRequest.get(`news-categories/${id}`);
 };
 
 export const getNewsCategories = (params) => {
-    return axiosPrivate.get(`news-categories?${params}`);
+    return httpRequest.get('news-categories', { params });
 };
 
 export const updateNewsCategory = (id, values) => {

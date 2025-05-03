@@ -1,15 +1,15 @@
-import { axiosPrivate } from '~/utils/httpRequest';
+import httpRequest, { axiosPrivate } from '~/utils/httpRequest';
 
 export const getNewsById = (id) => {
-    return axiosPrivate.get(`news/${id}`);
+    return httpRequest.get(`news/${id}`);
 };
 
 export const getNewsBySlug = (slug) => {
-    return axiosPrivate.get(`news/slug/${slug}`);
+    return httpRequest.get(`news/slug/${slug}`);
 };
 
 export const getNews = (params) => {
-    return axiosPrivate.get(`news?${params}`);
+    return httpRequest.get('news', { params });
 };
 
 export const updateNews = (id, values, image) => {

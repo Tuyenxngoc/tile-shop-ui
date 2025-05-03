@@ -9,7 +9,7 @@ export const getAttributeByCategoryId = (id) => {
 };
 
 export const getAttributes = (params) => {
-    return axiosPrivate.get(`attributes?${params}`);
+    return axiosPrivate.get('attributes', { params });
 };
 
 export const updateAttribute = (id, values) => {

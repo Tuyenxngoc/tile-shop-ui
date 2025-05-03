@@ -10,7 +10,7 @@ export const rejectReview = (id) => {
 };
 
 export const getReviews = (params) => {
-    return axiosPrivate.get(`reviews?${params}`);
+    return axiosPrivate.get('reviews', { params });
 };
 
 export const deleteReview = (id) => {
@@ -39,5 +39,5 @@ export const getReviewSummaryByProductId = (productId) => {
 };
 
 export const getReviewsByProductId = (productId, params) => {
-    return httpRequest.get(`reviews/product/${productId}?${params}`);
+    return httpRequest.get(`reviews/product/${productId}`, { params });
 };

@@ -6,7 +6,7 @@ export const getProductById = (id) => {
 };
 
 export const getProducts = (params) => {
-    return axiosPrivate.get(`admin/products?${params}`);
+    return axiosPrivate.get('admin/products', { params });
 };
 
 export const updateProduct = (id, values, images) => {
@@ -51,7 +51,7 @@ export const deleteProduct = (id) => {
 
 // ---------- USER ----------
 export const getProductsForUser = (params) => {
-    return httpRequest.get(`products?${params}`);
+    return httpRequest.get('products', { params });
 };
 
 export const getProductByIdForUser = (id) => {

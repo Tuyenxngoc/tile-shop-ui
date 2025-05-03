@@ -1,11 +1,15 @@
-import { axiosPrivate } from '~/utils/httpRequest';
+import httpRequest, { axiosPrivate } from '~/utils/httpRequest';
 
 export const getCategoryById = (id) => {
-    return axiosPrivate.get(`categories/${id}`);
+    return httpRequest.get(`categories/${id}`);
 };
 
 export const getCategories = (params) => {
-    return axiosPrivate.get(`categories?${params}`);
+    return httpRequest.get('categories', { params });
+};
+
+export const getCategoriesTree = () => {
+    return httpRequest.get('categories/tree');
 };
 
 export const updateCategory = (id, values) => {
@@ -18,8 +22,4 @@ export const createCategory = (values) => {
 
 export const deleteCategory = (id) => {
     return axiosPrivate.delete(`categories/${id}`);
-};
-
-export const getCategoriesTree = () => {
-    return axiosPrivate.get('categories/tree');
 };

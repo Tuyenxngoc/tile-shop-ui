@@ -7,7 +7,7 @@ export const updateOrderStatus = (id, status) => {
 };
 
 export const getOrders = (params) => {
-    return axiosPrivate.get(`admin/orders?${params}`);
+    return axiosPrivate.get('admin/orders', { params });
 };
 
 export const getOrderById = (id) => {
@@ -21,7 +21,7 @@ export const getOrderCountByStatus = () => {
 // ---------- USER ----------
 
 export const getAllOrdersForUser = (params) => {
-    return axiosPrivate.get(`orders?${params}`);
+    return axiosPrivate.get('orders', { params });
 };
 
 export const createOrder = (orderData) => {

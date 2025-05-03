@@ -22,7 +22,6 @@ import {
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import queryString from 'query-string';
 
 import { formatCurrency } from '~/utils';
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
@@ -188,8 +187,7 @@ function Order() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const params = queryString.stringify(filters);
-                const response = await getOrders(params);
+                const response = await getOrders(filters);
                 const { meta, items } = response.data.data;
                 setEntityData(items);
                 setMeta(meta);

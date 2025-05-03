@@ -6,8 +6,6 @@ import { FaRegTrashAlt } from 'react-icons/fa';
 import { AiOutlineBars } from 'react-icons/ai';
 import { PiListStarBold } from 'react-icons/pi';
 
-import queryString from 'query-string';
-
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { deleteProduct, getProducts } from '~/services/productService';
 import { formatCurrency } from '~/utils/utils';
@@ -83,8 +81,7 @@ function Product() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const params = queryString.stringify(filters);
-                const response = await getProducts(params);
+                const response = await getProducts(filters);
                 const { meta, items } = response.data.data;
                 setEntityData(items);
                 setMeta(meta);

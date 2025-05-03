@@ -103,7 +103,7 @@ function Header() {
                             <a className={cx('top-link')} href={`tel:${phone}`}>
                                 <FaPhoneAlt /> <span>Hotline: {phone}</span>
                             </a>
-                            <Link className={cx('top-link')} to="/he-thong-cua-hang">
+                            <Link className={cx('top-link')} to="/tin-tuc/he-thong-cua-hang">
                                 <FaMapMarkerAlt /> <span>Hệ thống Showroom</span>
                             </Link>
                         </div>

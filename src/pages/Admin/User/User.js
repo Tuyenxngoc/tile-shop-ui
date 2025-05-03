@@ -4,8 +4,6 @@ import { Alert, Button, Flex, Input, message, Popconfirm, Select, Space, Switch,
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 
-import queryString from 'query-string';
-
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { deleteUser, getUsers, toggleUserActive } from '~/services/userService';
 
@@ -103,8 +101,7 @@ function User() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const params = queryString.stringify(filters);
-                const response = await getUsers(params);
+                const response = await getUsers(filters);
                 const { meta, items } = response.data.data;
                 setEntityData(items);
                 setMeta(meta);
