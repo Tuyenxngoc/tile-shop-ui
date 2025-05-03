@@ -23,7 +23,7 @@ import styles from './ProductDetail.module.scss';
 import images from '~/assets';
 import Policy from '~/components/Policy';
 import { addToCart } from '~/services/cartService';
-import { getProductBySlugForUser } from '~/services/productService';
+import { getProductBySlug } from '~/services/productService';
 import { formatCurrency } from '~/utils/utils';
 import ReviewSection from './ReviewSection';
 
@@ -109,7 +109,7 @@ function ProductDetail() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const response = await getProductBySlugForUser(id);
+                const response = await getProductBySlug(id);
                 const { data } = response.data;
                 setEntityData(data);
             } catch (error) {

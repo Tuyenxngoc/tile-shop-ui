@@ -10,10 +10,6 @@ export const getOrders = (params) => {
     return axiosPrivate.get('admin/orders', { params });
 };
 
-export const getOrderById = (id) => {
-    return axiosPrivate.get(`admin/orders/${id}`);
-};
-
 export const getOrderCountByStatus = () => {
     return axiosPrivate.get(`admin/orders/count-by-status`);
 };
@@ -24,10 +20,10 @@ export const getAllOrdersForUser = (params) => {
     return axiosPrivate.get('orders', { params });
 };
 
-export const createOrder = (orderData) => {
-    return axiosPrivate.post('orders', orderData);
+export const getOrderById = (id) => {
+    return axiosPrivate.get(`orders/${id}`);
 };
 
-export const getOrderByIdForUser = (id) => {
-    return axiosPrivate.get(`orders/${id}`);
+export const createOrder = (orderData) => {
+    return axiosPrivate.post('orders', orderData);
 };

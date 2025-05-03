@@ -13,7 +13,7 @@ import classNames from 'classnames/bind';
 import styles from './SlideProduct.module.scss';
 
 import Product from '../Product';
-import { getProductsForUser } from '~/services/productService';
+import { getProducts } from '~/services/productService';
 import { Alert, Spin } from 'antd';
 import { addToCart } from '~/services/cartService';
 import { getBrands } from '~/services/brandService';
@@ -59,7 +59,7 @@ function SlideProduct() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const [productsRes, brandsRes] = await Promise.all([getProductsForUser(), getBrands()]);
+                const [productsRes, brandsRes] = await Promise.all([getProducts(), getBrands()]);
 
                 const { items: productItems } = productsRes.data.data;
                 setEntityData(productItems);

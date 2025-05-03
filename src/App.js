@@ -15,6 +15,7 @@ import Home from './pages/User/Home';
 import Login from './pages/User/Login';
 import ForgotPassword from './pages/User/ForgotPassword';
 import Register from './pages/User/Register';
+import SearchProduct from './pages/User/SearchProduct';
 import ProductDetail from './pages/User/ProductDetail';
 import ProductByCategory from './pages/User/ProductByCategory';
 import Checkout from './pages/User/Checkout';
@@ -72,6 +73,7 @@ function App() {
                     <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPassword />} />
                     <Route path={ROUTES.REGISTER} element={<Register />} />
 
+                    <Route path="tim-kiem" element={<SearchProduct />} />
                     <Route path="san-pham/:id" element={<ProductDetail />} />
                     <Route path="danh-muc/:id" element={<ProductByCategory />} />
 

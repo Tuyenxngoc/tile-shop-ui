@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { Dropdown } from 'antd';
@@ -21,7 +22,9 @@ import styles from './Header.module.scss';
 
 import useAuth from '~/hooks/useAuth';
 import useStore from '~/hooks/useStore';
-import { useState } from 'react';
+import { searchProducts } from '~/services/productService';
+import useDebounce from '~/hooks/useDebounce';
+import { formatCurrency } from '~/utils';
 
 const cx = classNames.bind(styles);
 
@@ -31,20 +34,25 @@ function Header() {
     } = useStore();
     const { isAuthenticated, user, logout } = useAuth();
 
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearch = useDebounce(searchTerm, 300);
+
     const navigate = useNavigate();
-    const [searchQuery, setSearchQuery] = useState('');
 
     const handleLogout = () => {
         logout();
     };
 
     const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
+        setSearchTerm(e.target.value);
     };
 
     const handleSearchSubmit = () => {
-        if (searchQuery.trim()) {
-            navigate(`/tim-kiem?q=${encodeURIComponent(searchQuery)}`);
+        if (searchTerm.trim()) {
+            setShowSuggestions(false);
+            navigate(`/tim-kiem?q=${encodeURIComponent(searchTerm)}`);
         }
     };
 
@@ -74,6 +82,26 @@ function Header() {
             navigate('/gio-hang');
         }
     };
+
+    useEffect(() => {
+        if (debouncedSearch.trim()) {
+            const fetchSuggestions = async () => {
+                try {
+                    const response = await searchProducts(debouncedSearch);
+                    setSuggestions(response.data.data.items);
+                    setShowSuggestions(true);
+                } catch {
+                    setSuggestions([]);
+                    setShowSuggestions(false);
+                }
+            };
+
+            fetchSuggestions();
+        } else {
+            setSuggestions([]);
+            setShowSuggestions(false);
+        }
+    }, [debouncedSearch]);
 
     const userMenuItems = [
         {
@@ -133,10 +161,48 @@ function Header() {
                                     id="search-input"
                                     className={cx('search-input', 'form-control', 'input-lg')}
                                     placeholder="Nhập tên sản phẩm, từ khóa cần tìm"
-                                    value={searchQuery}
+                                    value={searchTerm}
                                     onChange={handleSearchChange}
                                     onKeyDown={handleKeyDown}
+                                    onFocus={() => {
+                                        if (suggestions.length > 0) setShowSuggestions(true);
+                                    }}
+                                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                                 />
+
+                                {showSuggestions && suggestions.length > 0 && (
+                                    <ul className={cx('suggestions')}>
+                                        {suggestions.map((item) => (
+                                            <li key={item.id} onClick={() => navigate(`/san-pham/${item.slug}`)}>
+                                                <div className="row">
+                                                    <div className="col-3">
+                                                        <img
+                                                            src={item.imageUrl}
+                                                            alt={item.name}
+                                                            width={52}
+                                                            height={52}
+                                                            className="img-fluid"
+                                                        />
+                                                    </div>
+                                                    <div className="col-9">
+                                                        <div>
+                                                            <a href={`/san-pham/${item.slug}`}>{item.name}</a>
+                                                        </div>
+                                                        <div>
+                                                            <span className={cx('sale-price')}>
+                                                                {formatCurrency(item.salePrice)}
+                                                            </span>
+                                                            &nbsp; &nbsp;
+                                                            <span className={cx('base-price')}>
+                                                                {formatCurrency(item.price)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
 
                                 <i className={cx('search-icon')}>
                                     <FaSearch />

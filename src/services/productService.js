@@ -1,12 +1,24 @@
 import httpRequest, { axiosPrivate } from '~/utils/httpRequest';
 
-// ---------- ADMIN ----------
 export const getProductById = (id) => {
-    return axiosPrivate.get(`admin/products/${id}`);
+    return httpRequest.get(`products/${id}`);
 };
 
 export const getProducts = (params) => {
-    return axiosPrivate.get('admin/products', { params });
+    return httpRequest.get('products', { params });
+};
+
+export const getProductBySlug = (slug) => {
+    return httpRequest.get(`products/slug/${slug}`);
+};
+
+export const searchProducts = (keyword, params) => {
+    return httpRequest.get(`products/search`, {
+        params: {
+            keyword,
+            ...params,
+        },
+    });
 };
 
 export const updateProduct = (id, values, images) => {
@@ -22,7 +34,7 @@ export const updateProduct = (id, values, images) => {
     const existingImageUrls = images.filter((img) => !img.originFileObj && img.url).map((img) => img.url);
     formData.append('existingImages', new Blob([JSON.stringify(existingImageUrls)], { type: 'application/json' }));
 
-    return axiosPrivate.put(`admin/products/${id}`, formData, {
+    return axiosPrivate.put(`products/${id}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -38,7 +50,7 @@ export const createProduct = (values, images) => {
         });
     }
 
-    return axiosPrivate.post('admin/products', formData, {
+    return axiosPrivate.post('products', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -46,18 +58,5 @@ export const createProduct = (values, images) => {
 };
 
 export const deleteProduct = (id) => {
-    return axiosPrivate.delete(`admin/products/${id}`);
-};
-
-// ---------- USER ----------
-export const getProductsForUser = (params) => {
-    return httpRequest.get('products', { params });
-};
-
-export const getProductByIdForUser = (id) => {
-    return httpRequest.get(`products/${id}`);
-};
-
-export const getProductBySlugForUser = (slug) => {
-    return httpRequest.get(`products/slug/${slug}`);
+    return axiosPrivate.delete(`products/${id}`);
 };
