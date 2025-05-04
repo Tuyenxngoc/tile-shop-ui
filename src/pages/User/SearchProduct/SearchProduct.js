@@ -1,19 +1,43 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Breadcrumb, Spin, Empty } from 'antd';
-import Policy from '~/components/Policy';
-import { searchProducts } from '~/services/productService';
-import Product from '~/components/Product';
-import { addToCart } from '~/services/cartService';
+import { Breadcrumb, Empty, Pagination, Skeleton, Alert } from 'antd';
 import Swal from 'sweetalert2';
+import Policy from '~/components/Policy';
+import Product from '~/components/Product';
+import { searchProducts } from '~/services/productService';
+import { addToCart } from '~/services/cartService';
+import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
+
+import classNames from 'classnames/bind';
+import styles from './SearchProduct.module.scss';
+
+const cx = classNames.bind(styles);
+
 function SearchProduct() {
     const location = useLocation();
     const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
     const query = queryParams.get('q');
 
-    const [loading, setLoading] = useState(false);
-    const [products, setProducts] = useState([]);
+    const [meta, setMeta] = useState(INITIAL_META);
+    const [filters, setFilters] = useState(INITIAL_FILTERS);
+
+    const [entityData, setEntityData] = useState(null);
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null);
+
+    const handleChangePage = (newPage) => {
+        setFilters((prev) => ({ ...prev, pageNum: newPage }));
+    };
+
+    const handleChangeRowsPerPage = (current, size) => {
+        setFilters((prev) => ({
+            ...prev,
+            pageNum: 1,
+            pageSize: size,
+        }));
+    };
 
     const handleAddToCart = async (productId) => {
         try {
@@ -48,22 +72,26 @@ function SearchProduct() {
             return;
         }
 
-        const fetchProducts = async () => {
-            setLoading(true);
+        const fetchEntities = async () => {
+            setIsLoading(true);
+            setErrorMessage(null);
             try {
-                const response = await searchProducts(query);
-                const { items } = response.data.data;
-                setProducts(items);
+                const response = await searchProducts(query, filters);
+                const { meta, items } = response.data.data;
+                setEntityData(items);
+                setMeta(meta);
             } catch (error) {
-                console.error('Lỗi tìm kiếm sản phẩm:', error);
-                setProducts([]);
+                const errorMessage =
+                    error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+                setErrorMessage(errorMessage);
             } finally {
-                setLoading(false);
+                setIsLoading(false);
             }
         };
 
-        fetchProducts();
-    }, [query, navigate]);
+        fetchEntities();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [query, filters]);
 
     return (
         <div className="container bg-white">
@@ -83,23 +111,48 @@ function SearchProduct() {
                 Kết quả tìm kiếm cho: <strong>{query}</strong>
             </h5>
 
-            {loading ? (
-                <div className="text-center my-5">
-                    <Spin tip="Đang tìm kiếm..." />
-                </div>
-            ) : products.length === 0 ? (
-                <Empty description="Không tìm thấy sản phẩm nào" />
-            ) : (
+            {isLoading ? (
                 <div className="row">
-                    {products.map((product) => (
-                        <div key={product.id} className="col-6 col-md-3">
-                            <Product data={product} onAddToCart={() => handleAddToCart(product.id)} />
+                    {[...Array(12)].map((_, index) => (
+                        <div key={index} className="col-12 col-md-4 mb-4">
+                            <Skeleton active paragraph={{ rows: 4 }} />
                         </div>
                     ))}
                 </div>
+            ) : errorMessage ? (
+                <div className="my-5">
+                    <Alert message="Lỗi" description={errorMessage} type="error" />
+                </div>
+            ) : !entityData || entityData.length === 0 ? (
+                <Empty description="Không tìm thấy sản phẩm nào" />
+            ) : (
+                <div className="row g-3">
+                    <div className="col-12">
+                        <div className={cx('product-wrapper')}>
+                            {entityData.map((product) => (
+                                <div key={product.id} className={cx('item-product')}>
+                                    <Product data={product} onAddToCart={() => handleAddToCart(product.id)} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="col-12 d-flex justify-content-center">
+                        <Pagination
+                            current={filters.pageNum}
+                            pageSize={filters.pageSize}
+                            total={meta.totalElements}
+                            onChange={handleChangePage}
+                            showSizeChanger={true}
+                            onShowSizeChange={handleChangeRowsPerPage}
+                        />
+                    </div>
+                </div>
             )}
 
-            <Policy />
+            <div className="mt-3">
+                <Policy />
+            </div>
         </div>
     );
 }
