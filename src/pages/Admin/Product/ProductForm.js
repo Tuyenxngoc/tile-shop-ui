@@ -479,6 +479,8 @@ function ProductForm() {
 
                         <TextInput
                             required
+                            maxLength={255}
+                            showCount
                             id="name"
                             className="col-12 col-md-5"
                             label="Tên sản phẩm"

@@ -185,7 +185,12 @@ function Header() {
                                                     </div>
                                                     <div className="col-9">
                                                         <div className="p-1">
-                                                            <Link to={`/san-pham/${item.slug}`}>{item.name}</Link>
+                                                            <Link
+                                                                to={`/san-pham/${item.slug}`}
+                                                                className="text-truncate-2"
+                                                            >
+                                                                {item.name}
+                                                            </Link>
                                                         </div>
                                                         <div>
                                                             <span className={cx('sale-price')}>
