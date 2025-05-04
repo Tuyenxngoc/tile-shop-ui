@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import queryString from 'query-string';
 import ImgCrop from 'antd-img-crop';
 import { ArrowDownOutlined, ArrowRightOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Image, Menu, message, Space, Upload, theme, TreeSelect } from 'antd';
@@ -142,6 +141,8 @@ function ProductForm() {
     const { id } = useParams();
     const navigate = useNavigate();
 
+    const [activeKey, setActiveKey] = useState(menuItems[0].key);
+
     const [messageApi, contextHolder] = message.useMessage();
 
     const [categoryList, setCategoryList] = useState([]);
@@ -244,6 +245,24 @@ function ProductForm() {
     });
 
     useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash.replace('#', '');
+            setActiveKey(hash || menuItems[0].key); // default nếu không có hash
+        };
+
+        // Gọi lần đầu khi component mount
+        handleHashChange();
+
+        // Lắng nghe sự kiện hash change
+        window.addEventListener('hashchange', handleHashChange);
+
+        // Cleanup event
+        return () => {
+            window.removeEventListener('hashchange', handleHashChange);
+        };
+    }, []);
+
+    useEffect(() => {
         if (formik.values.name) {
             const generatedSlug = slugify(formik.values.name, { lower: true, strict: true });
             formik.setFieldValue('slug', generatedSlug);
@@ -273,8 +292,7 @@ function ProductForm() {
         const fetchBrands = async () => {
             setIsBrandLoading(true);
             try {
-                const params = queryString.stringify({ keyword: debouncedBrandSearch, searchBy: 'name' });
-                const response = await getBrands(params);
+                const response = await getBrands({ keyword: debouncedBrandSearch, searchBy: 'name' });
                 setBrandList(response.data.data.items);
             } catch (error) {
                 messageApi.error('Lỗi: ' + error.message);
@@ -402,7 +420,7 @@ function ProductForm() {
                     marginBottom: 16,
                 }}
             >
-                <Menu mode="horizontal" items={menuItems} />
+                <Menu mode="horizontal" selectedKeys={[activeKey]} items={menuItems} />
             </div>
 
             <form onSubmit={formik.handleSubmit}>

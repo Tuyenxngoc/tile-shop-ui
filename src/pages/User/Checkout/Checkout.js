@@ -12,7 +12,6 @@ import { formatCurrency } from '~/utils';
 import useAuth from '~/hooks/useAuth';
 import useStore from '~/hooks/useStore';
 import { createOrder } from '~/services/ordersService';
-import queryString from 'query-string';
 import { createVnpayPaymentUrl } from '~/services/paymentService';
 import { useNavigate } from 'react-router-dom';
 
@@ -121,8 +120,7 @@ function Checkout() {
 
             if (values.paymentMethod === 'VNPAY') {
                 try {
-                    const params = queryString.stringify({ orderId: orderId });
-                    const response = await createVnpayPaymentUrl(params);
+                    const response = await createVnpayPaymentUrl({ orderId: orderId });
                     const { url } = response.data.data;
 
                     // Redirect người dùng đến trang thanh toán VNPAY

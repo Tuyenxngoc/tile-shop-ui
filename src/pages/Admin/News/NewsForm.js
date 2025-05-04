@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import queryString from 'query-string';
 import ImgCrop from 'antd-img-crop';
 import { ArrowDownOutlined, ArrowRightOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Image, message, Space, Upload } from 'antd';
@@ -164,8 +163,7 @@ function NewsForm() {
         const fetchCategories = async () => {
             setIsCategoryLoading(true);
             try {
-                const params = queryString.stringify({ keyword: debouncedCategorySearch, searchBy: 'name' });
-                const response = await getNewsCategories(params);
+                const response = await getNewsCategories({ keyword: debouncedCategorySearch, searchBy: 'name' });
 
                 const { items } = response.data.data;
                 setCategoryList(items);

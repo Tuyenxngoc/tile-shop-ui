@@ -174,19 +174,18 @@ function Header() {
                                     <ul className={cx('suggestions')}>
                                         {suggestions.map((item) => (
                                             <li key={item.id} onClick={() => navigate(`/san-pham/${item.slug}`)}>
-                                                <div className="row">
+                                                <div className="row g-0">
                                                     <div className="col-3">
                                                         <img
                                                             src={item.imageUrl}
                                                             alt={item.name}
                                                             width={52}
-                                                            height={52}
                                                             className="img-fluid"
                                                         />
                                                     </div>
                                                     <div className="col-9">
-                                                        <div>
-                                                            <a href={`/san-pham/${item.slug}`}>{item.name}</a>
+                                                        <div className="p-1">
+                                                            <Link to={`/san-pham/${item.slug}`}>{item.name}</Link>
                                                         </div>
                                                         <div>
                                                             <span className={cx('sale-price')}>

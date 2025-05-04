@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-import queryString from 'query-string';
 import { Button, message, Space } from 'antd';
 
 import { handleError } from '~/utils/errorHandler';
@@ -89,8 +88,7 @@ function CategoryForm() {
         const fetchCategories = async () => {
             setIsCategoryLoading(true);
             try {
-                const params = queryString.stringify({ keyword: debouncedCategorySearch, searchBy: 'name' });
-                const response = await getCategories(params);
+                const response = await getCategories({ keyword: debouncedCategorySearch, searchBy: 'name' });
                 const { items } = response.data.data;
                 setCategoryList(items);
             } catch (error) {
@@ -108,8 +106,7 @@ function CategoryForm() {
         const fetchAttributes = async () => {
             setIsAttributeLoading(true);
             try {
-                const params = queryString.stringify({ keyword: debouncedAttributeSearch, searchBy: 'name' });
-                const response = await getAttributes(params);
+                const response = await getAttributes({ keyword: debouncedAttributeSearch, searchBy: 'name' });
                 const { items } = response.data.data;
                 setAttributeList(
                     items.map((attr) => ({

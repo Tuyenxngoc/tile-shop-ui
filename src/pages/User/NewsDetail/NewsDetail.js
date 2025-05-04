@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Alert, Breadcrumb, Menu, Spin } from 'antd';
 import dayjs from 'dayjs';
-import queryString from 'query-string';
 import { FaClock } from 'react-icons/fa6';
 import Policy from '~/components/Policy';
 import { getNewsCategories } from '~/services/newsCategoryService';
@@ -55,12 +54,11 @@ function NewsDetail() {
         const fetchRelated = async () => {
             if (entityData?.category?.id) {
                 try {
-                    const params = queryString.stringify({
+                    const response = await getNews({
                         excludeId: entityData.id,
                         searchBy: 'categoryId',
                         keyword: entityData.category.id,
                     });
-                    const response = await getNews(params);
                     const { items } = response.data.data;
                     setRelatedNews(items);
                 } catch (error) {

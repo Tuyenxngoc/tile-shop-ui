@@ -57,6 +57,7 @@
             z-index: 1000;
 
             li {
+                line-height: normal;
                 padding: 10px;
                 cursor: pointer;
 
@@ -69,8 +70,8 @@
                     font-size: 14px;
                     color: #d0021c;
                 }
+
                 .base-price {
-                    font-weight: 400;
                     font-size: 11px;
                     color: #62666b;
                     text-decoration-line: line-through;
