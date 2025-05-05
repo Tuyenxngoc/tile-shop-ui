@@ -51,43 +51,53 @@ const validationSchema = yup.object({
 
     phoneNumber: yup
         .string()
-        .trim()
         .required('Vui lòng nhập số điện thoại')
         .matches(/^(?:\+84|0)(?:1[2689]|9[0-9]|3[2-9]|5[6-9]|7[0-9])(?:\d{7}|\d{8})$/, 'Số điện thoại không hợp lệ'),
 
     fullName: yup
         .string()
-        .trim()
         .required('Vui lòng nhập họ và tên')
         .matches(/^\S+(\s+\S+)+$/, 'Họ và tên phải có ít nhất hai từ'),
 
-    deliveryMethod: yup.string().required('Vui lòng chọn phương thức giao hàng'),
+    deliveryMethod: yup.string().trim().required('Vui lòng chọn phương thức giao hàng'),
 
-    shippingAddress: yup.string().when('deliveryMethod', {
-        is: (val) => val === 'HOME_DELIVERY',
-        then: () => yup.string().required('Vui lòng chọn địa chỉ giao hàng'),
-        otherwise: () => yup.string().notRequired(),
-    }),
+    shippingAddress: yup
+        .string()
+        .trim()
+        .when('deliveryMethod', {
+            is: (val) => val === 'HOME_DELIVERY',
+            then: () => yup.string().trim().required('Vui lòng chọn địa chỉ giao hàng'),
+            otherwise: () => yup.string().notRequired(),
+        }),
 
     requestInvoice: yup.boolean(),
 
-    invoiceCompanyName: yup.string().when('requestInvoice', {
-        is: true,
-        then: () => yup.string().required('Vui lòng nhập tên công ty'),
-        otherwise: () => yup.string().notRequired(),
-    }),
+    invoiceCompanyName: yup
+        .string()
+        .trim()
+        .when('requestInvoice', {
+            is: true,
+            then: () => yup.string().trim().required('Vui lòng nhập tên công ty'),
+            otherwise: () => yup.string().notRequired(),
+        }),
 
-    invoiceTaxCode: yup.string().when('requestInvoice', {
-        is: true,
-        then: () => yup.string().required('Vui lòng nhập mã số thuế'),
-        otherwise: () => yup.string().notRequired(),
-    }),
+    invoiceTaxCode: yup
+        .string()
+        .trim()
+        .when('requestInvoice', {
+            is: true,
+            then: () => yup.string().trim().required('Vui lòng nhập mã số thuế'),
+            otherwise: () => yup.string().notRequired(),
+        }),
 
-    invoiceCompanyAddress: yup.string().when('requestInvoice', {
-        is: true,
-        then: () => yup.string().required('Vui lòng nhập địa chỉ công ty'),
-        otherwise: () => yup.string().notRequired(),
-    }),
+    invoiceCompanyAddress: yup
+        .string()
+        .trim()
+        .when('requestInvoice', {
+            is: true,
+            then: () => yup.string().trim().required('Vui lòng nhập địa chỉ công ty'),
+            otherwise: () => yup.string().notRequired(),
+        }),
 });
 
 function Checkout() {

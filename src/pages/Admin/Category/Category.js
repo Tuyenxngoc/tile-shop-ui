@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Alert, Button, Flex, Input, message, Popconfirm, Select, Space, Table } from 'antd';
+import { Alert, Button, Flex, Image, Input, message, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { deleteCategory, getCategories } from '~/services/categoryService';
+import { formatDate } from '~/utils';
 
 const options = [
     { value: 'id', label: 'ID' },
@@ -102,11 +103,48 @@ function Category() {
             showSorterTooltip: false,
         },
         {
+            title: 'Ngày tạo',
+            dataIndex: 'createdDate',
+            key: 'createdDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
+            title: 'Ngày chỉnh sửa',
+            dataIndex: 'lastModifiedDate',
+            key: 'lastModifiedDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
             title: 'Tên danh mục',
             dataIndex: 'name',
             key: 'name',
             sorter: true,
             showSorterTooltip: false,
+            render: (text) => (
+                <div style={{ maxWidth: 200 }}>
+                    <Tooltip title={text}>
+                        <span className="text-truncate-2">{text}</span>
+                    </Tooltip>
+                </div>
+            ),
+        },
+        {
+            title: 'Đường dẫn',
+            dataIndex: 'slug',
+            key: 'slug',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => (
+                <div style={{ maxWidth: 200 }}>
+                    <Tooltip title={text}>
+                        <span className="text-truncate-2">{text}</span>
+                    </Tooltip>
+                </div>
+            ),
         },
         {
             title: 'Danh mục cha',
@@ -121,7 +159,27 @@ function Category() {
                 return 'Không có';
             },
         },
-
+        {
+            title: 'Ảnh bìa',
+            dataIndex: 'imageUrl',
+            key: 'imageUrl',
+            sorter: true,
+            showSorterTooltip: false,
+            align: 'center',
+            render: (text) =>
+                text ? (
+                    <Image
+                        src={text}
+                        alt="review"
+                        width={56}
+                        height={56}
+                        preview={{ mask: 'Xem ảnh' }}
+                        className="rounded-2"
+                    />
+                ) : (
+                    <span>Chưa có ảnh</span>
+                ),
+        },
         {
             title: 'Thao tác',
             key: 'action',

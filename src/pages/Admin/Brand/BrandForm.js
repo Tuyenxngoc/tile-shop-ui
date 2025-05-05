@@ -27,12 +27,13 @@ const defaultValue = {
 const validationSchema = yup.object({
     name: yup
         .string()
+        .trim()
         .required('Tên thương hiệu là bắt buộc')
         .max(255, 'Tên thương hiệu không được vượt quá 255 ký tự'),
 
-    slug: yup.string().required('Đường dẫn là bắt buộc').max(255, 'Đường dẫn không được vượt quá 255 ký tự'),
+    slug: yup.string().trim().required('Đường dẫn là bắt buộc').max(255, 'Đường dẫn không được vượt quá 255 ký tự'),
 
-    description: yup.string().max(255, 'Mô tả không được vượt quá 255 ký tự'),
+    description: yup.string().trim().max(255, 'Mô tả không được vượt quá 255 ký tự'),
 });
 
 const uploadButton = (

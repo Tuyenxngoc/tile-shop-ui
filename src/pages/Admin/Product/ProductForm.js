@@ -37,17 +37,19 @@ const defaultValue = {
 const validationSchema = yup.object({
     name: yup
         .string()
+        .trim()
         .required('Không được để trống ô')
         .min(3, 'Độ dài tối thiểu là 3 ký tự')
         .max(255, 'Độ dài tối đa là 255 ký tự'),
 
     slug: yup
         .string()
+        .trim()
         .required('Không được để trống ô')
         .min(3, 'Độ dài tối thiểu là 3 ký tự')
         .max(255, 'Độ dài tối đa là 255 ký tự'),
 
-    description: yup.string().required('Không được để trống ô'),
+    description: yup.string().trim().required('Không được để trống ô'),
 
     price: yup
         .number()
@@ -73,13 +75,16 @@ const getDynamicAttributeSchema = (attributeList) => {
     return yup.array().of(
         yup.object().shape({
             attributeId: yup.number().required(),
-            value: yup.string().when('attributeId', ([attributeId], schema, context) => {
-                const attr = attributeList.find((a) => a.id === Number(attributeId));
-                if (attr?.isRequired) {
-                    return schema.required('Không được để trống ô');
-                }
-                return schema;
-            }),
+            value: yup
+                .string()
+                .trim()
+                .when('attributeId', ([attributeId], schema, context) => {
+                    const attr = attributeList.find((a) => a.id === Number(attributeId));
+                    if (attr?.isRequired) {
+                        return schema.required('Không được để trống ô');
+                    }
+                    return schema;
+                }),
         }),
     );
 };

@@ -12,12 +12,34 @@ export const getCategoriesTree = () => {
     return httpRequest.get('categories/tree');
 };
 
-export const updateCategory = (id, values) => {
-    return axiosPrivate.put(`categories/${id}`, values);
+export const updateCategory = (id, values, image) => {
+    const formData = new FormData();
+    formData.append('category', new Blob([JSON.stringify(values)], { type: 'application/json' }));
+
+    if (image?.originFileObj) {
+        formData.append('image', image.originFileObj);
+    }
+
+    return axiosPrivate.put(`categories/${id}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
 };
 
-export const createCategory = (values) => {
-    return axiosPrivate.post('categories', values);
+export const createCategory = (values, image) => {
+    const formData = new FormData();
+    formData.append('category', new Blob([JSON.stringify(values)], { type: 'application/json' }));
+
+    if (image?.originFileObj) {
+        formData.append('image', image.originFileObj);
+    }
+
+    return axiosPrivate.post('categories', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
 };
 
 export const deleteCategory = (id) => {

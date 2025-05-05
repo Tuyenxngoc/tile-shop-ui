@@ -12,6 +12,7 @@ import { ROUTES } from '~/constants/routes';
 
 const validationSchema = yup.object({
     username: yup.string().trim().required('Vui lòng nhập tên đăng nhập'),
+
     password: yup.string().required('Vui lòng nhập mật khẩu'),
 });
 

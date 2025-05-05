@@ -18,6 +18,7 @@ const cx = classNames.bind(styles);
 
 const validationSchema = yup.object({
     username: yup.string().trim().required('Vui lòng nhập tên đăng nhập'),
+
     email: yup.string().trim().email('Email không hợp lệ').required('Vui lòng nhập email'),
 });
 

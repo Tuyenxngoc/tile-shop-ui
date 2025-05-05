@@ -9,6 +9,7 @@ import { forgotPassword } from '~/services/authService';
 
 const validationSchema = yup.object({
     username: yup.string().trim().required('Vui lòng nhập tên đăng nhập'),
+
     email: yup.string().email('Email không hợp lệ').required('Vui lòng nhập email'),
 });
 

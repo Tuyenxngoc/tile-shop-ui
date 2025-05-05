@@ -19,6 +19,7 @@ const cx = classNames.bind(styles);
 
 const validationSchema = yup.object({
     username: yup.string().trim().required('Vui lòng nhập tên tài khoản'),
+
     password: yup.string().required('Vui lòng nhập mật khẩu'),
 });
 

@@ -26,11 +26,11 @@ const defaultValue = {
 };
 
 const validationSchema = yup.object({
-    name: yup.string().required('Vui lòng nhập cửa hàng.'),
+    name: yup.string().trim().required('Vui lòng nhập cửa hàng.'),
 
-    address: yup.string().required('Vui lòng nhập địa chỉ.'),
+    address: yup.string().trim().required('Vui lòng nhập địa chỉ.'),
 
-    phone: yup.string().required('Vui lòng nhập số điện thoại.'),
+    phone: yup.string().trim().required('Vui lòng nhập số điện thoại.'),
 });
 
 function StoreInfo() {

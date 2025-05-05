@@ -31,23 +31,20 @@ const defaultValue = {
 const validationSchema = yup.object({
     title: yup
         .string()
+        .trim()
         .required('Tiêu đề là bắt buộc')
         .min(3, 'Tiêu đề phải có ít nhất 3 ký tự')
-        .max(500, 'Tiêu đề không được vượt quá 500 ký tự'),
+        .max(255, 'Tiêu đề không được vượt quá 255 ký tự'),
 
     slug: yup
         .string()
-        .required('Slug bài viết là bắt buộc')
-        .min(3, 'Slug phải có ít nhất 3 ký tự')
-        .max(500, 'Slug không được vượt quá 500 ký tự'),
+        .trim()
+        .required('Đường dẫn bài viết là bắt buộc')
+        .max(255, 'Đường dẫn không được vượt quá 255 ký tự'),
 
-    description: yup
-        .string()
-        .required('Mô tả là bắt buộc')
-        .min(3, 'Mô tả phải có ít nhất 3 ký tự')
-        .max(1500, 'Mô tả không được vượt quá 1500 ký tự'),
+    description: yup.string().trim().required('Mô tả là bắt buộc').max(500, 'Mô tả không được vượt quá 500 ký tự'),
 
-    content: yup.string().required('Nội dung là bắt buộc'),
+    content: yup.string().trim().required('Nội dung là bắt buộc'),
 
     categoryId: yup.number().required('Loại tin tức là bắt buộc').typeError('Loại tin tức không hợp lệ'),
 });

@@ -33,19 +33,17 @@ const validationSchema = yup.object({
 
     phoneNumber: yup
         .string()
-        .trim()
         .required('Vui lòng nhập số điện thoại')
         .matches(/^(?:\+84|0)(?:1[2689]|9[0-9]|3[2-9]|5[6-9]|7[0-9])(?:\d{7}|\d{8})$/, 'Số điện thoại không hợp lệ'),
 
     fullName: yup
         .string()
-        .trim()
         .required('Vui lòng nhập họ và tên')
         .matches(/^\S+(\s+\S+)+$/, 'Họ và tên phải có ít nhất hai từ'),
 
     address: yup.string().trim().min(5, 'Địa chỉ quá ngắn').max(255, 'Địa chỉ quá dài').nullable(),
 
-    gender: yup.string().oneOf(['MALE', 'FEMALE', 'OTHER'], 'Giới tính không hợp lệ').nullable(),
+    gender: yup.string().trim().oneOf(['MALE', 'FEMALE', 'OTHER'], 'Giới tính không hợp lệ').nullable(),
 
     roleId: yup.number().required('Vui lòng chọn quyền').typeError('Vui lòng chọn quyền'),
 });
