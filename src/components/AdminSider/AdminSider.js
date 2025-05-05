@@ -64,7 +64,7 @@ const menuConfig = [
         icon: <BsNewspaper />,
         children: [
             { label: 'Danh sách tin tức', key: '/admin/news' },
-            { label: 'Danh mục tin tức', key: '/admin/news-categories' },
+            { label: 'Loại tin tức', key: '/admin/news-categories' },
         ],
     },
 ];

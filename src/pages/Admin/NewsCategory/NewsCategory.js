@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Flex, Form, Input, message, Modal, Popconfirm, Select, Space, Table } from 'antd';
+import { ArrowDownOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
+import slugify from 'slugify';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import {
@@ -10,6 +12,7 @@ import {
     getNewsCategories,
     updateNewsCategory,
 } from '~/services/newsCategoryService';
+import { formatDate } from '~/utils';
 
 const options = [
     { value: 'id', label: 'ID' },
@@ -97,7 +100,7 @@ function NewsCategory() {
                 messageApi.success(message);
 
                 // Cập nhật lại danh sách sau khi thêm mới
-                setEntityData((prevData) => [...prevData, data]);
+                setEntityData((prevData) => [data, ...prevData]);
                 closeAddModal();
             }
         } catch (error) {
@@ -167,9 +170,32 @@ function NewsCategory() {
             showSorterTooltip: false,
         },
         {
-            title: 'Tên danh mục tin tức',
+            title: 'Ngày tạo',
+            dataIndex: 'createdDate',
+            key: 'createdDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
+            title: 'Ngày chỉnh sửa',
+            dataIndex: 'lastModifiedDate',
+            key: 'lastModifiedDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
+            title: 'Tên loại tin tức',
             dataIndex: 'name',
             key: 'name',
+            sorter: true,
+            showSorterTooltip: false,
+        },
+        {
+            title: 'Đường dẫn',
+            dataIndex: 'slug',
+            key: 'slug',
             sorter: true,
             showSorterTooltip: false,
         },
@@ -203,38 +229,77 @@ function NewsCategory() {
             {contextHolder}
 
             {/* Modal thêm mới */}
-            <Modal
-                title="Thêm mới danh mục tin tức"
-                open={isAddModalOpen}
-                onOk={addForm.submit}
-                onCancel={closeAddModal}
-            >
-                <Form form={addForm} layout="vertical" onFinish={handleCreateEntity}>
+            <Modal title="Thêm mới loại tin tức" open={isAddModalOpen} onOk={addForm.submit} onCancel={closeAddModal}>
+                <Form
+                    form={addForm}
+                    layout="vertical"
+                    onFinish={handleCreateEntity}
+                    onValuesChange={(changedValues) => {
+                        if (changedValues.name) {
+                            const slug = slugify(changedValues.name, { lower: true, strict: true });
+                            addForm.setFieldsValue({ slug });
+                        }
+                    }}
+                >
                     <Form.Item
-                        label="Tên danh mục tin tức"
+                        label="Tên loại tin tức"
                         name="name"
-                        rules={[{ required: true, message: 'Vui lòng nhập tên danh mục tin tức' }]}
+                        rules={[{ required: true, message: 'Vui lòng nhập tên loại tin tức' }]}
                     >
-                        <Input placeholder="Nhập tên danh mục tin tức" />
+                        <Input autoComplete="off" placeholder="Nhập tên loại tin tức" />
+                    </Form.Item>
+
+                    <Form.Item style={{ textAlign: 'center' }}>
+                        <ArrowDownOutlined style={{ fontSize: 24 }} />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Đường dẫn"
+                        name="slug"
+                        rules={[{ required: true, message: 'Đường dẫn không được để trống' }]}
+                    >
+                        <Input placeholder="Đường dẫn cho loại tin tức" />
                     </Form.Item>
                 </Form>
             </Modal>
 
             {/* Modal chỉnh sửa */}
-            <Modal title="Sửa danh mục tin tức" open={isEditModalOpen} onOk={editForm.submit} onCancel={closeEditModal}>
-                <Form form={editForm} layout="vertical" onFinish={handleUpdateEntity}>
+            <Modal title="Sửa loại tin tức" open={isEditModalOpen} onOk={editForm.submit} onCancel={closeEditModal}>
+                <Form
+                    form={editForm}
+                    layout="vertical"
+                    onFinish={handleUpdateEntity}
+                    onValuesChange={(changedValues) => {
+                        if (changedValues.name) {
+                            const slug = slugify(changedValues.name, { lower: true, strict: true });
+                            editForm.setFieldsValue({ slug });
+                        }
+                    }}
+                >
                     <Form.Item
-                        label="Tên danh mục tin tức"
+                        label="Tên loại tin tức"
                         name="name"
-                        rules={[{ required: true, message: 'Vui lòng nhập tên danh mục tin tức' }]}
+                        rules={[{ required: true, message: 'Vui lòng nhập tên loại tin tức' }]}
                     >
-                        <Input placeholder="Nhập tên danh mục tin tức" />
+                        <Input autoComplete="off" placeholder="Nhập tên loại tin tức" />
+                    </Form.Item>
+
+                    <Form.Item style={{ textAlign: 'center' }}>
+                        <ArrowDownOutlined style={{ fontSize: 24 }} />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Đường dẫn"
+                        name="slug"
+                        rules={[{ required: true, message: 'Đường dẫn không được để trống' }]}
+                    >
+                        <Input placeholder="Đường dẫn cho loại tin tức" />
                     </Form.Item>
                 </Form>
             </Modal>
 
             <Flex wrap justify="space-between" align="center">
-                <h2>Danh mục tin tức</h2>
+                <h2>Loại tin tức</h2>
                 <Space>
                     <Space.Compact className="my-2">
                         <Select

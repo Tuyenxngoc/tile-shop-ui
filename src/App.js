@@ -151,7 +151,7 @@ function App() {
                             <Route path="edit/:id" element={<BrandForm />} />
                         </Route>
 
-                        {/* Quản lý danh mục tin tức */}
+                        {/* Quản lý loại tin tức */}
                         <Route path="news-categories">
                             <Route index element={<NewsCategory />} />
                         </Route>

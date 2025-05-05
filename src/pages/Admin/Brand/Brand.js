@@ -6,6 +6,7 @@ import { FaRegTrashAlt } from 'react-icons/fa';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { deleteBrand, getBrands } from '~/services/brandService';
+import { formatDate } from '~/utils';
 
 const options = [
     { value: 'id', label: 'ID' },
@@ -102,6 +103,22 @@ function Brand() {
             showSorterTooltip: false,
         },
         {
+            title: 'Ngày tạo',
+            dataIndex: 'createdDate',
+            key: 'createdDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
+            title: 'Ngày chỉnh sửa',
+            dataIndex: 'lastModifiedDate',
+            key: 'lastModifiedDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
             title: 'Tên thương hiệu',
             dataIndex: 'name',
             key: 'name',
@@ -136,16 +153,19 @@ function Brand() {
             sorter: true,
             showSorterTooltip: false,
             align: 'center',
-            render: (text) => (
-                <Image
-                    src={text}
-                    alt="review"
-                    width={56}
-                    height={56}
-                    preview={{ mask: 'Xem ảnh' }}
-                    className="rounded-2"
-                />
-            ),
+            render: (text) =>
+                text ? (
+                    <Image
+                        src={text}
+                        alt="review"
+                        width={56}
+                        height={56}
+                        preview={{ mask: 'Xem ảnh' }}
+                        className="rounded-2"
+                    />
+                ) : (
+                    <span>Chưa có ảnh</span>
+                ),
         },
         {
             title: 'Thao tác',

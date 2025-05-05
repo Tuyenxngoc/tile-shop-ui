@@ -106,7 +106,7 @@ function Attribute() {
                 messageApi.success(message);
 
                 // Cập nhật lại danh sách sau khi thêm mới
-                setEntityData((prevData) => [...prevData, data]);
+                setEntityData((prevData) => [data, ...prevData]);
                 closeAddModal();
             }
         } catch (error) {

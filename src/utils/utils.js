@@ -1,5 +1,11 @@
+import dayjs from 'dayjs';
+
 export const formatCurrency = (amount) => {
     return new Intl.NumberFormat('vi-VN').format(amount).replace(/\./g, ',') + '₫';
+};
+
+export const formatDate = (date, format = 'DD/MM/YYYY HH:mm') => {
+    return date ? dayjs(date).format(format) : '';
 };
 
 export const getBase64 = (file) =>
