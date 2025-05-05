@@ -76,7 +76,7 @@ const categories = [
 
 function Home() {
     const {
-        storeInfo: { bannerLink, bannerImage, backgroundImage },
+        storeInfo: { bannerLink, bannerImage, backgroundImage, backgroundColor },
     } = useStore();
 
     return (
@@ -85,6 +85,7 @@ function Home() {
                 className={cx('banner')}
                 style={{
                     backgroundImage: `url(${backgroundImage})`,
+                    backgroundColor: '#9cedfe',
                 }}
             >
                 <div className="container pb-3">
@@ -95,7 +96,7 @@ function Home() {
                 </div>
             </div>
 
-            <div className={cx('products')}>
+            <div style={{ backgroundColor: '#9cedfe' }}>
                 <Policy />
 
                 <div className="container pb-3">
