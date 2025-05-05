@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import ImgCrop from 'antd-img-crop';
-import { PlusOutlined } from '@ant-design/icons';
+import { ArrowDownOutlined, ArrowRightOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Image, message, Space, Upload } from 'antd';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import slugify from 'slugify';
 
 import { checkIdIsNumber } from '~/utils/helper';
 import { getBase64, validateFile } from '~/utils';
@@ -19,6 +20,7 @@ const maxImageCount = 1;
 
 const defaultValue = {
     name: '',
+    slug: '',
     description: '',
 };
 
@@ -26,8 +28,9 @@ const validationSchema = yup.object({
     name: yup
         .string()
         .required('Tên thương hiệu là bắt buộc')
-        .min(3, 'Tên thương hiệu phải có ít nhất 3 ký tự')
-        .max(100, 'Tên thương hiệu không được vượt quá 100 ký tự'),
+        .max(255, 'Tên thương hiệu không được vượt quá 255 ký tự'),
+
+    slug: yup.string().required('Đường dẫn là bắt buộc').max(255, 'Đường dẫn không được vượt quá 255 ký tự'),
 
     description: yup.string().max(255, 'Mô tả không được vượt quá 255 ký tự'),
 });
@@ -102,10 +105,6 @@ function BrandForm() {
             if (id) {
                 response = await updateBrand(id, values, image);
             } else {
-                if (!image) {
-                    messageApi.warning('Vui lòng chọn hình ảnh!');
-                    return;
-                }
                 response = await createBrand(values, image);
             }
 
@@ -126,6 +125,14 @@ function BrandForm() {
         enableReinitialize: true,
     });
 
+    useEffect(() => {
+        if (formik.values.name) {
+            const generatedSlug = slugify(formik.values.name, { lower: true, strict: true });
+            formik.setFieldValue('slug', generatedSlug);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formik.values.name]);
+
     //Tải dữ liệu
     useEffect(() => {
         if (!id) return;
@@ -138,22 +145,25 @@ function BrandForm() {
         const fetchEntity = async () => {
             try {
                 const response = await getBrandById(id);
-                const { name, description, logoUrl } = response.data.data;
+                const { name, slug, description, logoUrl } = response.data.data;
 
                 formik.setValues({
                     name,
+                    slug,
                     description,
                 });
 
-                const mappedImages = [
-                    {
-                        uid: '1',
-                        name: 'image-1.jpg',
-                        status: 'done',
-                        url: logoUrl,
-                    },
-                ];
-                setFileList(mappedImages);
+                if (logoUrl) {
+                    const mappedImages = [
+                        {
+                            uid: '1',
+                            name: 'image-1.jpg',
+                            status: 'done',
+                            url: logoUrl,
+                        },
+                    ];
+                    setFileList(mappedImages);
+                }
             } catch (error) {
                 messageApi.error('Lỗi: ' + error.message);
             }
@@ -172,9 +182,7 @@ function BrandForm() {
             <form onSubmit={formik.handleSubmit}>
                 <div className="row g-3">
                     <div className="col-12">
-                        <span>
-                            <span className="text-danger">*</span> Logo thương hiệu:
-                        </span>
+                        <span>Logo thương hiệu:</span>
                         <div className="text-center">
                             <ImgCrop
                                 rotationSlider
@@ -212,16 +220,41 @@ function BrandForm() {
 
                     <TextInput
                         required
+                        maxLength={255}
+                        showCount
                         id="name"
-                        className="col-12"
+                        className="col-12 col-md-5"
                         label="Tên thương hiệu"
                         placeholder="Nhập tên thương hiệu"
-                        helperText="Tên thương hiệu từ 3-100 kí tự"
+                        helperText="Tên thương hiệu tối đa 255 kí tự"
                         autoComplete="off"
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         error={formik.touched.name && formik.errors.name ? formik.errors.name : null}
+                    />
+
+                    {/* Mũi tên ngang: chỉ hiện khi md trở lên */}
+                    <div className="col-12 col-md-2 d-none d-md-flex justify-content-center align-items-center">
+                        <ArrowRightOutlined size={24} />
+                    </div>
+
+                    {/* Mũi tên xuống: chỉ hiện khi nhỏ hơn md */}
+                    <div className="col-12 d-flex d-md-none justify-content-center align-items-center my-2">
+                        <ArrowDownOutlined size={24} />
+                    </div>
+
+                    <TextInput
+                        required
+                        id="slug"
+                        className="col-12 col-md-5"
+                        label="Đường dẫn thương hiệu"
+                        placeholder="Ví dụ: ao-thun-nam-tron"
+                        helperText="Chuỗi không dấu, cách nhau bằng dấu gạch ngang (-), tối đa 255 ký tự."
+                        value={formik.values.slug}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={formik.touched.slug && formik.errors.slug ? formik.errors.slug : null}
                     />
 
                     <TextAreaInput

@@ -133,6 +133,20 @@ function Brand() {
             ),
         },
         {
+            title: 'Đường dẫn',
+            dataIndex: 'slug',
+            key: 'slug',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => (
+                <div style={{ maxWidth: 200 }}>
+                    <Tooltip title={text}>
+                        <span className="text-truncate-2">{text}</span>
+                    </Tooltip>
+                </div>
+            ),
+        },
+        {
             title: 'Mô tả',
             dataIndex: 'description',
             key: 'description',
