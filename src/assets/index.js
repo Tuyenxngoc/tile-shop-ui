@@ -38,6 +38,8 @@ const images = {
 
     success: require('./images/check.png'),
     error: require('./images/close.png'),
+
+    categoryDefault: require('./images/category-default.png'),
 };
 
 export const backgrounds = {};

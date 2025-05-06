@@ -1,83 +1,49 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Carousel from '~/components/Carousel';
+import { Alert, Spin } from 'antd';
 
 import classNames from 'classnames/bind';
 import styles from './Home.module.scss';
 
+import images from '~/assets';
+import useStore from '~/hooks/useStore';
 import SlideProduct from '~/components/SlideProduct';
+import Carousel from '~/components/Carousel';
 import Policy from '~/components/Policy';
 import SlideNew from '~/components/SlideNew';
-import useStore from '~/hooks/useStore';
+import { getCategories } from '~/services/categoryService';
 
 const cx = classNames.bind(styles);
-
-const categories = [
-    {
-        nameSlug: '/combo-thiet-bi-ve-sinh-nha-tam',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/combo-thiet-bi-ve-sinh_w143_h143_n.png',
-        title: 'Combo Thiết Bị Vệ Sinh',
-    },
-    {
-        nameSlug: '/combo-thiet-bi-nha-bep',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/combo-nha-bep_w143_h143_n.png',
-        title: 'Combo Thiết Bị Nhà Bếp',
-    },
-    {
-        nameSlug: '/bon-cau',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/bon-cau_w143_h143_n.png',
-        title: 'Bồn Cầu',
-    },
-    {
-        nameSlug: '/bon-tam',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/bon-tam_w143_h143_n.png',
-        title: 'Bồn Tắm',
-    },
-    {
-        nameSlug: '/sen-tam',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/sen-tam_w143_h143_n.png',
-        title: 'Sen Tắm',
-    },
-    {
-        nameSlug: '/lavabo',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/lavabo_w143_h143_n.png',
-        title: 'Lavabo',
-    },
-    {
-        nameSlug: '/voi-lavabo',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/voi-lavabo_w143_h143_n.png',
-        title: 'Vòi Lavabo',
-    },
-    {
-        nameSlug: '/bep-dien',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/bep-tu_w143_h143_n.png',
-        title: 'Bếp Điện',
-    },
-    {
-        nameSlug: '/hut-mui',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/hut-mui_w143_h143_n.png',
-        title: 'Máy Hút Mùi',
-    },
-    {
-        nameSlug: '/may-rua-bat',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/may-rua-bat_w143_h143_n.png',
-        title: 'Máy Rửa Bát',
-    },
-    {
-        nameSlug: '/lo-nuong',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/lo-nuong_w143_h143_n.png',
-        title: 'Lò Nướng',
-    },
-    {
-        nameSlug: '/voi-rua-bat',
-        img: 'https://shome.vn/Thumb/Web/Resources/Uploaded/18/images/icon-danh-muc/voi-rua-bat_w143_h143_n.png',
-        title: 'Vòi Rửa Bát',
-    },
-];
 
 function Home() {
     const {
         storeInfo: { bannerLink, bannerImage, backgroundImage, backgroundColor },
     } = useStore();
+
+    const [categories, setCategories] = useState(null);
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState(null);
+
+    useEffect(() => {
+        const fetchEntities = async () => {
+            setIsLoading(true);
+            setErrorMessage(null);
+            try {
+                const response = await getCategories({ pageNum: 1, pageSize: 12 });
+                const { items } = response.data.data;
+                setCategories(items);
+            } catch (error) {
+                const errorMessage =
+                    error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+                setErrorMessage(errorMessage);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchEntities();
+    }, []);
 
     return (
         <>
@@ -101,14 +67,28 @@ function Home() {
 
                 <div className="container pb-3">
                     <div className="row g-0">
-                        {categories.map((item, index) => (
-                            <div key={index} className="col-md-2 col-3">
-                                <a href={item.nameSlug} className={cx('popular-item')}>
-                                    <img src={item.img} alt={item.title} className="img-fluid" />
-                                    <p>{item.title}</p>
-                                </a>
+                        {isLoading ? (
+                            <div className="d-flex justify-content-center w-100">
+                                <Spin size="large" />
                             </div>
-                        ))}
+                        ) : errorMessage ? (
+                            <div className="w-100">
+                                <Alert message="Lỗi" description={errorMessage} type="error" />
+                            </div>
+                        ) : (
+                            categories.map((item, index) => (
+                                <div key={index} className="col-md-2 col-3">
+                                    <Link to={item.slug} className={cx('popular-item')}>
+                                        <img
+                                            src={item.imgUrl || images.categoryDefault}
+                                            alt={item.name}
+                                            className="img-fluid"
+                                        />
+                                        <p>{item.name}</p>
+                                    </Link>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
 
