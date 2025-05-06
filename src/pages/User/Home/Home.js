@@ -85,7 +85,7 @@ function Home() {
                 className={cx('banner')}
                 style={{
                     backgroundImage: `url(${backgroundImage})`,
-                    backgroundColor: '#9cedfe',
+                    backgroundColor: backgroundColor,
                 }}
             >
                 <div className="container pb-3">
@@ -96,7 +96,7 @@ function Home() {
                 </div>
             </div>
 
-            <div style={{ backgroundColor: '#9cedfe' }}>
+            <div style={{ backgroundColor: backgroundColor }}>
                 <Policy />
 
                 <div className="container pb-3">

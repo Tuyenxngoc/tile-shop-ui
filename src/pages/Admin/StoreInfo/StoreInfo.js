@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Input, message, Spin } from 'antd';
+import { Alert, Button, ColorPicker, Input, message, Spin } from 'antd';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { handleError } from '~/utils/errorHandler';
 import { getStoreInfo, updateStoreInfo } from '~/services/storeService';
 import useStore from '~/hooks/useStore';
+import { REGEXP_COLOR } from '~/constants';
 
 const { TextArea } = Input;
 
@@ -18,19 +19,44 @@ const defaultValue = {
     facebookUrl: '',
     youtubeUrl: '',
     zaloUrl: '',
+    bannerLink: '',
+    backgroundColor: '',
     logo: null,
     logoSmall: null,
     bannerImage: null,
-    bannerLink: '',
     backgroundImage: null,
 };
 
 const validationSchema = yup.object({
-    name: yup.string().trim().required('Vui lòng nhập cửa hàng.'),
+    name: yup.string().trim().max(255, 'Tối đa 255 ký tự.').required('Vui lòng nhập cửa hàng.'),
 
-    address: yup.string().trim().required('Vui lòng nhập địa chỉ.'),
+    address: yup.string().trim().max(255, 'Tối đa 255 ký tự.').required('Vui lòng nhập địa chỉ.'),
 
-    phone: yup.string().trim().required('Vui lòng nhập số điện thoại.'),
+    phone: yup.string().trim().max(20, 'Tối đa 20 ký tự.').required('Vui lòng nhập số điện thoại.'),
+
+    phoneSupport: yup.string().trim().max(20, 'Tối đa 20 ký tự.').nullable(),
+    email: yup
+        .string()
+        .trim()
+        .max(255, 'Tối đa 255 ký tự.')
+        .email('Email không đúng định dạng.')
+        .required('Vui lòng nhập email.'),
+
+    openingHours: yup.string().trim().max(255, 'Tối đa 255 ký tự.').required('Vui lòng nhập giờ mở cửa.'),
+
+    facebookUrl: yup.string().trim().max(255, 'Tối đa 255 ký tự.').required('Vui lòng nhập Facebook URL.'),
+
+    youtubeUrl: yup.string().trim().max(255, 'Tối đa 255 ký tự.').required('Vui lòng nhập Youtube URL.'),
+
+    zaloUrl: yup.string().trim().max(255, 'Tối đa 255 ký tự.').required('Vui lòng nhập Zalo URL.'),
+
+    bannerLink: yup.string().trim().max(255, 'Tối đa 255 ký tự.').required('Vui lòng nhập link banner.'),
+
+    backgroundColor: yup
+        .string()
+        .trim()
+        .matches(REGEXP_COLOR, 'Mã màu không hợp lệ.')
+        .required('Vui lòng nhập mã màu.'),
 });
 
 function StoreInfo() {
@@ -187,7 +213,7 @@ function StoreInfo() {
 
                 <div className="row mb-3">
                     <div className="col-md-3">
-                        <label htmlFor="email">Email:</label>
+                        <span className="text-danger">*</span> <label htmlFor="email">Email:</label>
                     </div>
                     <div className="col-md-6">
                         <Input
@@ -205,7 +231,7 @@ function StoreInfo() {
 
                 <div className="row mb-3">
                     <div className="col-md-3">
-                        <label htmlFor="openingHours">Giờ mở cửa:</label>
+                        <span className="text-danger">*</span> <label htmlFor="openingHours">Giờ mở cửa:</label>
                     </div>
                     <div className="col-md-6">
                         <Input
@@ -222,7 +248,7 @@ function StoreInfo() {
 
                 <div className="row mb-3">
                     <div className="col-md-3">
-                        <label htmlFor="facebookUrl">Đường dẫn Facebook:</label>
+                        <span className="text-danger">*</span> <label htmlFor="facebookUrl">Đường dẫn Facebook:</label>
                     </div>
                     <div className="col-md-6">
                         <Input
@@ -239,7 +265,7 @@ function StoreInfo() {
 
                 <div className="row mb-3">
                     <div className="col-md-3">
-                        <label htmlFor="youtubeUrl">Đường dẫn Youtubte:</label>
+                        <span className="text-danger">*</span> <label htmlFor="youtubeUrl">Đường dẫn Youtubte:</label>
                     </div>
                     <div className="col-md-6">
                         <Input
@@ -256,7 +282,7 @@ function StoreInfo() {
 
                 <div className="row mb-3">
                     <div className="col-md-3">
-                        <label htmlFor="zaloUrl">Đường dẫn Zalo:</label>
+                        <span className="text-danger">*</span> <label htmlFor="zaloUrl">Đường dẫn Zalo:</label>
                     </div>
                     <div className="col-md-6">
                         <Input
@@ -341,7 +367,7 @@ function StoreInfo() {
 
                 <div className="row mb-3">
                     <div className="col-md-3">
-                        <label htmlFor="bannerLink">Đường dẫn (Banner):</label>
+                        <span className="text-danger">*</span> <label htmlFor="bannerLink">Đường dẫn (Banner):</label>
                     </div>
                     <div className="col-md-6">
                         <Input
@@ -353,6 +379,37 @@ function StoreInfo() {
                             status={formik.touched.bannerLink && formik.errors.bannerLink ? 'error' : undefined}
                         />
                         <div className="text-danger">{formik.touched.bannerLink && formik.errors.bannerLink}</div>
+                    </div>
+                </div>
+
+                <div className="row mb-3">
+                    <div className="col-md-3">
+                        <label htmlFor="backgroundColor">
+                            <span className="text-danger">*</span> Màu nền trang chủ:
+                        </label>
+                    </div>
+                    <div className="col-md-6 d-flex align-items-center gap-2">
+                        <ColorPicker
+                            value={formik.values.backgroundColor}
+                            onChange={(color) => {
+                                formik.setFieldValue('backgroundColor', color.toHexString());
+                            }}
+                        />
+                        <Input
+                            id="backgroundColor"
+                            name="backgroundColor"
+                            value={formik.values.backgroundColor}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            status={
+                                formik.touched.backgroundColor && formik.errors.backgroundColor ? 'error' : undefined
+                            }
+                        />
+                    </div>
+                    <div className="col-md-6 offset-md-3">
+                        <div className="text-danger">
+                            {formik.touched.backgroundColor && formik.errors.backgroundColor}
+                        </div>
                     </div>
                 </div>
 

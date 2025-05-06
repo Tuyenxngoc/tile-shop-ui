@@ -20,6 +20,7 @@ const defaultStore = {
     logoSmall: '',
     bannerImage: '',
     backgroundImage: '',
+    backgroundColor: '',
 };
 
 const StoreProvider = ({ children }) => {
