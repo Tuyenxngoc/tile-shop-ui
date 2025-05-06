@@ -20,7 +20,7 @@ import { getBrands } from '~/services/brandService';
 
 const cx = classNames.bind(styles);
 
-function SlideProduct() {
+function SlideProduct({ className }) {
     const [brands, setBrands] = useState([]);
     const [entityData, setEntityData] = useState(null);
 
@@ -78,56 +78,54 @@ function SlideProduct() {
     }, []);
 
     return (
-        <div className="container pb-3">
-            <div className={cx('wrapper')}>
-                <div className="row mx-0 mb-4">
-                    <div className="col col-md-5 col-8">
-                        <h2 className={cx('title-popup')}>Bồn Cầu</h2>
-                    </div>
-
-                    <div className="col col-md-7 col-4 text-end">
-                        {brands.map((brand, index) => (
-                            <a key={index} href={brand.url} className={cx('btn-brand')}>
-                                <img src={brand.img} alt={brand.name} width={100} className="img-fluid" />
-                            </a>
-                        ))}
-                        <a className={cx('btn-brand', 'btn-read-more')} href="/bon-cau">
-                            <span>Xem tất cả</span>
-                            <FaCaretRight />
-                        </a>
-                    </div>
+        <div className={cx('wrapper', className)}>
+            <div className="row mx-0 mb-4">
+                <div className="col col-md-5 col-8">
+                    <h2 className={cx('title-popup')}>Bồn Cầu</h2>
                 </div>
 
-                <div className="row mx-0">
-                    <div className="col col-12">
-                        {isLoading ? (
-                            <div className="d-flex justify-content-center w-100">
-                                <Spin size="large" />
-                            </div>
-                        ) : errorMessage ? (
-                            <div className="w-100">
-                                <Alert message="Lỗi" description={errorMessage} type="error" />
-                            </div>
-                        ) : (
-                            <Swiper
-                                style={{
-                                    '--swiper-navigation-color': '#333',
-                                    '--swiper-pagination-color': '#333',
-                                }}
-                                modules={[Navigation, Grid]}
-                                navigation
-                                spaceBetween={10}
-                                slidesPerView={5}
-                                grid={{ rows: 2, fill: 'row' }}
-                            >
-                                {entityData.map((product, index) => (
-                                    <SwiperSlide key={index}>
-                                        <Product data={product} onAddToCart={() => handleAddToCart(product.id)} />
-                                    </SwiperSlide>
-                                ))}
-                            </Swiper>
-                        )}
-                    </div>
+                <div className="col col-md-7 col-4 text-end">
+                    {brands.map((brand, index) => (
+                        <a key={index} href={brand.url} className={cx('btn-brand')}>
+                            <img src={brand.img} alt={brand.name} width={100} className="img-fluid" />
+                        </a>
+                    ))}
+                    <a className={cx('btn-brand', 'btn-read-more')} href="/bon-cau">
+                        <span>Xem tất cả</span>
+                        <FaCaretRight />
+                    </a>
+                </div>
+            </div>
+
+            <div className="row mx-0">
+                <div className="col col-12">
+                    {isLoading ? (
+                        <div className="d-flex justify-content-center w-100">
+                            <Spin size="large" />
+                        </div>
+                    ) : errorMessage ? (
+                        <div className="w-100">
+                            <Alert message="Lỗi" description={errorMessage} type="error" />
+                        </div>
+                    ) : (
+                        <Swiper
+                            style={{
+                                '--swiper-navigation-color': '#333',
+                                '--swiper-pagination-color': '#333',
+                            }}
+                            modules={[Navigation, Grid]}
+                            navigation
+                            spaceBetween={10}
+                            slidesPerView={5}
+                            grid={{ rows: 2, fill: 'row' }}
+                        >
+                            {entityData.map((product, index) => (
+                                <SwiperSlide key={index}>
+                                    <Product data={product} onAddToCart={() => handleAddToCart(product.id)} />
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    )}
                 </div>
             </div>
         </div>
