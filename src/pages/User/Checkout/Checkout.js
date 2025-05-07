@@ -111,6 +111,7 @@ function Checkout() {
     const [errorMessage, setErrorMessage] = useState(null);
 
     const [totalPrice, setTotalPrice] = useState(0);
+    // eslint-disable-next-line no-unused-vars
     const [shippingFee, setShippingFee] = useState(0);
 
     const handleSubmit = async (values, { setSubmitting }) => {
