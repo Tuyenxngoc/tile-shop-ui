@@ -520,7 +520,9 @@ function ProductDetail() {
                 Tại sao lại chọn Hùng Hương
             </div>
 
-            <Policy />
+            <div className="row">
+                <Policy />
+            </div>
         </div>
     );
 }

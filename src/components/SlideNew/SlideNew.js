@@ -18,7 +18,7 @@ import styles from './SlideNew.module.scss';
 
 const cx = classNames.bind(styles);
 
-function SlideNew() {
+function SlideNew({ className }) {
     const [entityData, setEntityData] = useState(null);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -45,50 +45,48 @@ function SlideNew() {
     }, []);
 
     return (
-        <div className="container pb-3">
-            <div className={cx('wrapper')}>
-                <div className="row mb-4">
-                    <div className="col col-md-5 col-8">
-                        <h2 className={cx('title-popup')}>Tin tức</h2>
-                    </div>
-
-                    <div className="col col-md-7 col-4 text-end">
-                        <a className={cx('btn-brand', 'btn-read-more')} href="/tin-tuc">
-                            <span>Xem tất cả</span>
-                            <FaCaretRight />
-                        </a>
-                    </div>
+        <div className={cx('wrapper', className)}>
+            <div className="row mb-4">
+                <div className="col col-md-5 col-8">
+                    <h2 className={cx('title-popup')}>Tin tức</h2>
                 </div>
 
-                <div className="row">
-                    <div className="col col-12">
-                        {isLoading ? (
-                            <div className="d-flex justify-content-center w-100">
-                                <Spin size="large" />
-                            </div>
-                        ) : errorMessage ? (
-                            <div className="w-100">
-                                <Alert message="Lỗi" description={errorMessage} type="error" />
-                            </div>
-                        ) : (
-                            <Swiper
-                                style={{
-                                    '--swiper-navigation-color': '#333',
-                                    '--swiper-pagination-color': '#333',
-                                }}
-                                slidesPerView={3}
-                                spaceBetween={10}
-                                navigation
-                                modules={[Navigation]}
-                            >
-                                {entityData.map((news, index) => (
-                                    <SwiperSlide key={index}>
-                                        <New data={news} />
-                                    </SwiperSlide>
-                                ))}
-                            </Swiper>
-                        )}
-                    </div>
+                <div className="col col-md-7 col-4 text-end">
+                    <a className={cx('btn-brand', 'btn-read-more')} href="/tin-tuc">
+                        <span>Xem tất cả</span>
+                        <FaCaretRight />
+                    </a>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col col-12">
+                    {isLoading ? (
+                        <div className="d-flex justify-content-center w-100">
+                            <Spin size="large" />
+                        </div>
+                    ) : errorMessage ? (
+                        <div className="w-100">
+                            <Alert message="Lỗi" description={errorMessage} type="error" />
+                        </div>
+                    ) : (
+                        <Swiper
+                            style={{
+                                '--swiper-navigation-color': '#333',
+                                '--swiper-pagination-color': '#333',
+                            }}
+                            slidesPerView={3}
+                            spaceBetween={10}
+                            navigation
+                            modules={[Navigation]}
+                        >
+                            {entityData.map((news, index) => (
+                                <SwiperSlide key={index}>
+                                    <New data={news} />
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    )}
                 </div>
             </div>
         </div>

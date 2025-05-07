@@ -32,19 +32,19 @@ function Home() {
             </div>
 
             <div style={{ backgroundColor: backgroundColor }}>
-                <Policy />
+                <div className="container">
+                    <Policy className="mb-3" />
 
-                <div className="container pb-3">
-                    <PopularCategories />
+                    <PopularCategories className="mb-3" />
+
+                    <SlideProduct className="mb-3" />
+
+                    <SlideProduct className="mb-3" />
+
+                    <SlideProduct className="mb-3" />
+
+                    <SlideNew />
                 </div>
-
-                <SlideProduct />
-
-                <SlideProduct />
-
-                <SlideProduct />
-
-                <SlideNew />
             </div>
         </>
     );

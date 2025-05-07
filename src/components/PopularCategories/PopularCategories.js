@@ -10,7 +10,7 @@ import { getCategories } from '~/services/categoryService';
 
 const cx = classNames.bind(styles);
 
-function PopularCategories() {
+function PopularCategories({ className }) {
     const [categories, setCategories] = useState(null);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -37,25 +37,31 @@ function PopularCategories() {
     }, []);
 
     return (
-        <div className="row g-0">
-            {isLoading ? (
-                <div className="d-flex justify-content-center w-100">
-                    <Spin size="large" />
-                </div>
-            ) : errorMessage ? (
-                <div className="w-100">
-                    <Alert message="Lỗi" description={errorMessage} type="error" />
-                </div>
-            ) : (
-                categories.map((item, index) => (
-                    <div key={index} className="col-6 col-md-3 col-lg-2">
-                        <Link to={item.slug} className={cx('popular-item')}>
-                            <img src={item.imageUrl || images.categoryDefault} alt={item.name} className="img-fluid" />
-                            <p>{item.name}</p>
-                        </Link>
+        <div className={className}>
+            <div className="row g-0">
+                {isLoading ? (
+                    <div className="d-flex justify-content-center w-100">
+                        <Spin size="large" />
                     </div>
-                ))
-            )}
+                ) : errorMessage ? (
+                    <div className="w-100">
+                        <Alert message="Lỗi" description={errorMessage} type="error" />
+                    </div>
+                ) : (
+                    categories.map((item, index) => (
+                        <div key={index} className="col-6 col-md-3 col-lg-2">
+                            <Link to={item.slug} className={cx('popular-item')}>
+                                <img
+                                    src={item.imageUrl || images.categoryDefault}
+                                    alt={item.name}
+                                    className="img-fluid"
+                                />
+                                <p>{item.name}</p>
+                            </Link>
+                        </div>
+                    ))
+                )}
+            </div>
         </div>
     );
 }
