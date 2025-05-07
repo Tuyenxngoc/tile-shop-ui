@@ -50,7 +50,7 @@ function PopularCategories({ className }) {
                 ) : (
                     categories.map((item, index) => (
                         <div key={index} className="col-6 col-md-3 col-lg-2">
-                            <Link to={item.slug} className={cx('popular-item')}>
+                            <Link to={`/danh-muc/${item.slug}`} className={cx('popular-item')}>
                                 <img
                                     src={item.imageUrl || images.categoryDefault}
                                     alt={item.name}

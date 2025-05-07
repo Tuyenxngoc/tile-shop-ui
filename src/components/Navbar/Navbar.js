@@ -68,7 +68,7 @@ function Navbar() {
                                             <li className={cx('list-group-item', 'list-master-group-item')}>
                                                 <div className={cx('row-menu-category')}>
                                                     <span>
-                                                        <a href={category.id}>{category.name}</a>
+                                                        <Link to={`/danh-muc/${category.slug}`}>{category.name}</Link>
                                                     </span>
                                                     <span className={cx('right')}>
                                                         <img src={images.right} alt="icon" />
@@ -81,7 +81,9 @@ function Navbar() {
                                                     <li key={subCategory.id} className={cx('list-group-item')}>
                                                         <div className={cx('row-menu-category')}>
                                                             <span>
-                                                                <a href={subCategory.id}>{subCategory.name}</a>
+                                                                <Link to={`/danh-muc/${subCategory.slug}`}>
+                                                                    {subCategory.name}
+                                                                </Link>
                                                             </span>
                                                             <span className={cx('right')}>
                                                                 <img src={images.right} alt="icon" />
@@ -97,7 +99,7 @@ function Navbar() {
 
                         {categories.map((category, index) => (
                             <li key={index} className={cx('item')}>
-                                <Link to={`/danh-muc/${category.id}`}>{category.name}</Link>
+                                <Link to={`/danh-muc/${category.slug}`}>{category.name}</Link>
                             </li>
                         ))}
                     </ul>

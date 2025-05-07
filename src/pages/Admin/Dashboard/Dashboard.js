@@ -113,7 +113,7 @@ function Dashboard() {
                         title="Tổng số đơn hàng"
                         amount={36894}
                         percentage={-3.57}
-                        link="/"
+                        link="/admin/orders"
                         linkLabel="Xem tất cả các đơn hàng"
                         iconComponent={BsFillBagFill}
                         iconBg="bg-info-subtle"
@@ -125,7 +125,7 @@ function Dashboard() {
                         title="Số khách hàng"
                         amount={18335}
                         percentage={29.08}
-                        link="/"
+                        link="/admin/users"
                         linkLabel="Xem danh sách khách hàng"
                         iconComponent={BsPersonCircle}
                         iconBg="bg-warning-subtle"
@@ -137,7 +137,7 @@ function Dashboard() {
                         title="Số sản phẩm"
                         amount={165}
                         percentage={0.0}
-                        link="/"
+                        link="/admin/products"
                         linkLabel="Xem danh sách sản phẩm"
                         iconComponent={AiFillProduct}
                         iconBg="bg-primary-subtle"

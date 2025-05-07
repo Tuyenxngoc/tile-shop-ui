@@ -17,7 +17,7 @@ const { Sider } = Layout;
 const menuConfig = [
     {
         label: 'Trang chủ',
-        key: '/admin/home',
+        key: '/admin',
         icon: <AiFillDashboard />,
     },
     {

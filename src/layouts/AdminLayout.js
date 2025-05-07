@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 const { Content } = Layout;
 
 const noWrapperRegexes = [
+    /^\/admin$/, // exact match "/admin"
     /^\/admin\/products\/new$/, // exact match "/admin/products/new"
     /^\/admin\/products\/edit\/[^/]+$/, // matches "/admin/products/edit/:id",
     /^\/admin\/reviews$/, // exact match "/admin/reviews"

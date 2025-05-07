@@ -19,6 +19,7 @@ import { FaRegTrashAlt } from 'react-icons/fa';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { createAttribute, deleteAttribute, updateAttribute, getAttributes } from '~/services/attributeService';
+import { formatDate } from '~/utils';
 
 const options = [
     { value: 'id', label: 'ID' },
@@ -171,6 +172,22 @@ function Attribute() {
             key: 'id',
             sorter: true,
             showSorterTooltip: false,
+        },
+        {
+            title: 'Ngày tạo',
+            dataIndex: 'createdDate',
+            key: 'createdDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
+            title: 'Ngày chỉnh sửa',
+            dataIndex: 'lastModifiedDate',
+            key: 'lastModifiedDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
         },
         {
             title: 'Tên thuộc tính',
