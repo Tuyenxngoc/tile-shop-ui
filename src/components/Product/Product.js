@@ -11,7 +11,7 @@ import styles from './Product.module.scss';
 const cx = classNames.bind(styles);
 
 function Product({ data, onAddToCart }) {
-    const productPath = 'san-pham/' + data.slug;
+    const productPath = '/san-pham/' + data.slug;
 
     return (
         <div className={cx('wrapper')}>
