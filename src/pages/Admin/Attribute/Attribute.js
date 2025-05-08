@@ -13,6 +13,7 @@ import {
     Space,
     Table,
     Tag,
+    Tooltip,
 } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
@@ -219,16 +220,20 @@ function Attribute() {
             fixed: 'right',
             render: (_, record) => (
                 <Space>
-                    <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => showEditModal(record)} />
-                    <Popconfirm
-                        title="Thông báo"
-                        description={'Bạn có chắc muốn xóa thuộc tính này không?'}
-                        onConfirm={() => handleDeleteEntity(record.id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                    >
-                        <Button type="text" danger icon={<FaRegTrashAlt />} />
-                    </Popconfirm>
+                    <Tooltip title="Chỉnh sửa thuộc tính">
+                        <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => showEditModal(record)} />
+                    </Tooltip>
+                    <Tooltip title="Xóa thuộc tính">
+                        <Popconfirm
+                            title="Thông báo"
+                            description={'Bạn có chắc muốn xóa thuộc tính này không?'}
+                            onConfirm={() => handleDeleteEntity(record.id)}
+                            okText="Xóa"
+                            cancelText="Hủy"
+                        >
+                            <Button type="text" danger icon={<FaRegTrashAlt />} />
+                        </Popconfirm>
+                    </Tooltip>
                 </Space>
             ),
         },

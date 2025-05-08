@@ -181,21 +181,49 @@ function Category() {
                 ),
         },
         {
+            title: 'Mô tả',
+            dataIndex: 'description',
+            key: 'description',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => {
+                if (!text) {
+                    return 'Chưa có mô tả';
+                }
+
+                return (
+                    <div style={{ maxWidth: 300 }}>
+                        <Tooltip title={text.length > 100 ? text.slice(0, 100) + '...' : text}>
+                            <span className="text-truncate-2">{text}</span>
+                        </Tooltip>
+                    </div>
+                );
+            },
+        },
+        {
             title: 'Thao tác',
             key: 'action',
             fixed: 'right',
             render: (_, record) => (
                 <Space>
-                    <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
-                    <Popconfirm
-                        title="Thông báo"
-                        description={'Bạn có chắc muốn xóa danh mục này không?'}
-                        onConfirm={() => handleDeleteEntity(record.id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                    >
-                        <Button type="text" danger icon={<FaRegTrashAlt />} />
-                    </Popconfirm>
+                    <Tooltip title="Chỉnh sửa danh mục">
+                        <Button
+                            type="text"
+                            icon={<MdOutlineModeEdit />}
+                            onClick={() => navigate(`edit/${record.id}`)}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Xóa danh mục">
+                        <Popconfirm
+                            title="Thông báo"
+                            description={'Bạn có chắc muốn xóa danh mục này không?'}
+                            onConfirm={() => handleDeleteEntity(record.id)}
+                            okText="Xóa"
+                            cancelText="Hủy"
+                        >
+                            <Button type="text" danger icon={<FaRegTrashAlt />} />
+                        </Popconfirm>
+                    </Tooltip>
                 </Space>
             ),
         },

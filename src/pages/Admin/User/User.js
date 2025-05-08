@@ -192,16 +192,24 @@ function User() {
             fixed: 'right',
             render: (_, record) => (
                 <Space>
-                    <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
-                    <Popconfirm
-                        title="Thông báo"
-                        description={'Bạn có chắc muốn xóa người dùng này không?'}
-                        onConfirm={() => handleDeleteEntity(record.id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                    >
-                        <Button type="text" danger icon={<FaRegTrashAlt />} />
-                    </Popconfirm>
+                    <Tooltip title="Chỉnh sửa người dùng">
+                        <Button
+                            type="text"
+                            icon={<MdOutlineModeEdit />}
+                            onClick={() => navigate(`edit/${record.id}`)}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Xóa người dùng">
+                        <Popconfirm
+                            title="Thông báo"
+                            description={'Bạn có chắc muốn xóa người dùng này không?'}
+                            onConfirm={() => handleDeleteEntity(record.id)}
+                            okText="Xóa"
+                            cancelText="Hủy"
+                        >
+                            <Button type="text" danger icon={<FaRegTrashAlt />} />
+                        </Popconfirm>
+                    </Tooltip>
                 </Space>
             ),
         },

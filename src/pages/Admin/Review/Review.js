@@ -298,15 +298,17 @@ function Review() {
                             </Button>
                         </>
                     )}
-                    <Popconfirm
-                        title="Thông báo"
-                        description={'Bạn có chắc muốn xóa đánh giá này không?'}
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                    >
-                        <Button type="text" danger icon={<FaRegTrashAlt />} />
-                    </Popconfirm>
+                    <Tooltip title="Xóa đánh giá">
+                        <Popconfirm
+                            title="Thông báo"
+                            description={'Bạn có chắc muốn xóa đánh giá này không?'}
+                            onConfirm={() => handleDelete(record.id)}
+                            okText="Xóa"
+                            cancelText="Hủy"
+                        >
+                            <Button type="text" danger icon={<FaRegTrashAlt />} />
+                        </Popconfirm>{' '}
+                    </Tooltip>
                 </Space>
             ),
         },

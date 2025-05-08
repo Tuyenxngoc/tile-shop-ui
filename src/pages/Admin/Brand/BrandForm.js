@@ -12,7 +12,7 @@ import slugify from 'slugify';
 import { checkIdIsNumber } from '~/utils/helper';
 import { getBase64, validateFile } from '~/utils';
 import { handleError } from '~/utils/errorHandler';
-import { TextInput, TextAreaInput } from '~/components/FormInput';
+import { TextInput, RichTextInput } from '~/components/FormInput';
 import { createBrand, getBrandById, updateBrand } from '~/services/brandService';
 
 const entityListPage = '/admin/brands';
@@ -32,8 +32,6 @@ const validationSchema = yup.object({
         .max(255, 'Tên thương hiệu không được vượt quá 255 ký tự'),
 
     slug: yup.string().trim().required('Đường dẫn là bắt buộc').max(255, 'Đường dẫn không được vượt quá 255 ký tự'),
-
-    description: yup.string().trim().max(255, 'Mô tả không được vượt quá 255 ký tự'),
 });
 
 const uploadButton = (
@@ -236,12 +234,12 @@ function BrandForm() {
                     />
 
                     {/* Mũi tên ngang: chỉ hiện khi md trở lên */}
-                    <div className="col-12 col-md-2 d-none d-md-flex justify-content-center align-items-center">
+                    <div className="col-12 col-md-2 d-none d-md-flex justify-description-center align-items-center">
                         <ArrowRightOutlined size={24} />
                     </div>
 
                     {/* Mũi tên xuống: chỉ hiện khi nhỏ hơn md */}
-                    <div className="col-12 d-flex d-md-none justify-content-center align-items-center my-2">
+                    <div className="col-12 d-flex d-md-none justify-description-center align-items-center my-2">
                         <ArrowDownOutlined size={24} />
                     </div>
 
@@ -258,15 +256,15 @@ function BrandForm() {
                         error={formik.touched.slug && formik.errors.slug ? formik.errors.slug : null}
                     />
 
-                    <TextAreaInput
+                    <RichTextInput
                         id="description"
+                        required
                         className="col-12"
                         label="Mô tả"
-                        placeholder="Nhập mô tả"
-                        helperText="Mô tả tối đa 255 kí tự"
+                        placeholder="Nhập mô tả thương hiệu"
                         value={formik.values.description}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
+                        onChange={(value) => formik.setFieldValue('description', value)}
+                        onBlur={() => formik.setFieldTouched('description', true)}
                         error={
                             formik.touched.description && formik.errors.description ? formik.errors.description : null
                         }

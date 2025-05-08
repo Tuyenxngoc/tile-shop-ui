@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button, Flex, Image, Input, message, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
-import { FaRegTrashAlt } from 'react-icons/fa';
+import { FaEye, FaRegTrashAlt } from 'react-icons/fa';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { deleteNews, getNews } from '~/services/newsService';
+import { formatDate } from '~/utils';
 
 const options = [
     { value: 'id', label: 'ID' },
@@ -103,13 +104,43 @@ function News() {
             showSorterTooltip: false,
         },
         {
+            title: 'Ngày tạo',
+            dataIndex: 'createdDate',
+            key: 'createdDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
+            title: 'Ngày chỉnh sửa',
+            dataIndex: 'lastModifiedDate',
+            key: 'lastModifiedDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
             title: 'Tiêu đề',
             dataIndex: 'title',
             key: 'title',
             sorter: true,
             showSorterTooltip: false,
             render: (text) => (
-                <div style={{ maxWidth: 300 }}>
+                <div style={{ maxWidth: 200 }}>
+                    <Tooltip title={text}>
+                        <span className="text-truncate-2">{text}</span>
+                    </Tooltip>
+                </div>
+            ),
+        },
+        {
+            title: 'Đường dẫn',
+            dataIndex: 'slug',
+            key: 'slug',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => (
+                <div style={{ maxWidth: 200 }}>
                     <Tooltip title={text}>
                         <span className="text-truncate-2">{text}</span>
                     </Tooltip>
@@ -158,16 +189,27 @@ function News() {
             fixed: 'right',
             render: (_, record) => (
                 <Space>
-                    <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
-                    <Popconfirm
-                        title="Thông báo"
-                        description={'Bạn có chắc muốn xóa tin tức này không?'}
-                        onConfirm={() => handleDeleteEntity(record.id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                    >
-                        <Button type="text" danger icon={<FaRegTrashAlt />} />
-                    </Popconfirm>
+                    <Tooltip title="Xem chi tiết">
+                        <Button type="text" icon={<FaEye />} href={`/tin-tuc/${record.slug}`} target="_blank" />
+                    </Tooltip>
+                    <Tooltip title="Chỉnh sửa tin tức">
+                        <Button
+                            type="text"
+                            icon={<MdOutlineModeEdit />}
+                            onClick={() => navigate(`edit/${record.id}`)}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Xóa tin tức">
+                        <Popconfirm
+                            title="Thông báo"
+                            description={'Bạn có chắc muốn xóa tin tức này không?'}
+                            onConfirm={() => handleDeleteEntity(record.id)}
+                            okText="Xóa"
+                            cancelText="Hủy"
+                        >
+                            <Button type="text" danger icon={<FaRegTrashAlt />} />
+                        </Popconfirm>
+                    </Tooltip>
                 </Space>
             ),
         },

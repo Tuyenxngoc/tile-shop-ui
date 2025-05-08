@@ -152,13 +152,19 @@ function Brand() {
             key: 'description',
             sorter: true,
             showSorterTooltip: false,
-            render: (text) => (
-                <div style={{ maxWidth: 300 }}>
-                    <Tooltip title={text}>
-                        <span className="text-truncate-2">{text}</span>
-                    </Tooltip>
-                </div>
-            ),
+            render: (text) => {
+                if (!text) {
+                    return 'Chưa có mô tả';
+                }
+
+                return (
+                    <div style={{ maxWidth: 300 }}>
+                        <Tooltip title={text.length > 100 ? text.slice(0, 100) + '...' : text}>
+                            <span className="text-truncate-2">{text}</span>
+                        </Tooltip>
+                    </div>
+                );
+            },
         },
         {
             title: 'Ảnh bìa',
@@ -187,16 +193,24 @@ function Brand() {
             fixed: 'right',
             render: (_, record) => (
                 <Space>
-                    <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => navigate(`edit/${record.id}`)} />
-                    <Popconfirm
-                        title="Thông báo"
-                        description={'Bạn có chắc muốn xóa thương hiệu này không?'}
-                        onConfirm={() => handleDeleteEntity(record.id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                    >
-                        <Button type="text" danger icon={<FaRegTrashAlt />} />
-                    </Popconfirm>
+                    <Tooltip title="Chỉnh sửa thương hiệu">
+                        <Button
+                            type="text"
+                            icon={<MdOutlineModeEdit />}
+                            onClick={() => navigate(`edit/${record.id}`)}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Xóa thương hiệu">
+                        <Popconfirm
+                            title="Thông báo"
+                            description={'Bạn có chắc muốn xóa thương hiệu này không?'}
+                            onConfirm={() => handleDeleteEntity(record.id)}
+                            okText="Xóa"
+                            cancelText="Hủy"
+                        >
+                            <Button type="text" danger icon={<FaRegTrashAlt />} />
+                        </Popconfirm>
+                    </Tooltip>
                 </Space>
             ),
         },

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Flex, Form, Input, message, Modal, Popconfirm, Select, Space, Table } from 'antd';
+import { Alert, Button, Flex, Form, Input, message, Modal, Popconfirm, Select, Space, Table, Tooltip } from 'antd';
 import { ArrowDownOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
@@ -205,16 +205,20 @@ function NewsCategory() {
             fixed: 'right',
             render: (_, record) => (
                 <Space>
-                    <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => showEditModal(record)} />
-                    <Popconfirm
-                        title="Thông báo"
-                        description={'Bạn có chắc muốn xóa danh mục này không?'}
-                        onConfirm={() => handleDeleteEntity(record.id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                    >
-                        <Button type="text" danger icon={<FaRegTrashAlt />} />
-                    </Popconfirm>
+                    <Tooltip title="Chỉnh sửa danh mục">
+                        <Button type="text" icon={<MdOutlineModeEdit />} onClick={() => showEditModal(record)} />
+                    </Tooltip>
+                    <Tooltip title="Xóa danh mục">
+                        <Popconfirm
+                            title="Thông báo"
+                            description={'Bạn có chắc muốn xóa danh mục này không?'}
+                            onConfirm={() => handleDeleteEntity(record.id)}
+                            okText="Xóa"
+                            cancelText="Hủy"
+                        >
+                            <Button type="text" danger icon={<FaRegTrashAlt />} />
+                        </Popconfirm>
+                    </Tooltip>
                 </Space>
             ),
         },

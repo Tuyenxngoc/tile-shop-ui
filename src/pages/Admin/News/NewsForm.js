@@ -264,6 +264,8 @@ function NewsForm() {
                     </div>
 
                     <TextInput
+                        maxLength={255}
+                        showCount
                         required
                         id="title"
                         className="col-12 col-md-5"
@@ -300,6 +302,8 @@ function NewsForm() {
                     />
 
                     <TextAreaInput
+                        maxLength={500}
+                        showCount
                         required
                         id="description"
                         className="col-12"
