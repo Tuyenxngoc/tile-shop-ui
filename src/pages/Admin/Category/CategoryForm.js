@@ -16,7 +16,7 @@ import { getAttributes } from '~/services/attributeService';
 import { createCategory, getCategories, getCategoryById, updateCategory } from '~/services/categoryService';
 import useDebounce from '~/hooks/useDebounce';
 import TableTransfer from '~/components/TableTransfer';
-import { SelectInput, TextInput } from '~/components/FormInput';
+import { RichTextInput, SelectInput, TextInput } from '~/components/FormInput';
 
 const entityListPage = '/admin/categories';
 const maxImageCount = 1;
@@ -24,6 +24,7 @@ const maxImageCount = 1;
 const defaultValue = {
     name: '',
     slug: '',
+    description: '',
     parentId: null,
     attributeIds: [],
 };
@@ -35,7 +36,7 @@ const validationSchema = yup.object({
         .required('Tên danh mục là bắt buộc')
         .max(255, 'Tên danh mục không được vượt quá 255 ký tự'),
 
-    slug: yup.string().trim().required('Slug là bắt buộc').max(255, 'Slug không được vượt quá 255 ký tự'),
+    slug: yup.string().trim().required('Đường dẫn là bắt buộc').max(255, 'Đường dẫn không được vượt quá 255 ký tự'),
 
     parentId: yup.number().nullable(),
 
@@ -222,9 +223,9 @@ function CategoryForm() {
         const fetchEntity = async () => {
             try {
                 const response = await getCategoryById(id);
-                const { name, slug, imageUrl, parent, attributeIds } = response.data.data;
+                const { name, slug, description, imageUrl, parent, attributeIds } = response.data.data;
                 const parentId = parent?.id;
-                formik.setValues({ name, slug, parentId, attributeIds });
+                formik.setValues({ name, slug, description, parentId, attributeIds });
 
                 if (imageUrl) {
                     const mappedImages = [
@@ -342,6 +343,19 @@ function CategoryForm() {
                         onBlur={() => formik.setFieldTouched('parentId', true)}
                         options={categoryList}
                         error={formik.touched.parentId && formik.errors.parentId ? formik.errors.parentId : null}
+                    />
+
+                    <RichTextInput
+                        id="description"
+                        className="col-12"
+                        label="Mô tả danh mục"
+                        placeholder="Nhập mô tả danh mục"
+                        value={formik.values.description}
+                        onChange={(value) => formik.setFieldValue('description', value)}
+                        onBlur={() => formik.setFieldTouched('description', true)}
+                        error={
+                            formik.touched.description && formik.errors.description ? formik.errors.description : null
+                        }
                     />
 
                     <div className="col-12">
