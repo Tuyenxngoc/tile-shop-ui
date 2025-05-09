@@ -197,10 +197,10 @@ function Checkout() {
     }, [checkoutItems]);
 
     return (
-        <div className="container mt-5 mb-5">
+        <div className="container">
             <form onSubmit={formik.handleSubmit}>
                 <div className="row">
-                    <div className="col-md-4 order-md-2 mb-4">
+                    <div className="col-md-4 order-md-2 py-5">
                         <h4 className="mb-3">Giỏ hàng của bạn</h4>
                         {isLoading ? (
                             <div className="d-flex justify-content-center w-100">
@@ -246,7 +246,7 @@ function Checkout() {
                         )}
                     </div>
 
-                    <div className="col-md-8 order-md-1 mb-4 border-end">
+                    <div className="col-md-8 order-md-1 py-5 border-end bg-white">
                         <div className="row g-3">
                             <div className="col-12">
                                 <h4 className="mb-3">Thông tin khách hàng</h4>
