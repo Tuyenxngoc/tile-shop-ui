@@ -235,9 +235,8 @@ function Order() {
         },
         {
             title: 'Tên khách hàng',
-            dataIndex: 'user',
-            key: 'user',
-            render: (user) => user.fullName || user.username,
+            dataIndex: 'recipientName',
+            key: 'recipientName',
         },
         {
             title: 'Phương thức',
@@ -318,13 +317,16 @@ function Order() {
     return (
         <div>
             {contextHolder}
+
             <Flex wrap justify="space-between" align="center">
                 <h2>Quản lý đơn hàng</h2>
                 <Button type="primary" onClick={handleExportReport}>
                     Xuất báo cáo
                 </Button>
             </Flex>
+
             <Tabs activeKey={filters.status || 'ALL'} onChange={filterOrdersByStatus} items={orderStatusOptions} />
+
             <Row gutter={[16, 16]} className="mb-3">
                 <Col xs={24} md={12}>
                     <Space.Compact className="my-2 w-100">

@@ -120,9 +120,6 @@ function OrdersDetail() {
                 <Descriptions column={1} bordered>
                     <Descriptions.Item label="Ngày tạo">{formatDate(order.createdDate)}</Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">{orderStatusTags[order.status]}</Descriptions.Item>
-                    <Descriptions.Item label="Người đặt">
-                        {order.user?.fullName || order.user?.username}
-                    </Descriptions.Item>
 
                     <Descriptions.Item label="Người nhận">{order.recipientName}</Descriptions.Item>
                     <Descriptions.Item label="Giới tính">{genderTags[order.recipientGender]}</Descriptions.Item>
@@ -132,7 +129,9 @@ function OrdersDetail() {
                     <Descriptions.Item label="Phương thức giao hàng">
                         {deliveryMethodLabelMap[order.deliveryMethod]}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Địa chỉ giao">{order.shippingAddress}</Descriptions.Item>
+                    {order.deliveryMethod === 'HOME_DELIVERY' && (
+                        <Descriptions.Item label="Địa chỉ giao">{order.shippingAddress}</Descriptions.Item>
+                    )}
 
                     <Descriptions.Item label="Phương thức thanh toán">
                         {paymentMethodLabelMap[order.paymentMethod]}
@@ -142,9 +141,6 @@ function OrdersDetail() {
                         <Descriptions.Item label="Thời gian thanh toán">
                             {formatDate(order.paymentTime)}
                         </Descriptions.Item>
-                    )}
-                    {order.transactionId && (
-                        <Descriptions.Item label="Mã giao dịch">{order.transactionId}</Descriptions.Item>
                     )}
 
                     <Descriptions.Item label="Ghi chú">{order.note}</Descriptions.Item>
@@ -159,7 +155,7 @@ function OrdersDetail() {
             </Card>
 
             <Card title="Danh sách sản phẩm">
-                <Table dataSource={order.orderItems} columns={columns} rowKey="id" pagination={false} />
+                <Table rowKey="id" dataSource={order.orderItems} columns={columns} pagination={false} />
             </Card>
         </>
     );

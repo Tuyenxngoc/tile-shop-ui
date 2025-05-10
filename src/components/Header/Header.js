@@ -8,11 +8,11 @@ import {
     FaPhoneAlt,
     FaBullhorn,
     FaSearch,
-    FaShoppingBasket,
-    FaRegUserCircle,
     FaUser,
     FaMapMarkerAlt,
     FaRegEdit,
+    FaShoppingBag,
+    FaUserCircle,
 } from 'react-icons/fa';
 import { FaRegFlag } from 'react-icons/fa6';
 import { IoIosLogOut } from 'react-icons/io';
@@ -217,7 +217,7 @@ function Header() {
                             <div className={cx('box')}>
                                 <div className={cx('btn-link')} onClick={handleCartClick}>
                                     <i className={cx('icon')}>
-                                        <FaShoppingBasket />
+                                        <FaShoppingBag />
                                     </i>
                                     <span>Giỏ hàng</span>
                                 </div>
@@ -231,7 +231,7 @@ function Header() {
                                     >
                                         <div className={cx('btn-link')} style={{ cursor: 'pointer' }}>
                                             <i className={cx('icon')}>
-                                                <FaRegUserCircle />
+                                                <FaUserCircle />
                                             </i>
                                             <span>{user.username}</span>
                                         </div>
@@ -239,7 +239,7 @@ function Header() {
                                 ) : (
                                     <Link to="/dang-nhap" className={cx('btn-link')}>
                                         <i className={cx('icon')}>
-                                            <FaRegUserCircle />
+                                            <FaUserCircle />
                                         </i>
                                         <span>Đăng nhập</span>
                                     </Link>
