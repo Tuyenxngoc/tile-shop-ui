@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Alert, Input, Table, Tabs, Tooltip } from 'antd';
+import { Alert, Empty, Input, Spin, Tabs } from 'antd';
 
-import { formatCurrency } from '~/utils';
 import useDebounce from '~/hooks/useDebounce';
 
 import { getAllOrdersForUser } from '~/services/ordersService';
 import { orderStatusOptions } from '~/constants';
+import OrderItem from '~/components/OrderItem';
 
 function Orders() {
     const [filters, setFilters] = useState({ status: null, keyword: '' });
@@ -52,65 +52,6 @@ function Orders() {
         fetchEntities();
     }, [filters]);
 
-    const columns = [
-        {
-            title: 'ID',
-            dataIndex: 'id',
-            key: 'id',
-        },
-        {
-            title: 'Tổng tiền (VNĐ)',
-            dataIndex: 'totalAmount',
-            key: 'totalAmount',
-            render: (amount) => formatCurrency(amount),
-        },
-        {
-            title: 'Trạng thái đơn hàng',
-            dataIndex: 'status',
-            key: 'status',
-        },
-        {
-            title: 'Phương thức giao hàng',
-            dataIndex: 'deliveryMethod',
-            key: 'deliveryMethod',
-        },
-        {
-            title: 'Địa chỉ giao hàng',
-            dataIndex: 'shippingAddress',
-            key: 'shippingAddress',
-            render: (text) => (
-                <div style={{ maxWidth: 250 }}>
-                    <Tooltip title={text}>
-                        <span className="text-truncate-2">{text}</span>
-                    </Tooltip>
-                </div>
-            ),
-        },
-        {
-            title: 'Phương thức thanh toán',
-            dataIndex: 'paymentMethod',
-            key: 'paymentMethod',
-        },
-        {
-            title: 'Ghi chú',
-            dataIndex: 'note',
-            key: 'note',
-            render: (text) => text || '—',
-        },
-        {
-            title: 'Trạng thái thanh toán',
-            dataIndex: 'paymentStatus',
-            key: 'paymentStatus',
-            render: (status) => status || '—',
-        },
-        {
-            title: 'Thời gian thanh toán',
-            dataIndex: 'paymentTime',
-            key: 'paymentTime',
-            render: (time) => (time ? new Date(time).toLocaleString('vi-VN') : '—'),
-        },
-    ];
-
     if (errorMessage) {
         return <Alert message="Lỗi" description={errorMessage} type="error" />;
     }
@@ -129,15 +70,15 @@ function Orders() {
                 className="mb-3"
             />
 
-            <Table
-                bordered
-                rowKey="id"
-                scroll={{ x: 'max-content' }}
-                dataSource={entityData}
-                columns={columns}
-                loading={isLoading}
-                pagination={false}
-            />
+            {isLoading ? (
+                <div className="d-flex justify-content-center w-100">
+                    <Spin size="large" />
+                </div>
+            ) : entityData.length === 0 ? (
+                <Empty description="Không có đơn hàng nào" />
+            ) : (
+                entityData.map((order) => <OrderItem key={order.id} data={order} />)
+            )}
         </div>
     );
 }
