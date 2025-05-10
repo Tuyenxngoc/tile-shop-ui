@@ -18,3 +18,13 @@ export const orderStatusTags = {
     RETURNED: <Tag color="volcano">Trả hàng</Tag>,
     CANCELLED: <Tag color="red">Đã hủy</Tag>,
 };
+
+export const deliveryMethodLabelMap = {
+    HOME_DELIVERY: 'Giao hàng tận nơi',
+    STORE_PICKUP: 'Nhận tại cửa hàng',
+};
+
+export const paymentMethodLabelMap = {
+    COD: 'Thanh toán khi nhận hàng (COD)',
+    VNPAY: 'Thanh toán qua VNPAY',
+};

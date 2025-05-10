@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, Flex, Input, message, Popconfirm, Select, Space, Switch, Table, Tag, Tooltip } from 'antd';
+import { Alert, Button, Flex, Input, message, Popconfirm, Select, Space, Switch, Table, Tooltip } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { FaRegTrashAlt } from 'react-icons/fa';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
+import { genderTags } from '~/constants/gender';
 import { deleteUser, getUsers, toggleUserActive } from '~/services/userService';
 
 const options = [
@@ -13,12 +14,6 @@ const options = [
     { value: 'fullName', label: 'Họ tên' },
     { value: 'phoneNumber', label: 'Số điện thoại' },
 ];
-
-const genderTagMap = {
-    MALE: <Tag color="blue">Nam</Tag>,
-    FEMALE: <Tag color="pink">Nữ</Tag>,
-    OTHER: <Tag color="gray">Khác</Tag>,
-};
 
 function User() {
     const navigate = useNavigate();
@@ -166,7 +161,7 @@ function User() {
             key: 'gender',
             sorter: true,
             showSorterTooltip: false,
-            render: (gender) => genderTagMap[gender] || null,
+            render: (gender) => genderTags[gender] || null,
         },
         {
             title: 'Vai trò',

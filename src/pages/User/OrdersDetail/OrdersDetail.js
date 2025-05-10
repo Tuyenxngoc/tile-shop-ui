@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { LeftOutlined } from '@ant-design/icons';
-import { Alert, Button, Card, Descriptions, Image, Spin, Table } from 'antd';
+import { Alert, Button, Card, Descriptions, Image, Spin, Table, Tooltip } from 'antd';
 
 import { getOrderById } from '~/services/ordersService';
 import { formatCurrency, formatDate } from '~/utils';
 import { checkIdIsNumber } from '~/utils/helper';
-import { orderStatusTags } from '~/constants/order';
+import { genderTags } from '~/constants/gender';
+import { deliveryMethodLabelMap, orderStatusTags, paymentMethodLabelMap } from '~/constants/order';
 
 function OrdersDetail() {
     const { id } = useParams();
@@ -77,8 +78,17 @@ function OrdersDetail() {
         },
         {
             title: 'Tên sản phẩm',
-            dataIndex: ['product', 'name'],
-            key: 'name',
+            dataIndex: 'product',
+            key: 'product',
+            render: (product) => (
+                <div style={{ maxWidth: 300 }}>
+                    <Tooltip title={product.name}>
+                        <Link to={`/san-pham/${product.slug}`} className="text-truncate-2">
+                            {product.name}
+                        </Link>
+                    </Tooltip>
+                </div>
+            ),
         },
         {
             title: 'Số lượng',
@@ -89,7 +99,7 @@ function OrdersDetail() {
             title: 'Giá',
             dataIndex: 'priceAtTimeOfOrder',
             key: 'price',
-            render: (text) => `${text.toLocaleString()} đ`,
+            render: (text) => formatCurrency(text),
         },
         {
             title: 'Thành tiền',
@@ -110,10 +120,38 @@ function OrdersDetail() {
                 <Descriptions column={1} bordered>
                     <Descriptions.Item label="Ngày tạo">{formatDate(order.createdDate)}</Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">{orderStatusTags[order.status]}</Descriptions.Item>
-                    <Descriptions.Item label="Phương thức giao hàng">{order.deliveryMethod}</Descriptions.Item>
+                    <Descriptions.Item label="Người đặt">
+                        {order.user?.fullName || order.user?.username}
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="Người nhận">{order.recipientName}</Descriptions.Item>
+                    <Descriptions.Item label="Giới tính">{genderTags[order.recipientGender]}</Descriptions.Item>
+                    <Descriptions.Item label="Số điện thoại">{order.recipientPhone}</Descriptions.Item>
+                    <Descriptions.Item label="Email">{order.recipientEmail}</Descriptions.Item>
+
+                    <Descriptions.Item label="Phương thức giao hàng">
+                        {deliveryMethodLabelMap[order.deliveryMethod]}
+                    </Descriptions.Item>
                     <Descriptions.Item label="Địa chỉ giao">{order.shippingAddress}</Descriptions.Item>
-                    <Descriptions.Item label="Phương thức thanh toán">{order.paymentMethod}</Descriptions.Item>
+
+                    <Descriptions.Item label="Phương thức thanh toán">
+                        {paymentMethodLabelMap[order.paymentMethod]}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Trạng thái thanh toán">{order.paymentStatus}</Descriptions.Item>
+                    {order.paymentTime && (
+                        <Descriptions.Item label="Thời gian thanh toán">
+                            {formatDate(order.paymentTime)}
+                        </Descriptions.Item>
+                    )}
+                    {order.transactionId && (
+                        <Descriptions.Item label="Mã giao dịch">{order.transactionId}</Descriptions.Item>
+                    )}
+
                     <Descriptions.Item label="Ghi chú">{order.note}</Descriptions.Item>
+                    {order.status === 'CANCELED' && (
+                        <Descriptions.Item label="Lý do hủy">{order.cancelReason}</Descriptions.Item>
+                    )}
+
                     <Descriptions.Item label="Tổng tiền">
                         <strong>{formatCurrency(order.totalAmount)}</strong>
                     </Descriptions.Item>
