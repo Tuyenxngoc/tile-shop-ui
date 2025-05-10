@@ -15,7 +15,6 @@ import {
     Space,
     Table,
     Tabs,
-    Tag,
     Tooltip,
     Typography,
 } from 'antd';
@@ -25,6 +24,7 @@ import dayjs from 'dayjs';
 
 import { formatCurrency } from '~/utils';
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
+import { orderStatusTags } from '~/constants/order';
 import { getOrderCountByStatus, getOrders, updateOrderStatus } from '~/services/ordersService';
 
 const { RangePicker } = DatePicker;
@@ -41,15 +41,6 @@ const paymentOptions = [
     { value: 'MOMO', label: 'Thanh toán qua MOMO' },
     { value: 'ZALOPAY', label: 'Thanh toán qua ZALOPAY' },
 ];
-
-export const orderStatusTags = {
-    PENDING: <Tag color="gold">Chờ xác nhận</Tag>,
-    CONFIRMED: <Tag color="blue">Đã xác nhận</Tag>,
-    DELIVERING: <Tag color="geekblue">Đang giao</Tag>,
-    DELIVERED: <Tag color="green">Đã giao</Tag>,
-    RETURNED: <Tag color="volcano">Trả hàng</Tag>,
-    CANCELLED: <Tag color="red">Đã hủy</Tag>,
-};
 
 const allowedTransitions = {
     PENDING: ['CONFIRMED', 'CANCELLED'],

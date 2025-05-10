@@ -22,6 +22,7 @@ import Checkout from './pages/User/Checkout';
 import PaymentReturn from './pages/User/PaymentReturn';
 import UserProfile from './pages/User/UserProfile';
 import Orders from './pages/User/Orders';
+import OrdersDetail from './pages/User/OrdersDetail';
 import ChangePassword from './pages/User/ChangePassword';
 import NewsDetail from './pages/User/NewsDetail';
 import NewsList from './pages/User/NewsList';
@@ -88,7 +89,12 @@ function App() {
 
                         <Route path="ho-so" element={<ProfileLayout />}>
                             <Route index element={<UserProfile />} />
-                            <Route path="don-hang" element={<Orders />} />
+
+                            <Route path="don-hang">
+                                <Route index element={<Orders />} />
+                                <Route path=":id" element={<OrdersDetail />} />
+                            </Route>
+
                             <Route path="doi-mat-khau" element={<ChangePassword />} />
                         </Route>
                     </Route>
