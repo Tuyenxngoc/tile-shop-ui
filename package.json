@@ -13,6 +13,7 @@
         "bootstrap": "^5.3.3",
         "classnames": "^2.5.1",
         "dayjs": "^1.11.13",
+        "file-saver": "^2.0.5",
         "formik": "^2.4.6",
         "normalize.css": "^8.0.1",
         "prop-types": "^15.8.1",

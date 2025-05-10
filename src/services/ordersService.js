@@ -14,6 +14,13 @@ export const getOrderCountByStatus = () => {
     return axiosPrivate.get(`admin/orders/count-by-status`);
 };
 
+export const exportOrderReport = (filter) => {
+    return axiosPrivate.get('admin/orders/export-report', {
+        params: filter,
+        responseType: 'arraybuffer',
+    });
+};
+
 // ---------- USER ----------
 
 export const getAllOrdersForUser = (params) => {

@@ -21,11 +21,12 @@ import {
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { DownOutlined, SearchOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { saveAs } from 'file-saver';
 
 import { formatCurrency } from '~/utils';
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { orderStatusTags } from '~/constants/order';
-import { getOrderCountByStatus, getOrders, updateOrderStatus } from '~/services/ordersService';
+import { exportOrderReport, getOrderCountByStatus, getOrders, updateOrderStatus } from '~/services/ordersService';
 
 const { RangePicker } = DatePicker;
 
@@ -157,6 +158,29 @@ function Order() {
             }
         } catch (error) {
             messageApi.error('Lỗi: ' + error.message);
+        }
+    };
+
+    const handleExportReport = async () => {
+        try {
+            const response = await exportOrderReport(filters);
+            if (response.status === 200) {
+                const blob = new Blob([response.data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                });
+
+                const contentDisposition = response.headers['content-disposition'];
+                let fileName = 'Order.xlsx';
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+                    if (fileNameMatch && fileNameMatch.length > 1) {
+                        fileName = fileNameMatch[1];
+                    }
+                }
+                saveAs(blob, fileName);
+            }
+        } catch (error) {
+            console.error('Lỗi khi xuất báo cáo:', error);
         }
     };
 
@@ -296,7 +320,7 @@ function Order() {
             {contextHolder}
             <Flex wrap justify="space-between" align="center">
                 <h2>Quản lý đơn hàng</h2>
-                <Button type="primary" onClick={() => navigate('new')}>
+                <Button type="primary" onClick={handleExportReport}>
                     Xuất báo cáo
                 </Button>
             </Flex>
@@ -408,7 +432,7 @@ function Order() {
                 </Col>
             </Row>
 
-            <div class="fw-bold fs-5">{orderCounts.ALL || 0} Đơn hàng</div>
+            <div className="fw-bold fs-5">{orderCounts.ALL || 0} Đơn hàng</div>
 
             <Table
                 bordered
