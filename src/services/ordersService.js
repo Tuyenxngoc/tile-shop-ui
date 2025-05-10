@@ -27,3 +27,7 @@ export const getOrderById = (id) => {
 export const createOrder = (orderData) => {
     return axiosPrivate.post('orders', orderData);
 };
+
+export const cancelOrder = (id, cancelReason) => {
+    return axiosPrivate.put(`orders/${id}/cancel`, { cancelReason });
+};

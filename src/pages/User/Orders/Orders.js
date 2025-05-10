@@ -1,10 +1,41 @@
 import { useEffect, useState } from 'react';
-import { Alert, Empty, Input, Spin, Tabs, Modal, Select, Form } from 'antd';
+import { Alert, Empty, Input, Spin, Tabs, Modal, Select, Form, message } from 'antd';
 
 import useDebounce from '~/hooks/useDebounce';
-import { getAllOrdersForUser } from '~/services/ordersService';
+import { getAllOrdersForUser, cancelOrder } from '~/services/ordersService';
 import { orderStatusOptions } from '~/constants/order';
 import OrderItem from '~/components/OrderItem';
+
+const cancelReasonOptions = [
+    {
+        value: 'updateAddress',
+        label: 'Tôi muốn cập nhật địa chỉ/sđt nhận hàng.',
+    },
+    {
+        value: 'applyDiscount',
+        label: 'Tôi muốn thêm/thay đổi Mã giảm giá',
+    },
+    {
+        value: 'changeProduct',
+        label: 'Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng…)',
+    },
+    {
+        value: 'paymentIssue',
+        label: 'Thủ tục thanh toán rắc rối',
+    },
+    {
+        value: 'betterPrice',
+        label: 'Tôi tìm thấy chỗ mua khác tốt hơn (Rẻ hơn, uy tín hơn, giao nhanh hơn…)',
+    },
+    {
+        value: 'noNeed',
+        label: 'Tôi không có nhu cầu mua nữa',
+    },
+    {
+        value: 'other',
+        label: 'Tôi không tìm thấy lý do hủy phù hợp',
+    },
+];
 
 function Orders() {
     const [filters, setFilters] = useState({ status: null, keyword: '' });
@@ -17,23 +48,51 @@ function Orders() {
     const [searchTerm, setSearchTerm] = useState('');
     const debouncedSearch = useDebounce(searchTerm, 300);
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCancelOrderModalOpen, setIsCancelOrderModalOpen] = useState(false);
     const [cancelReason, setCancelReason] = useState('');
     const [otherReason, setOtherReason] = useState('');
     const [selectedOrderId, setSelectedOrderId] = useState(null);
 
-    const showModal = (orderId) => {
+    const [messageApi, contextHolder] = message.useMessage();
+
+    const openCancelOrderModal = (orderId) => {
         setSelectedOrderId(orderId);
-        setIsModalOpen(true);
+        setIsCancelOrderModalOpen(true);
     };
 
-    const handleCancel = () => {
-        setIsModalOpen(false);
+    const closeCancelOrderModal = () => {
+        setIsCancelOrderModalOpen(false);
     };
 
-    const handleOk = () => {
-        console.log('Lý do hủy:', cancelReason === 'other' ? otherReason : cancelReason);
-        setIsModalOpen(false);
+    const handleConfirmCancelOrder = async () => {
+        if (!cancelReason) {
+            messageApi.error('Vui lòng chọn một lý do hủy đơn hàng.');
+            return;
+        }
+
+        if (cancelReason === 'other' && !otherReason.trim()) {
+            messageApi.error('Vui lòng nhập lý do hủy đơn hàng.');
+            return;
+        }
+
+        const reasonToSend =
+            cancelReason === 'other'
+                ? otherReason
+                : cancelReasonOptions.find((option) => option.value === cancelReason)?.label || '';
+
+        try {
+            const response = await cancelOrder(selectedOrderId, reasonToSend);
+            if (response.status === 200) {
+                const { data, message } = response.data.data;
+                messageApi.success(message);
+
+                // Cập nhật lại danh sách đơn hàng
+                setEntityData((prevData) => prevData.map((item) => (item.id === selectedOrderId ? data : item)));
+                closeCancelOrderModal();
+            }
+        } catch (error) {
+            messageApi.error('Lỗi: ' + error.message);
+        }
     };
 
     const handleCancelReasonChange = (value) => {
@@ -85,12 +144,14 @@ function Orders() {
     }
 
     return (
-        <div>
+        <>
+            {contextHolder}
+
             <Modal
                 title="Lý Do Hủy"
-                open={isModalOpen}
-                onOk={handleOk}
-                onCancel={handleCancel}
+                open={isCancelOrderModalOpen}
+                onOk={handleConfirmCancelOrder}
+                onCancel={closeCancelOrderModal}
                 cancelText="Không phải bây giờ"
                 okText="Hủy đơn hàng"
             >
@@ -106,21 +167,8 @@ function Orders() {
                             value={cancelReason}
                             onChange={handleCancelReasonChange}
                             placeholder="Chọn lý do hủy"
-                        >
-                            <Select.Option value="updateAddress">
-                                Tôi muốn cập nhật địa chỉ/sđt nhận hàng.
-                            </Select.Option>
-                            <Select.Option value="applyDiscount">Tôi muốn thêm/thay đổi Mã giảm giá</Select.Option>
-                            <Select.Option value="changeProduct">
-                                Tôi muốn thay đổi sản phẩm (kích thước, màu sắc, số lượng…)
-                            </Select.Option>
-                            <Select.Option value="paymentIssue">Thủ tục thanh toán rắc rối</Select.Option>
-                            <Select.Option value="betterPrice">
-                                Tôi tìm thấy chỗ mua khác tốt hơn (Rẻ hơn, uy tín hơn, giao nhanh hơn…)
-                            </Select.Option>
-                            <Select.Option value="noNeed">Tôi không có nhu cầu mua nữa</Select.Option>
-                            <Select.Option value="other">Tôi không tìm thấy lý do hủy phù hợp</Select.Option>
-                        </Select>
+                            options={cancelReasonOptions}
+                        />
                     </Form.Item>
 
                     {cancelReason === 'other' && (
@@ -155,10 +203,10 @@ function Orders() {
                 <Empty description="Không có đơn hàng nào" />
             ) : (
                 entityData.map((order) => (
-                    <OrderItem key={order.id} data={order} onCancelOrder={() => showModal(order.id)} />
+                    <OrderItem key={order.id} data={order} onCancelOrder={() => openCancelOrderModal(order.id)} />
                 ))
             )}
-        </div>
+        </>
     );
 }
 
