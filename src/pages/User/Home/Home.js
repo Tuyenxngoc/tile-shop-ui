@@ -25,7 +25,7 @@ function Home() {
             >
                 <div className="container pb-3">
                     <Link to={bannerLink}>
-                        <img src={bannerImage} alt="Hình ảnh banner" />
+                        <img src={bannerImage} className="img-fluid" alt="Hình ảnh banner" />
                     </Link>
                     <Carousel />
                 </div>

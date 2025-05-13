@@ -1,4 +1,4 @@
-.button-contact-vr {
+.btn-group {
     position: fixed;
     bottom: 0;
     z-index: 99999;
@@ -6,11 +6,11 @@
     transform: scale(0.8);
     margin: -10px;
 
-    .button-contact {
+    .btn-item {
         position: relative;
         margin-top: -5px;
 
-        .phone-vr {
+        .icon-wrap {
             position: relative;
             visibility: visible;
             background-color: transparent;
@@ -28,7 +28,7 @@
     }
 }
 
-.phone-vr-circle-fill {
+.circle-bg {
     width: 65px;
     height: 65px;
     top: 12px;
@@ -38,17 +38,15 @@
     background-color: rgba(230, 8, 8, 0.7);
     border-radius: 50%;
     border: 2px solid transparent;
-    -webkit-animation: phone-vr-circle-fill 2.3s infinite ease-in-out;
-    animation: phone-vr-circle-fill 2.3s infinite ease-in-out;
     transition: all 0.5s;
     -webkit-transform-origin: 50% 50%;
     -ms-transform-origin: 50% 50%;
     transform-origin: 50% 50%;
-    -webkit-animuiion: zoom 1.3s infinite;
+    -webkit-animation: zoom 1.3s infinite;
     animation: zoom 1.3s infinite;
 }
 
-.phone-vr-img-circle {
+.circle-img {
     background-color: #e60808;
     width: 40px;
     height: 40px;
@@ -60,7 +58,6 @@
     overflow: hidden;
     display: flex;
     justify-content: center;
-    -webkit-animation: phonering-alo-circle-img-anim 1s infinite ease-in-out;
     animation: phone-vr-circle-fill 1s infinite ease-in-out;
 
     a {
@@ -78,6 +75,36 @@
         -moz-transform: translate(-50%, -50%);
         -webkit-transform: translate(-50%, -50%);
         -o-transform: translate(-50%, -50%);
+    }
+}
+
+@keyframes circle-bg {
+    0% {
+        -webkit-transform: rotate(0) scale(1) skew(1deg);
+    }
+
+    10% {
+        -webkit-transform: rotate(-25deg) scale(1) skew(1deg);
+    }
+
+    20% {
+        -webkit-transform: rotate(25deg) scale(1) skew(1deg);
+    }
+
+    30% {
+        -webkit-transform: rotate(-25deg) scale(1) skew(1deg);
+    }
+
+    40% {
+        -webkit-transform: rotate(25deg) scale(1) skew(1deg);
+    }
+
+    50% {
+        -webkit-transform: rotate(0) scale(1) skew(1deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(0) scale(1) skew(1deg);
     }
 }
 
@@ -127,27 +154,25 @@
     }
 }
 
-.zalo-vr {
-    .phone-vr-circle-fill {
+.zalo {
+    .circle-bg {
         box-shadow: 0 0 0 0 #2196f3;
         background-color: rgba(33, 150, 243, 0.7);
     }
 
-    .phone-vr-img-circle {
+    .circle-img {
         background-color: #2196f3;
     }
 }
 
-.gom-all-in-one {
-    .phone-vr {
-        transition: 0.7s all;
-        -moz-transition: 0.7s all;
-        -webkit-transition: 0.7s all;
-    }
+.phone {
+    transition: 0.7s all;
+    -moz-transition: 0.7s all;
+    -webkit-transition: 0.7s all;
+}
 
-    .zalo-vr {
-        transition: 1s all;
-        -moz-transition: 1s all;
-        -webkit-transition: 1s all;
-    }
+.zalo {
+    transition: 1s all;
+    -moz-transition: 1s all;
+    -webkit-transition: 1s all;
 }
