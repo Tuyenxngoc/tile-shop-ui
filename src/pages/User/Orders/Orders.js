@@ -202,9 +202,13 @@ function Orders() {
             ) : entityData.length === 0 ? (
                 <Empty description="Không có đơn hàng nào" />
             ) : (
-                entityData.map((order) => (
-                    <OrderItem key={order.id} data={order} onCancelOrder={() => openCancelOrderModal(order.id)} />
-                ))
+                <div className="row g-3">
+                    {entityData.map((order) => (
+                        <div key={order.id} className="col-12">
+                            <OrderItem data={order} onCancelOrder={() => openCancelOrderModal(order.id)} />
+                        </div>
+                    ))}
+                </div>
             )}
         </>
     );
