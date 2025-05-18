@@ -32,7 +32,7 @@ function StatCard({ title, amount, unit, percentage, link, linkLabel, iconBg, ic
                 <div className="d-flex align-items-end justify-content-between mt-4">
                     <div>
                         <h4 className="fs-22 fw-semibold ff-secondary mb-4">
-                            {unit}
+                            {unit} &nbsp;
                             <CountUp end={amount} decimals={2} duration={1} />
                         </h4>
                         <Link to={link} className="text-decoration-underline">

@@ -53,7 +53,7 @@ const menuConfig = [
         icon: <FaShoppingCart />,
     },
     {
-        label: 'Thống kê & Báo cáo',
+        label: 'Xem thống kê',
         key: '/admin/statistics',
         icon: <FaChartBar />,
         children: [{ label: 'Báo cáo tổng hợp', key: '/admin/statistics/overview' }],

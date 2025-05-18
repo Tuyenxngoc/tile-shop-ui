@@ -1,18 +1,92 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button, DatePicker, message } from 'antd';
+import { Button, DatePicker, message, Table } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
 import { BiSolidDollarCircle } from 'react-icons/bi';
 import { BsFillBagFill, BsPersonCircle } from 'react-icons/bs';
 import { AiFillProduct } from 'react-icons/ai';
+import { ResponsiveBar } from '@nivo/bar';
+import { ResponsivePie } from '@nivo/pie';
 
 import useAuth from '~/hooks/useAuth';
 import StatCard from '~/components/StatCard';
+import { getDashboardStatistics } from '~/services/statisticsService';
 
 const { RangePicker } = DatePicker;
+
+const datatest = [
+    { date: '2024-05-01', revenue: 1500000 },
+    { date: '2024-05-02', revenue: 2200000 },
+    { date: '2024-05-03', revenue: 1800000 },
+    { date: '2024-05-04', revenue: 2000000 },
+    { date: '2024-05-05', revenue: 2400000 },
+];
+
+const topProductsData = [
+    { key: '1', product: 'Áo thun', quantity: 120 },
+    { key: '2', product: 'Quần jean', quantity: 95 },
+    { key: '3', product: 'Giày sneaker', quantity: 80 },
+    { key: '4', product: 'Mũ lưỡi trai', quantity: 65 },
+    { key: '5', product: 'Túi xách', quantity: 50 },
+];
+
+const topCustomersData = [
+    { key: '1', customer: 'Nguyễn Văn A', orders: 15 },
+    { key: '2', customer: 'Trần Thị B', orders: 13 },
+    { key: '3', customer: 'Lê Văn C', orders: 12 },
+    { key: '4', customer: 'Phạm Thị D', orders: 11 },
+    { key: '5', customer: 'Hoàng Văn E', orders: 9 },
+];
+
+const orderStatusData = [
+    {
+        id: 'stylus',
+        label: 'stylus',
+        value: 584,
+        color: 'hsl(180, 70%, 50%)',
+    },
+    {
+        id: 'lisp',
+        label: 'lisp',
+        value: 353,
+        color: 'hsl(257, 70%, 50%)',
+    },
+    {
+        id: 'css',
+        label: 'css',
+        value: 170,
+        color: 'hsl(65, 70%, 50%)',
+    },
+    {
+        id: 'javascript',
+        label: 'javascript',
+        value: 538,
+        color: 'hsl(165, 70%, 50%)',
+    },
+    {
+        id: 'make',
+        label: 'make',
+        value: 78,
+        color: 'hsl(79, 70%, 50%)',
+    },
+];
+
+const recentOrdersData = [
+    {
+        key: '1',
+        code: 'DH001',
+        customer: 'Nguyễn Văn A',
+        date: '17/05/2024',
+        status: 'Hoàn thành',
+        total: '1,500,000đ',
+    },
+    { key: '2', code: 'DH002', customer: 'Trần Thị B', date: '17/05/2024', status: 'Đang xử lý', total: '900,000đ' },
+    { key: '3', code: 'DH003', customer: 'Lê Văn C', date: '16/05/2024', status: 'Đã hủy', total: '0đ' },
+    { key: '4', code: 'DH004', customer: 'Phạm Thị D', date: '16/05/2024', status: 'Hoàn thành', total: '2,300,000đ' },
+];
 
 function Dashboard() {
     const {
@@ -23,6 +97,9 @@ function Dashboard() {
     const [greeting, setGreeting] = useState('');
     const [stats, setStats] = useState(null);
     const [dates, setDates] = useState([dayjs().startOf('month'), dayjs().endOf('month')]);
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -59,6 +136,44 @@ function Dashboard() {
         }
     }, []);
 
+    useEffect(() => {
+        const fetchEntities = async () => {
+            setIsLoading(true);
+            setErrorMessage(null);
+            try {
+                const response = await getDashboardStatistics();
+                const data = response.data.data;
+                setStats(data);
+            } catch (error) {
+                const errorMessage =
+                    error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+                setErrorMessage(errorMessage);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchEntities();
+    }, []);
+
+    const productColumns = [
+        { title: 'Sản phẩm', dataIndex: 'product', key: 'product' },
+        { title: 'Số lượng bán', dataIndex: 'quantity', key: 'quantity' },
+    ];
+
+    const customerColumns = [
+        { title: 'Khách hàng', dataIndex: 'customer', key: 'customer' },
+        { title: 'Số đơn hàng', dataIndex: 'orders', key: 'orders' },
+    ];
+
+    const recentOrdersColumns = [
+        { title: 'Mã đơn', dataIndex: 'code', key: 'code' },
+        { title: 'Khách hàng', dataIndex: 'customer', key: 'customer' },
+        { title: 'Ngày', dataIndex: 'date', key: 'date' },
+        { title: 'Trạng thái', dataIndex: 'status', key: 'status' },
+        { title: 'Tổng tiền', dataIndex: 'total', key: 'total' },
+    ];
+
     return (
         <>
             {contextHolder}
@@ -94,13 +209,14 @@ function Dashboard() {
                     </div>
                 </div>
             </div>
+
             <div className="row">
                 <div className="col-xl-3 col-md-6">
                     <StatCard
                         title="Tổng doanh thu"
-                        amount={559.25}
-                        unit={'$'}
-                        percentage={16.24}
+                        amount={stats?.revenueStat?.totalRevenue || 0}
+                        unit={stats?.revenueStat?.currency || 'VND'}
+                        percentage={stats?.revenueStat?.percentageChange || 0}
                         link="/"
                         linkLabel="Xem doanh thu chi tiết"
                         iconComponent={BiSolidDollarCircle}
@@ -111,8 +227,8 @@ function Dashboard() {
                 <div className="col-xl-3 col-md-6">
                     <StatCard
                         title="Tổng số đơn hàng"
-                        amount={36894}
-                        percentage={-3.57}
+                        amount={stats?.orderStat?.totalOrders || 0}
+                        percentage={stats?.orderStat?.percentageChange || 0}
                         link="/admin/orders"
                         linkLabel="Xem tất cả các đơn hàng"
                         iconComponent={BsFillBagFill}
@@ -123,8 +239,8 @@ function Dashboard() {
                 <div className="col-xl-3 col-md-6">
                     <StatCard
                         title="Số khách hàng"
-                        amount={18335}
-                        percentage={29.08}
+                        amount={stats?.customerStat?.totalCustomers || 0}
+                        percentage={stats?.customerStat?.percentageChange || 0}
                         link="/admin/users"
                         linkLabel="Xem danh sách khách hàng"
                         iconComponent={BsPersonCircle}
@@ -135,13 +251,120 @@ function Dashboard() {
                 <div className="col-xl-3 col-md-6">
                     <StatCard
                         title="Số sản phẩm"
-                        amount={165}
-                        percentage={0.0}
+                        amount={stats?.productStat?.totalProducts || 0}
+                        percentage={stats?.productStat?.percentageChange || 0}
                         link="/admin/products"
                         linkLabel="Xem danh sách sản phẩm"
                         iconComponent={AiFillProduct}
                         iconBg="bg-primary-subtle"
                         iconColor="text-primary"
+                    />
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-md-8" style={{ height: '400px' }}>
+                    <h5>Doanh thu</h5>
+                    <ResponsiveBar
+                        data={datatest}
+                        keys={['revenue']}
+                        indexBy="date"
+                        margin={{ top: 20, right: 100, bottom: 100, left: 70 }}
+                        padding={0.3}
+                        axisBottom={{
+                            tickRotation: -45,
+                            legend: 'Ngày',
+                            legendPosition: 'middle',
+                            legendOffset: 40,
+                        }}
+                        axisLeft={{
+                            format: (value) => `${(value / 1000000).toFixed(1)}tr`,
+                            legend: 'Doanh thu (VNĐ)',
+                            legendPosition: 'middle',
+                            legendOffset: -60,
+                        }}
+                        labelSkipWidth={12}
+                        labelSkipHeight={12}
+                        labelTextColor="#fff"
+                        colors="#4ade80"
+                        legends={[
+                            {
+                                dataFrom: 'keys',
+                                anchor: 'top-right',
+                                direction: 'column',
+                                justify: false,
+                                translateX: 120,
+                                translateY: 0,
+                                itemsSpacing: 2,
+                                itemWidth: 100,
+                                itemHeight: 20,
+                                itemDirection: 'left-to-right',
+                                itemOpacity: 0.85,
+                                symbolSize: 20,
+                            },
+                        ]}
+                    />
+                </div>
+                <div className="col-md-4">
+                    <ResponsivePie /* or Pie for fixed dimensions */
+                        data={orderStatusData}
+                        margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+                        innerRadius={0.5}
+                        padAngle={0.6}
+                        cornerRadius={2}
+                        activeOuterRadiusOffset={8}
+                        arcLinkLabelsSkipAngle={10}
+                        arcLinkLabelsTextColor="#333333"
+                        arcLinkLabelsThickness={2}
+                        arcLinkLabelsColor={{ from: 'color' }}
+                        arcLabelsSkipAngle={10}
+                        arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
+                        legends={[
+                            {
+                                anchor: 'bottom',
+                                direction: 'row',
+                                translateY: 56,
+                                itemWidth: 100,
+                                itemHeight: 18,
+                                symbolShape: 'circle',
+                            },
+                        ]}
+                    />
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-md-6">
+                    <h5>Top sản phẩm bán chạy</h5>
+                    <Table
+                        columns={productColumns}
+                        dataSource={topProductsData}
+                        pagination={false}
+                        size="small"
+                        bordered
+                    />
+                </div>
+                <div className="col-md-6">
+                    <h5>Top khách hàng mua nhiều</h5>
+                    <Table
+                        columns={customerColumns}
+                        dataSource={topCustomersData}
+                        pagination={false}
+                        size="small"
+                        bordered
+                    />
+                </div>
+            </div>
+
+            <div className="row mt-4">
+                <div className="col-12">
+                    <h5>Đơn hàng gần đây</h5>
+                    <Table
+                        columns={recentOrdersColumns}
+                        dataSource={recentOrdersData}
+                        pagination={false}
+                        size="small"
+                        bordered
                     />
                 </div>
             </div>
