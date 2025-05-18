@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Button, DatePicker, message, Table } from 'antd';
+import { Alert, Button, DatePicker, message, Spin, Table } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
@@ -13,7 +13,12 @@ import { ResponsivePie } from '@nivo/pie';
 
 import useAuth from '~/hooks/useAuth';
 import StatCard from '~/components/StatCard';
-import { getDashboardStatistics } from '~/services/statisticsService';
+import {
+    getDashboardStatistics,
+    getTopSellingProducts,
+    getTopCustomers,
+    getRecentOrders,
+} from '~/services/statisticsService';
 
 const { RangePicker } = DatePicker;
 
@@ -23,22 +28,6 @@ const datatest = [
     { date: '2024-05-03', revenue: 1800000 },
     { date: '2024-05-04', revenue: 2000000 },
     { date: '2024-05-05', revenue: 2400000 },
-];
-
-const topProductsData = [
-    { key: '1', product: 'Áo thun', quantity: 120 },
-    { key: '2', product: 'Quần jean', quantity: 95 },
-    { key: '3', product: 'Giày sneaker', quantity: 80 },
-    { key: '4', product: 'Mũ lưỡi trai', quantity: 65 },
-    { key: '5', product: 'Túi xách', quantity: 50 },
-];
-
-const topCustomersData = [
-    { key: '1', customer: 'Nguyễn Văn A', orders: 15 },
-    { key: '2', customer: 'Trần Thị B', orders: 13 },
-    { key: '3', customer: 'Lê Văn C', orders: 12 },
-    { key: '4', customer: 'Phạm Thị D', orders: 11 },
-    { key: '5', customer: 'Hoàng Văn E', orders: 9 },
 ];
 
 const orderStatusData = [
@@ -74,20 +63,6 @@ const orderStatusData = [
     },
 ];
 
-const recentOrdersData = [
-    {
-        key: '1',
-        code: 'DH001',
-        customer: 'Nguyễn Văn A',
-        date: '17/05/2024',
-        status: 'Hoàn thành',
-        total: '1,500,000đ',
-    },
-    { key: '2', code: 'DH002', customer: 'Trần Thị B', date: '17/05/2024', status: 'Đang xử lý', total: '900,000đ' },
-    { key: '3', code: 'DH003', customer: 'Lê Văn C', date: '16/05/2024', status: 'Đã hủy', total: '0đ' },
-    { key: '4', code: 'DH004', customer: 'Phạm Thị D', date: '16/05/2024', status: 'Hoàn thành', total: '2,300,000đ' },
-];
-
 function Dashboard() {
     const {
         user: { username, fullName },
@@ -96,6 +71,10 @@ function Dashboard() {
 
     const [greeting, setGreeting] = useState('');
     const [stats, setStats] = useState(null);
+    const [topProducts, setTopProducts] = useState([]);
+    const [topCustomers, setTopCustomers] = useState([]);
+    const [recentOrders, setRecentOrders] = useState([]);
+
     const [dates, setDates] = useState([dayjs().startOf('month'), dayjs().endOf('month')]);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -141,9 +120,17 @@ function Dashboard() {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const response = await getDashboardStatistics();
-                const data = response.data.data;
-                setStats(data);
+                const [dashboardRes, productsRes, customersRes, ordersRes] = await Promise.all([
+                    getDashboardStatistics(),
+                    getTopSellingProducts(),
+                    getTopCustomers(),
+                    getRecentOrders(),
+                ]);
+
+                setStats(dashboardRes.data.data);
+                setTopProducts(productsRes.data.data);
+                setTopCustomers(customersRes.data.data);
+                setRecentOrders(ordersRes.data.data);
             } catch (error) {
                 const errorMessage =
                     error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
@@ -157,22 +144,34 @@ function Dashboard() {
     }, []);
 
     const productColumns = [
-        { title: 'Sản phẩm', dataIndex: 'product', key: 'product' },
+        { title: 'Sản phẩm', dataIndex: 'name', key: 'name' },
         { title: 'Số lượng bán', dataIndex: 'quantity', key: 'quantity' },
     ];
 
     const customerColumns = [
-        { title: 'Khách hàng', dataIndex: 'customer', key: 'customer' },
+        { title: 'Khách hàng', dataIndex: 'username', key: 'username' },
         { title: 'Số đơn hàng', dataIndex: 'orders', key: 'orders' },
     ];
 
     const recentOrdersColumns = [
-        { title: 'Mã đơn', dataIndex: 'code', key: 'code' },
+        { title: 'Mã đơn', dataIndex: 'id', key: 'id' },
         { title: 'Khách hàng', dataIndex: 'customer', key: 'customer' },
-        { title: 'Ngày', dataIndex: 'date', key: 'date' },
+        { title: 'Ngày', dataIndex: 'createdDate', key: 'createdDate' },
         { title: 'Trạng thái', dataIndex: 'status', key: 'status' },
-        { title: 'Tổng tiền', dataIndex: 'total', key: 'total' },
+        { title: 'Tổng tiền', dataIndex: 'totalAmount', key: 'totalAmount' },
     ];
+
+    if (isLoading) {
+        return (
+            <div className="d-flex justify-content-center w-100">
+                <Spin size="large" />
+            </div>
+        );
+    }
+
+    if (errorMessage) {
+        return <Alert message="Lỗi" description={errorMessage} type="error" />;
+    }
 
     return (
         <>
@@ -336,19 +335,13 @@ function Dashboard() {
             <div className="row">
                 <div className="col-md-6">
                     <h5>Top sản phẩm bán chạy</h5>
-                    <Table
-                        columns={productColumns}
-                        dataSource={topProductsData}
-                        pagination={false}
-                        size="small"
-                        bordered
-                    />
+                    <Table columns={productColumns} dataSource={topProducts} pagination={false} size="small" bordered />
                 </div>
                 <div className="col-md-6">
                     <h5>Top khách hàng mua nhiều</h5>
                     <Table
                         columns={customerColumns}
-                        dataSource={topCustomersData}
+                        dataSource={topCustomers}
                         pagination={false}
                         size="small"
                         bordered
@@ -361,7 +354,7 @@ function Dashboard() {
                     <h5>Đơn hàng gần đây</h5>
                     <Table
                         columns={recentOrdersColumns}
-                        dataSource={recentOrdersData}
+                        dataSource={recentOrders}
                         pagination={false}
                         size="small"
                         bordered
