@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { Alert, Button, DatePicker, message, Spin, Table } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { Alert, Button, DatePicker, message, Spin, Table, Tag, Card } from 'antd';
 import dayjs from 'dayjs';
 
 import { BiSolidDollarCircle } from 'react-icons/bi';
@@ -19,6 +19,8 @@ import {
     getTopCustomers,
     getRecentOrders,
 } from '~/services/statisticsService';
+import { formatCurrency, formatDate } from '~/utils';
+import { orderStatusTags } from '~/constants/order';
 
 const { RangePicker } = DatePicker;
 
@@ -144,21 +146,65 @@ function Dashboard() {
     }, []);
 
     const productColumns = [
-        { title: 'Sản phẩm', dataIndex: 'name', key: 'name' },
-        { title: 'Số lượng bán', dataIndex: 'quantity', key: 'quantity' },
+        {
+            title: 'Sản phẩm',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text, record) => (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <img
+                        src={record.imageUrl}
+                        alt={record.name}
+                        style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 8 }}
+                    />
+                    <div>
+                        <Link to={`/san-pham/${record.slug}`} style={{ fontWeight: 600 }}>
+                            {record.name}
+                        </Link>
+                        <div style={{ color: '#888' }}>{record.category?.name}</div>
+                    </div>
+                </div>
+            ),
+        },
+        { title: 'Giá bán', dataIndex: 'salePrice', key: 'salePrice', render: (text) => formatCurrency(text) },
+        { title: 'Số lượng bán', dataIndex: 'totalQuantity', key: 'totalQuantity' },
+        {
+            title: 'Tồn kho',
+            dataIndex: 'stockQuantity',
+            key: 'stockQuantity',
+            render: (text) => (text === 0 ? <Tag color="red">Hết hàng</Tag> : text),
+        },
+        { title: 'Doanh thu', dataIndex: 'totalAmount', key: 'totalAmount', render: (text) => formatCurrency(text) },
     ];
 
     const customerColumns = [
-        { title: 'Khách hàng', dataIndex: 'username', key: 'username' },
-        { title: 'Số đơn hàng', dataIndex: 'orders', key: 'orders' },
+        {
+            title: 'Khách hàng',
+            dataIndex: 'fullName',
+            key: 'fullName',
+            render: (text, record) => (text ? text : record.username),
+        },
+        { title: 'Email', dataIndex: 'email', key: 'email' },
+        { title: 'Số đơn hàng', dataIndex: 'totalOrders', key: 'totalOrders' },
+        {
+            title: 'Tổng chi tiêu',
+            dataIndex: 'totalSpent',
+            key: 'totalSpent',
+            render: (text) => formatCurrency(text),
+        },
     ];
 
     const recentOrdersColumns = [
         { title: 'Mã đơn', dataIndex: 'id', key: 'id' },
-        { title: 'Khách hàng', dataIndex: 'customer', key: 'customer' },
-        { title: 'Ngày', dataIndex: 'createdDate', key: 'createdDate' },
-        { title: 'Trạng thái', dataIndex: 'status', key: 'status' },
-        { title: 'Tổng tiền', dataIndex: 'totalAmount', key: 'totalAmount' },
+        {
+            title: 'Khách hàng',
+            dataIndex: 'customer',
+            key: 'customer',
+            render: (customer) => <Link to={`/admin/users`}>{customer.fullName || customer.username}</Link>,
+        },
+        { title: 'Ngày', dataIndex: 'createdDate', key: 'createdDate', render: (text) => formatDate(text) },
+        { title: 'Trạng thái', dataIndex: 'status', key: 'status', render: (text) => orderStatusTags[text] },
+        { title: 'Tổng tiền', dataIndex: 'totalAmount', key: 'totalAmount', render: (text) => formatCurrency(text) },
     ];
 
     if (isLoading) {
@@ -334,31 +380,27 @@ function Dashboard() {
 
             <div className="row">
                 <div className="col-md-6">
-                    <h5>Top sản phẩm bán chạy</h5>
-                    <Table columns={productColumns} dataSource={topProducts} pagination={false} size="small" bordered />
+                    <Card title="Top sản phẩm bán chạy">
+                        <Table columns={productColumns} dataSource={topProducts} pagination={false} size="small" />
+                    </Card>
                 </div>
                 <div className="col-md-6">
-                    <h5>Top khách hàng mua nhiều</h5>
-                    <Table
-                        columns={customerColumns}
-                        dataSource={topCustomers}
-                        pagination={false}
-                        size="small"
-                        bordered
-                    />
+                    <Card title="Top khách hàng mua nhiều">
+                        <Table columns={customerColumns} dataSource={topCustomers} pagination={false} size="small" />
+                    </Card>
                 </div>
             </div>
 
             <div className="row mt-4">
                 <div className="col-12">
-                    <h5>Đơn hàng gần đây</h5>
-                    <Table
-                        columns={recentOrdersColumns}
-                        dataSource={recentOrders}
-                        pagination={false}
-                        size="small"
-                        bordered
-                    />
+                    <Card title="Đơn hàng gần đây">
+                        <Table
+                            columns={recentOrdersColumns}
+                            dataSource={recentOrders}
+                            pagination={false}
+                            size="small"
+                        />
+                    </Card>
                 </div>
             </div>
         </>
