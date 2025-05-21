@@ -26,10 +26,15 @@ import { addToCart } from '~/services/cartService';
 import { getProductBySlug } from '~/services/productService';
 import { formatCurrency } from '~/utils/utils';
 import ReviewSection from './ReviewSection';
+import useStore from '~/hooks/useStore';
 
 const cx = classNames.bind(styles);
 
 function ProductDetail() {
+    const {
+        storeInfo: { phoneSupport, openingHours },
+    } = useStore();
+
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -218,7 +223,12 @@ function ProductDetail() {
                             <div className="col-12 mb-2">
                                 {entityData.brand && (
                                     <span className={cx('meta')}>
-                                        Thương hiệu: <strong className="text-danger">DeMuhler</strong>
+                                        Thương hiệu: &nbsp;
+                                        <strong className="text-danger">
+                                            <Link to={`/thuong-hieu/${entityData.brand.id}`}>
+                                                {entityData.brand.name}
+                                            </Link>
+                                        </strong>
                                     </span>
                                 )}
                             </div>
@@ -353,7 +363,7 @@ function ProductDetail() {
                                             fill="black"
                                         />
                                     </svg>
-                                    Hotline: <Link to="tel:0812.882.992">0812.882.992</Link> (8h00 - 21h00 mỗi ngày)
+                                    Hotline: <Link to={`tel:${phoneSupport}`}>{phoneSupport}</Link> ({openingHours})
                                 </div>
                             </div>
                         </div>

@@ -175,14 +175,7 @@ function Brand() {
             align: 'center',
             render: (text) =>
                 text ? (
-                    <Image
-                        src={text}
-                        alt="review"
-                        width={56}
-                        height={56}
-                        preview={{ mask: 'Xem ảnh' }}
-                        className="rounded-2"
-                    />
+                    <Image src={text} alt="review" width={100} preview={{ mask: 'Xem ảnh' }} className="rounded-2" />
                 ) : (
                     <span>Chưa có ảnh</span>
                 ),

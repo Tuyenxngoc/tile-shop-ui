@@ -17,9 +17,15 @@
         }
     }
 
-    .btn-read-more {
-        display: inline-flex;
+    .brand-placeholder {
+        width: 100px;
+        height: 35px;
+        display: flex;
         align-items: center;
         justify-content: center;
+        background: white;
+        border-radius: 6px;
+        font-weight: bold;
+        text-align: center;
     }
 }

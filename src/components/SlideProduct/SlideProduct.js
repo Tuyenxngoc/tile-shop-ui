@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Grid } from 'swiper/modules';
 import 'swiper/css';
@@ -80,20 +81,27 @@ function SlideProduct({ className }) {
     return (
         <div className={cx('wrapper', className)}>
             <div className="row mx-0 mb-4">
-                <div className="col col-md-5 col-8">
+                <div className="col-12 col-md-3">
                     <h2 className={cx('title-popup')}>Bồn Cầu</h2>
                 </div>
 
-                <div className="col col-md-7 col-4 text-end">
-                    {brands.map((brand, index) => (
-                        <a key={index} href={brand.url} className={cx('btn-brand')}>
-                            <img src={brand.img} alt={brand.name} width={100} className="img-fluid" />
-                        </a>
-                    ))}
-                    <a className={cx('btn-brand', 'btn-read-more')} href="/bon-cau">
-                        <span>Xem tất cả</span>
-                        <FaCaretRight />
-                    </a>
+                <div className="col-12 col-md-9">
+                    <div className="d-flex align-items-center justify-content-end">
+                        {brands.map((brand, index) => (
+                            <Link key={index} to={brand.slug} className={cx('btn-brand')}>
+                                {brand.logoUrl ? (
+                                    <img src={brand.logoUrl} alt={brand.name} width={100} className="img-fluid" />
+                                ) : (
+                                    <div className={cx('brand-placeholder')}>{brand.name}</div>
+                                )}
+                            </Link>
+                        ))}
+                        <Link to="/bon-cau" className={cx('btn-brand')}>
+                            <div className={cx('brand-placeholder')}>
+                                Xem tất cả <FaCaretRight />
+                            </div>
+                        </Link>
+                    </div>
                 </div>
             </div>
 

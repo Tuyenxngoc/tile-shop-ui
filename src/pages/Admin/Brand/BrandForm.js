@@ -187,6 +187,7 @@ function BrandForm() {
                                 rotationSlider
                                 aspectSlider
                                 showReset
+                                aspect={240 / 84}
                                 resetText="Đặt lại"
                                 modalTitle="Chỉnh sửa hình ảnh"
                                 beforeCrop={handleBeforeCrop}
