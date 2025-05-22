@@ -4,6 +4,10 @@ export const getCategoryById = (id) => {
     return httpRequest.get(`categories/${id}`);
 };
 
+export const getCategoryBySlug = (slug) => {
+    return httpRequest.get(`categories/slug/${slug}`);
+};
+
 export const getCategories = (params) => {
     return httpRequest.get('categories', { params });
 };
