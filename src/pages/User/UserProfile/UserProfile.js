@@ -4,6 +4,7 @@ import { EditOutlined } from '@ant-design/icons';
 import { FiMail, FiPhone, FiKey, FiUser } from 'react-icons/fi';
 import useAuth from '~/hooks/useAuth';
 import { updateMyProfile } from '~/services/userService';
+import { REGEXP_FULL_NAME, REGEXP_PHONE_NUMBER } from '~/constants';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -65,7 +66,7 @@ function UserProfile() {
                         rules={[
                             { required: true, message: 'Vui lòng nhập họ và tên' },
                             {
-                                pattern: /^\S+(\s+\S+)+$/,
+                                pattern: REGEXP_FULL_NAME,
                                 message: 'Họ và tên phải có ít nhất hai từ',
                             },
                         ]}
@@ -87,7 +88,7 @@ function UserProfile() {
                         rules={[
                             { required: true, message: 'Vui lòng nhập số điện thoại' },
                             {
-                                pattern: /^(?:\+84|0)(?:1[2689]|9[0-9]|3[2-9]|5[6-9]|7[0-9])(?:\d{7}|\d{8})$/,
+                                pattern: REGEXP_PHONE_NUMBER,
                                 message: 'Số điện thoại không hợp lệ',
                             },
                         ]}

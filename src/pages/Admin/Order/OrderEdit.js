@@ -8,19 +8,20 @@ import { Button, message, Space } from 'antd';
 
 import { handleError } from '~/utils/errorHandler';
 import { SelectInput, TextInput } from '~/components/FormInput';
-import { getUserById, updateUser } from '~/services/userService';
-import { getRoles } from '~/services/roleService';
+import { updateOrder } from '~/services/ordersService';
 import { REGEXP_FULL_NAME, REGEXP_PHONE_NUMBER } from '~/constants';
 
-const entityListPage = '/admin/users';
+const entityListPage = '/admin/orders';
 
 const defaultValue = {
-    email: '',
-    phoneNumber: '',
-    fullName: '',
-    address: '',
-    gender: null,
-    roleId: null,
+    deliveryMethod: null,
+    recipientName: '',
+    recipientGender: '',
+    recipientEmail: '',
+    recipientPhone: '',
+    shippingAddress: '',
+    note: '',
+    cancelReason: '',
 };
 
 const genderOptions = [
@@ -30,38 +31,55 @@ const genderOptions = [
 ];
 
 const validationSchema = yup.object({
-    email: yup.string().email('Email không hợp lệ').required('Vui lòng nhập email'),
+    deliveryMethod: yup.string().required('Vui lòng chọn phương thức giao hàng'),
 
-    phoneNumber: yup
-        .string()
-        .required('Vui lòng nhập số điện thoại')
-        .matches(REGEXP_PHONE_NUMBER, 'Số điện thoại không hợp lệ'),
-
-    fullName: yup
+    recipientName: yup
         .string()
         .required('Vui lòng nhập họ và tên')
-        .matches(REGEXP_FULL_NAME, 'Họ và tên phải có ít nhất hai từ'),
+        .matches(REGEXP_FULL_NAME, 'Họ và tên phải có ít nhất hai từ')
+        .min(2, 'Họ và tên phải từ 2 ký tự trở lên')
+        .max(100, 'Họ và tên không được vượt quá 100 ký tự'),
 
-    address: yup.string().trim().min(5, 'Địa chỉ quá ngắn').max(255, 'Địa chỉ quá dài').nullable(),
+    recipientGender: yup.string().nullable().oneOf(['MALE', 'FEMALE', 'OTHER', null], 'Giới tính không hợp lệ'),
 
-    gender: yup.string().trim().oneOf(['MALE', 'FEMALE', 'OTHER'], 'Giới tính không hợp lệ').nullable(),
+    recipientEmail: yup
+        .string()
+        .email('Email không hợp lệ')
+        .max(100, 'Email không được vượt quá 100 ký tự')
+        .nullable()
+        .notRequired(),
 
-    roleId: yup.number().required('Vui lòng chọn quyền').typeError('Vui lòng chọn quyền'),
+    recipientPhone: yup
+        .string()
+        .required('Vui lòng nhập số điện thoại')
+        .matches(REGEXP_PHONE_NUMBER, 'Số điện thoại không hợp lệ')
+        .min(10, 'Số điện thoại phải ít nhất 10 ký tự')
+        .max(20, 'Số điện thoại không được vượt quá 20 ký tự'),
+
+    shippingAddress: yup
+        .string()
+        .max(255, 'Địa chỉ không được vượt quá 255 ký tự')
+        .when('deliveryMethod', {
+            is: 'HOME_DELIVERY',
+            then: yup.string().required('Vui lòng nhập địa chỉ giao hàng'),
+            otherwise: yup.string().nullable(),
+        }),
+
+    note: yup.string().max(512, 'Ghi chú không được vượt quá 512 ký tự').nullable(),
+
+    cancelReason: yup.string().max(512, 'Lý do hủy không được vượt quá 512 ký tự').nullable(),
 });
 
-function UpdateUserForm() {
+function OrderEdit() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
 
-    const [userData, setUserData] = useState({});
-
-    const [roleList, setRoleList] = useState([]);
-    const [isRoleLoading, setIsRoleLoading] = useState(false);
+    const [orderData, setOrderData] = useState({});
 
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
-            const response = await updateUser(id, values);
+            const response = await updateOrder(id, values);
             if (response.status === 200) {
                 navigate(entityListPage);
             }
@@ -79,41 +97,24 @@ function UpdateUserForm() {
         enableReinitialize: true,
     });
 
-    useEffect(() => {
-        const fetchRoles = async () => {
-            setIsRoleLoading(true);
-            try {
-                const response = await getRoles();
-                setRoleList(response.data.data);
-            } catch (error) {
-                messageApi.error('Lỗi: ' + error.message);
-            } finally {
-                setIsRoleLoading(false);
-            }
-        };
-
-        fetchRoles();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
     //Tải dữ liệu
     useEffect(() => {
         if (!id) return;
 
         const fetchEntity = async () => {
             try {
-                const response = await getUserById(id);
-                const { email, phoneNumber, fullName, address, gender, role, ...additionalUserData } =
-                    response.data.data;
-                setUserData(additionalUserData);
-                formik.setValues({
-                    email,
-                    phoneNumber,
-                    fullName,
-                    address: address?.trim() === '' ? null : address,
-                    gender,
-                    roleId: role?.id || null,
-                });
+                // const response = await getUserById(id);
+                // const { email, phoneNumber, fullName, address, gender, role, ...additionalUserData } =
+                //     response.data.data;
+                // setUserData(additionalUserData);
+                // formik.setValues({
+                //     email,
+                //     phoneNumber,
+                //     fullName,
+                //     address: address?.trim() === '' ? null : address,
+                //     gender,
+                //     roleId: role?.id || null,
+                // });
             } catch (error) {
                 messageApi.error('Lỗi: ' + error.message);
             }
@@ -126,7 +127,7 @@ function UpdateUserForm() {
     return (
         <>
             {contextHolder}
-            <h2>{id ? 'Chỉnh sửa người dùng' : 'Thêm mới người dùng'}</h2>
+            <h2>Chỉnh sửa đơn hàng</h2>
 
             <form onSubmit={formik.handleSubmit}>
                 <div className="row g-3">
@@ -135,22 +136,8 @@ function UpdateUserForm() {
                         className="col-md-6"
                         label="Tên tài khoản"
                         autoComplete="off"
-                        value={userData.username}
+                        value={orderData.username}
                         disabled
-                    />
-
-                    <SelectInput
-                        id="roleId"
-                        label="Quyền"
-                        placeholder="Chọn quyền"
-                        className="col-md-6"
-                        loading={isRoleLoading}
-                        fieldNames={{ label: 'name', value: 'id' }}
-                        value={formik.values.roleId}
-                        onChange={(value) => formik.setFieldValue('roleId', value)}
-                        onBlur={() => formik.setFieldTouched('roleId', true)}
-                        options={roleList}
-                        error={formik.touched.roleId && formik.errors.roleId ? formik.errors.roleId : null}
                     />
 
                     <TextInput
@@ -228,4 +215,4 @@ function UpdateUserForm() {
     );
 }
 
-export default UpdateUserForm;
+export default OrderEdit;

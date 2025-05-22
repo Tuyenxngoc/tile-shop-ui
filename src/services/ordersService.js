@@ -2,6 +2,10 @@ import { axiosPrivate } from '~/utils/httpRequest';
 
 // ---------- ADMIN ----------
 
+export const updateOrder = (id, values) => {
+    return axiosPrivate.put(`admin/orders/${id}`, values);
+};
+
 export const updateOrderStatus = (id, status) => {
     return axiosPrivate.put(`admin/orders/${id}/status?status=${status}`);
 };

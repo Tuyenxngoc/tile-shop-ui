@@ -4,6 +4,7 @@ import * as yup from 'yup';
 
 import { handleError } from '~/utils/errorHandler';
 import { changePassword } from '~/services/authService';
+import { REGEXP_PASSWORD } from '~/constants';
 
 const defaultValue = {
     oldPassword: '',
@@ -17,10 +18,7 @@ const validationSchema = yup.object({
     password: yup
         .string()
         .required('Vui lòng nhập mật khẩu')
-        .matches(
-            /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,}$/,
-            'Mật khẩu phải chứa ít nhất một chữ cái và một số, tối thiểu 6 ký tự',
-        ),
+        .matches(REGEXP_PASSWORD, 'Mật khẩu phải chứa ít nhất một chữ cái và một số, tối thiểu 6 ký tự'),
 
     repeatPassword: yup
         .string()

@@ -14,6 +14,7 @@ import useStore from '~/hooks/useStore';
 import { getCartItems } from '~/services/cartService';
 import { createOrder } from '~/services/ordersService';
 import { createVnpayPaymentUrl } from '~/services/paymentService';
+import { REGEXP_FULL_NAME, REGEXP_PHONE_NUMBER } from '~/constants';
 
 const deliveryMethodOptions = [
     { value: 'HOME_DELIVERY', label: 'Giao hàng tận nơi' },
@@ -54,12 +55,12 @@ const validationSchema = yup.object({
     phoneNumber: yup
         .string()
         .required('Vui lòng nhập số điện thoại')
-        .matches(/^(?:\+84|0)(?:1[2689]|9[0-9]|3[2-9]|5[6-9]|7[0-9])(?:\d{7}|\d{8})$/, 'Số điện thoại không hợp lệ'),
+        .matches(REGEXP_PHONE_NUMBER, 'Số điện thoại không hợp lệ'),
 
     fullName: yup
         .string()
         .required('Vui lòng nhập họ và tên')
-        .matches(/^\S+(\s+\S+)+$/, 'Họ và tên phải có ít nhất hai từ'),
+        .matches(REGEXP_FULL_NAME, 'Họ và tên phải có ít nhất hai từ'),
 
     deliveryMethod: yup.string().trim().required('Vui lòng chọn phương thức giao hàng'),
 
@@ -69,7 +70,7 @@ const validationSchema = yup.object({
         .when('deliveryMethod', {
             is: (val) => val === 'HOME_DELIVERY',
             then: () => yup.string().trim().required('Vui lòng chọn địa chỉ giao hàng'),
-            otherwise: () => yup.string().notRequired(),
+            otherwise: () => yup.string().nullable(),
         }),
 
     requestInvoice: yup.boolean(),
@@ -80,7 +81,7 @@ const validationSchema = yup.object({
         .when('requestInvoice', {
             is: true,
             then: () => yup.string().trim().required('Vui lòng nhập tên công ty'),
-            otherwise: () => yup.string().notRequired(),
+            otherwise: () => yup.string().nullable(),
         }),
 
     invoiceTaxCode: yup
@@ -89,7 +90,7 @@ const validationSchema = yup.object({
         .when('requestInvoice', {
             is: true,
             then: () => yup.string().trim().required('Vui lòng nhập mã số thuế'),
-            otherwise: () => yup.string().notRequired(),
+            otherwise: () => yup.string().nullable(),
         }),
 
     invoiceCompanyAddress: yup
@@ -98,7 +99,7 @@ const validationSchema = yup.object({
         .when('requestInvoice', {
             is: true,
             then: () => yup.string().trim().required('Vui lòng nhập địa chỉ công ty'),
-            otherwise: () => yup.string().notRequired(),
+            otherwise: () => yup.string().nullable(),
         }),
 });
 

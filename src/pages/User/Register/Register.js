@@ -7,38 +7,33 @@ import * as yup from 'yup';
 import { handleError } from '~/utils/errorHandler';
 import { registerAPI } from '~/services/authService';
 import { ROUTES } from '~/constants/routes';
+import { REGEXP_FULL_NAME, REGEXP_PASSWORD, REGEXP_PHONE_NUMBER, REGEXP_USERNAME } from '~/constants';
 
 const validationSchema = yup.object({
     fullName: yup
         .string()
         .trim()
         .required('Vui lòng nhập họ và tên')
-        .matches(/^\S+(\s+\S+)+$/, 'Họ và tên phải có ít nhất hai từ'),
+        .matches(REGEXP_FULL_NAME, 'Họ và tên phải có ít nhất hai từ'),
 
     phoneNumber: yup
         .string()
         .trim()
         .required('Vui lòng nhập số điện thoại')
-        .matches(/^(?:\+84|0)(?:1[2689]|9[0-9]|3[2-9]|5[6-9]|7[0-9])(?:\d{7}|\d{8})$/, 'Số điện thoại không hợp lệ'),
+        .matches(REGEXP_PHONE_NUMBER, 'Số điện thoại không hợp lệ'),
 
     username: yup
         .string()
         .trim()
         .required('Vui lòng nhập tên đăng nhập')
-        .matches(
-            /^[a-z][a-z0-9]{3,15}$/,
-            'Tên đăng nhập phải bắt đầu bằng chữ cái, chỉ chứa chữ thường và số, từ 4-16 ký tự',
-        ),
+        .matches(REGEXP_USERNAME, 'Tên đăng nhập phải bắt đầu bằng chữ cái, chỉ chứa chữ thường và số, từ 4-16 ký tự'),
 
     email: yup.string().email('Email không hợp lệ').required('Vui lòng nhập email'),
 
     password: yup
         .string()
         .required('Vui lòng nhập mật khẩu')
-        .matches(
-            /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,}$/,
-            'Mật khẩu phải chứa ít nhất một chữ cái và một số, tối thiểu 6 ký tự',
-        ),
+        .matches(REGEXP_PASSWORD, 'Mật khẩu phải chứa ít nhất một chữ cái và một số, tối thiểu 6 ký tự'),
 
     repeatPassword: yup
         .string()

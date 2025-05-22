@@ -10,6 +10,7 @@ import { handleError } from '~/utils/errorHandler';
 import { SelectInput, TextInput } from '~/components/FormInput';
 import { createUser } from '~/services/userService';
 import { getRoles } from '~/services/roleService';
+import { REGEXP_FULL_NAME, REGEXP_PASSWORD, REGEXP_PHONE_NUMBER, REGEXP_USERNAME } from '~/constants';
 
 const entityListPage = '/admin/users';
 
@@ -30,18 +31,12 @@ const validationSchema = yup.object({
         .string()
         .trim()
         .required('Vui lòng nhập tên đăng nhập')
-        .matches(
-            /^[a-z][a-z0-9]{3,15}$/,
-            'Tên đăng nhập phải bắt đầu bằng chữ cái, chỉ chứa chữ thường và số, từ 4-16 ký tự',
-        ),
+        .matches(REGEXP_USERNAME, 'Tên đăng nhập phải bắt đầu bằng chữ cái, chỉ chứa chữ thường và số, từ 4-16 ký tự'),
 
     password: yup
         .string()
         .required('Vui lòng nhập mật khẩu')
-        .matches(
-            /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,}$/,
-            'Mật khẩu phải chứa ít nhất một chữ cái và một số, tối thiểu 6 ký tự',
-        ),
+        .matches(REGEXP_PASSWORD, 'Mật khẩu phải chứa ít nhất một chữ cái và một số, tối thiểu 6 ký tự'),
 
     repeatPassword: yup
         .string()
@@ -53,12 +48,12 @@ const validationSchema = yup.object({
     phoneNumber: yup
         .string()
         .required('Vui lòng nhập số điện thoại')
-        .matches(/^(?:\+84|0)(?:1[2689]|9[0-9]|3[2-9]|5[6-9]|7[0-9])(?:\d{7}|\d{8})$/, 'Số điện thoại không hợp lệ'),
+        .matches(REGEXP_PHONE_NUMBER, 'Số điện thoại không hợp lệ'),
 
     fullName: yup
         .string()
         .required('Vui lòng nhập họ và tên')
-        .matches(/^\S+(\s+\S+)+$/, 'Họ và tên phải có ít nhất hai từ'),
+        .matches(REGEXP_FULL_NAME, 'Họ và tên phải có ít nhất hai từ'),
 
     address: yup.string().trim().min(5, 'Địa chỉ quá ngắn').max(255, 'Địa chỉ quá dài').nullable(),
 
