@@ -58,7 +58,6 @@ import CreateUserForm from './pages/Admin/User/CreateUserForm';
 import UpdateUserForm from './pages/Admin/User/UpdateUserForm';
 
 import Order from './pages/Admin/Order';
-import OrderDetail from './pages/Admin/Order/OrderDetail';
 import OrderEdit from './pages/Admin/Order/OrderEdit';
 
 import StoreInfo from './pages/Admin/StoreInfo';
@@ -138,7 +137,6 @@ function App() {
                         {/* Quản lý đơn hàng */}
                         <Route path="orders">
                             <Route index element={<Order />} />
-                            <Route path="detail/:id" element={<OrderDetail />} />
                             <Route path="edit/:id" element={<OrderEdit />} />
                         </Route>
 
