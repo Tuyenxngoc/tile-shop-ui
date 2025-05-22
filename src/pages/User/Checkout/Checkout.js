@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
-import { Alert, Button, Checkbox, Input, Radio, Spin } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
+import { Alert, Breadcrumb, Button, Checkbox, Input, notification, Radio, Spin } from 'antd';
 
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-import { getCartItems } from '~/services/cartService';
 import CheckoutItem from '~/components/CheckoutItem';
 import ProvinceSelector from '~/components/ProvinceSelector';
 import { TextAreaInput, TextInput } from '~/components/FormInput';
 import { formatCurrency } from '~/utils';
 import useAuth from '~/hooks/useAuth';
 import useStore from '~/hooks/useStore';
+import { getCartItems } from '~/services/cartService';
 import { createOrder } from '~/services/ordersService';
 import { createVnpayPaymentUrl } from '~/services/paymentService';
-import { useNavigate } from 'react-router-dom';
 
 const deliveryMethodOptions = [
     { value: 'HOME_DELIVERY', label: 'Giao hàng tận nơi' },
@@ -30,6 +30,8 @@ const genderOptions = [
     { value: 'FEMALE', label: 'Chị' },
     { value: 'OTHER', label: 'Khác' },
 ];
+
+const shippingFee = 0;
 
 const defaultValue = {
     gender: genderOptions[0].value,
@@ -107,19 +109,19 @@ function Checkout() {
 
     const [checkoutItems, setCheckoutItems] = useState(null);
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [errorMessage, setErrorMessage] = useState(null);
+    const [isCartLoading, setIsCartLoading] = useState(true);
+    const [cartErrorMessage, setCartErrorMessage] = useState(null);
 
     const [totalPrice, setTotalPrice] = useState(0);
-    // eslint-disable-next-line no-unused-vars
-    const [shippingFee, setShippingFee] = useState(0);
+
+    const [api, contextHolder] = notification.useNotification();
 
     const handleSubmit = async (values, { setSubmitting }) => {
-        setSubmitting(true);
-
         if (values.paymentMethod === 'VNPAY' && totalPrice < 10000) {
-            setErrorMessage('Giá trị đơn hàng phải từ 10.000đ để thanh toán qua VNPAY.');
-            setSubmitting(false);
+            api.error({
+                message: 'Thanh toán không hợp lệ',
+                description: 'Giá trị đơn hàng phải từ 10.000đ để thanh toán qua VNPAY.',
+            });
             return;
         }
 
@@ -137,13 +139,21 @@ function Checkout() {
                     // Redirect người dùng đến trang thanh toán VNPAY
                     window.location.href = url;
                 } catch (error) {
-                    setErrorMessage(error.response?.data?.message || 'Lỗi thanh toán qua VNPAY. Vui lòng thử lại sau.');
+                    api.error({
+                        message: 'Lỗi thanh toán VNPAY',
+                        description: error.response?.data?.message || 'Lỗi thanh toán qua VNPAY. Vui lòng thử lại sau.',
+                    });
                 }
             } else {
                 navigate(`/thanh-toan/ket-qua?orderId=${orderId}&paymentMethod=COD&totalAmount=${totalPrice}`);
             }
         } catch (error) {
-            setErrorMessage('Lỗi khi tạo đơn hàng. Vui lòng thử lại.');
+            api.error({
+                message: 'Lỗi tạo đơn hàng',
+                description: error.response?.data?.message || 'Không thể tạo đơn hàng. Vui lòng thử lại.',
+            });
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -162,8 +172,8 @@ function Checkout() {
 
     useEffect(() => {
         const fetchEntities = async () => {
-            setIsLoading(true);
-            setErrorMessage(null);
+            setIsCartLoading(true);
+            setCartErrorMessage(null);
             try {
                 const response = await getCartItems();
                 const { data } = response.data;
@@ -175,9 +185,9 @@ function Checkout() {
                 }
             } catch (error) {
                 const errorMessage = error.response?.data?.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
-                setErrorMessage(errorMessage);
+                setCartErrorMessage(errorMessage);
             } finally {
-                setIsLoading(false);
+                setIsCartLoading(false);
             }
         };
 
@@ -198,13 +208,19 @@ function Checkout() {
 
     return (
         <div className="container">
+            {contextHolder}
+
             <form onSubmit={formik.handleSubmit}>
                 <div className="row">
                     <div className="col-md-4 order-md-2 py-5">
                         <h4 className="mb-3">Giỏ hàng của bạn</h4>
-                        {isLoading ? (
+                        {isCartLoading ? (
                             <div className="d-flex justify-content-center w-100">
                                 <Spin size="large" />
+                            </div>
+                        ) : cartErrorMessage ? (
+                            <div className="w-100">
+                                <Alert message="Lỗi" description={cartErrorMessage} type="error" />
                             </div>
                         ) : (
                             <>
@@ -216,7 +232,7 @@ function Checkout() {
 
                                 {/* Mã giảm giá */}
                                 <div className="d-flex gap-2 mb-3">
-                                    <Input placeholder="Mã giảm giá" />
+                                    <Input name="discountCode" placeholder="Mã giảm giá" />
                                     <Button type="primary">Sử dụng</Button>
                                 </div>
 
@@ -246,7 +262,26 @@ function Checkout() {
                         )}
                     </div>
 
-                    <div className="col-md-8 order-md-1 py-5 border-end bg-white">
+                    <div className="col-md-8 order-md-1 pb-5 border-end bg-white">
+                        <div className="row">
+                            <div className="col-12">
+                                <Breadcrumb
+                                    className="py-4"
+                                    separator=">"
+                                    itemRender={(route) => {
+                                        if (route.to) {
+                                            return <Link to={route.to}>{route.title}</Link>;
+                                        }
+                                        return <span>{route.title}</span>;
+                                    }}
+                                    items={[
+                                        { title: 'Trang chủ', to: '/' },
+                                        { title: 'Giỏ hàng', to: '/gio-hang' },
+                                        { title: 'Thanh toán' },
+                                    ]}
+                                />
+                            </div>
+                        </div>
                         <div className="row g-3">
                             <div className="col-12">
                                 <h4 className="mb-3">Thông tin khách hàng</h4>
@@ -262,11 +297,12 @@ function Checkout() {
                             </div>
 
                             <TextInput
-                                className="col-12"
-                                label="Nhập họ tên"
-                                id="fullName"
                                 required
-                                autoComplete="off"
+                                className="col-12"
+                                id="fullName"
+                                label="Họ tên người nhận"
+                                placeholder="Nhập họ tên người nhận"
+                                autoComplete="name"
                                 value={formik.values.fullName}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -276,11 +312,12 @@ function Checkout() {
                             />
 
                             <TextInput
-                                className="col-12"
-                                label="Nhập số điện thoại"
-                                id="phoneNumber"
                                 required
-                                autoComplete="off"
+                                className="col-12"
+                                id="phoneNumber"
+                                label="Số điện thoại người nhận"
+                                placeholder="Nhập số điện thoại người nhận"
+                                autoComplete="tel"
                                 value={formik.values.phoneNumber}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -292,11 +329,12 @@ function Checkout() {
                             />
 
                             <TextInput
+                                required
                                 className="col-12"
                                 id="email"
-                                required
                                 label="Email"
                                 placeholder="Nhập email"
+                                autoComplete="email"
                                 value={formik.values.email}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -323,11 +361,19 @@ function Checkout() {
                                 )}
 
                                 {formik.values.deliveryMethod === 'HOME_DELIVERY' && (
-                                    <ProvinceSelector
-                                        onChange={({ fullAddress }) =>
-                                            formik.setFieldValue('shippingAddress', fullAddress)
-                                        }
-                                    />
+                                    <>
+                                        <ProvinceSelector
+                                            onChange={({ fullAddress }) =>
+                                                formik.setFieldValue('shippingAddress', fullAddress)
+                                            }
+                                        />
+                                        {formik.values.shippingAddress && (
+                                            <div className="mt-2">
+                                                <strong>Địa chỉ giao hàng của bạn:</strong>
+                                                <div>{formik.values.shippingAddress}</div>
+                                            </div>
+                                        )}
+                                    </>
                                 )}
 
                                 {formik.touched.shippingAddress && formik.errors.shippingAddress && (
@@ -350,6 +396,7 @@ function Checkout() {
 
                             <div className="col-12">
                                 <Checkbox
+                                    name="requestInvoice"
                                     checked={formik.values.requestInvoice}
                                     onChange={(e) => formik.setFieldValue('requestInvoice', e.target.checked)}
                                 >
@@ -437,12 +484,6 @@ function Checkout() {
                             </div>
                         </div>
                     </div>
-
-                    {errorMessage && (
-                        <div className="col-12 order-md-3">
-                            <Alert message="Lỗi" description={errorMessage} type="error" />
-                        </div>
-                    )}
                 </div>
             </form>
         </div>
