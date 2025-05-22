@@ -74,7 +74,7 @@ function Login() {
                                     size="large"
                                     id="username"
                                     name="username"
-                                    autoComplete="on"
+                                    autoComplete="username"
                                     value={formik.values.username}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}

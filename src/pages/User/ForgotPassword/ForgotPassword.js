@@ -57,7 +57,7 @@ function ForgotPassword() {
                                     size="large"
                                     id="username"
                                     name="username"
-                                    autoComplete="on"
+                                    autoComplete="username"
                                     value={formik.values.username}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
@@ -72,7 +72,7 @@ function ForgotPassword() {
                                     size="large"
                                     id="email"
                                     name="email"
-                                    autoComplete="on"
+                                    autoComplete="email"
                                     value={formik.values.email}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}

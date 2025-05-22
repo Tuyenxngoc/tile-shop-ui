@@ -491,7 +491,7 @@ function ProductForm() {
                             label="Tên sản phẩm"
                             placeholder="Nhập tên sản phẩm"
                             helperText="Tên sản phẩm từ 3-255 kí tự"
-                            autoComplete="on"
+                            autoComplete="off"
                             value={formik.values.name}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}

@@ -300,7 +300,7 @@ function CategoryForm() {
                         label="Tên danh mục"
                         placeholder="Nhập tên danh mục"
                         helperText="Tên danh mục tối đa 255 kí tự"
-                        autoComplete="on"
+                        autoComplete="off"
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
