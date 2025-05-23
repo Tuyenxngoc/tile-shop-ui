@@ -14,6 +14,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import './swiper-custom.scss';
 
+import ReactQuill from 'react-quill';
 import { FaShoppingBag } from 'react-icons/fa';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa6';
 
@@ -421,10 +422,7 @@ function ProductDetail() {
             >
                 <div className="row mx-0">
                     <div className="col-12 col-md-7 order-2 order-md-1">
-                        <div
-                            className="rich-text-content"
-                            dangerouslySetInnerHTML={{ __html: entityData.description }}
-                        />
+                        <ReactQuill value={entityData.description} readOnly={true} theme="bubble" />
                     </div>
                     <div className="col-12 col-md-5 order-1 order-md-2">
                         <h3>Thông số kỹ thuật</h3>

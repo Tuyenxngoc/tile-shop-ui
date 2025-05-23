@@ -1,7 +1,4 @@
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import 'react-quill/dist/quill.core.css';
-
 import { formats, modules } from '~/constants/editorConfig';
 
 function RichTextInput({

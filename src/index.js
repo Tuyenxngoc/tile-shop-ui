@@ -9,6 +9,9 @@ import viVN from 'antd/es/locale/vi_VN';
 import { AuthProvider } from '~/contexts/AuthProvider';
 import { StoreProvider } from '~/contexts/StoreProvider';
 
+import 'react-quill/dist/quill.snow.css';
+import 'react-quill/dist/quill.core.css';
+
 import './assets/styles/Global.scss';
 
 import dayjs from 'dayjs';

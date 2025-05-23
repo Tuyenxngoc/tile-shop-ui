@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Alert, Breadcrumb, Menu, Spin } from 'antd';
 import dayjs from 'dayjs';
+import ReactQuill from 'react-quill';
 import { FaClock } from 'react-icons/fa6';
 import Policy from '~/components/Policy';
 import { getNewsCategories } from '~/services/newsCategoryService';
@@ -140,7 +141,7 @@ function NewsDetail() {
 
                         <img src={entityData.imageUrl} className="img-fluid rounded-3 my-3" alt={entityData.title} />
                         <div>{entityData.description}</div>
-                        <div className="rich-text-content" dangerouslySetInnerHTML={{ __html: entityData.content }} />
+                        <ReactQuill value={entityData.content} readOnly={true} theme="bubble" />
                     </div>
                 </div>
 
