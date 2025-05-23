@@ -21,7 +21,12 @@ function PopularCategories({ className }) {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const response = await getCategories({ pageNum: 1, pageSize: 12 });
+                const response = await getCategories({
+                    pageNum: 1,
+                    pageSize: 12,
+                    sortBy: 'createdDate',
+                    isAscending: false,
+                });
                 const { items } = response.data.data;
                 setCategories(items);
             } catch (error) {

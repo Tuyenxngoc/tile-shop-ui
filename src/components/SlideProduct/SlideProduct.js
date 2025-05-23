@@ -13,14 +13,20 @@ import classNames from 'classnames/bind';
 import styles from './SlideProduct.module.scss';
 
 import Product from '../Product';
-import { getProducts } from '~/services/productService';
-import { Alert, Spin } from 'antd';
-import { getBrands } from '~/services/brandService';
+import { Alert, Empty, Spin } from 'antd';
 import useCart from '~/hooks/useCart';
 
 const cx = classNames.bind(styles);
 
-function SlideProduct({ className }) {
+function SlideProduct({
+    className,
+    title,
+    fetchProducts,
+    productFilterParams,
+    fetchBrands,
+    brandFilterParams,
+    viewAllLink,
+}) {
     const { handleAddToCart, isAdding } = useCart();
 
     const [brands, setBrands] = useState([]);
@@ -34,7 +40,10 @@ function SlideProduct({ className }) {
             setIsLoading(true);
             setErrorMessage(null);
             try {
-                const [productsRes, brandsRes] = await Promise.all([getProducts(), getBrands()]);
+                const [productsRes, brandsRes] = await Promise.all([
+                    fetchProducts(productFilterParams),
+                    fetchBrands(brandFilterParams),
+                ]);
 
                 const { items: productItems } = productsRes.data.data;
                 setEntityData(productItems);
@@ -56,7 +65,7 @@ function SlideProduct({ className }) {
         <div className={cx('wrapper', className)}>
             <div className="row mx-0 mb-4">
                 <div className="col-12 col-md-3">
-                    <h2 className={cx('title-popup')}>Bồn Cầu</h2>
+                    <h2 className={cx('title')}>{title}</h2>
                 </div>
 
                 <div className="col-12 col-md-9">
@@ -66,14 +75,14 @@ function SlideProduct({ className }) {
                                 {brand.logoUrl ? (
                                     <img src={brand.logoUrl} alt={brand.name} width={100} className="img-fluid" />
                                 ) : (
-                                    <div className={cx('brand-placeholder')}>{brand.name}</div>
+                                    <span className={cx('brand-placeholder')}>{brand.name}</span>
                                 )}
                             </Link>
                         ))}
-                        <Link to="/bon-cau" className={cx('btn-brand')}>
-                            <div className={cx('brand-placeholder')}>
+                        <Link to={viewAllLink} className={cx('btn-brand')}>
+                            <span className={cx('brand-placeholder')}>
                                 Xem tất cả <FaCaretRight />
-                            </div>
+                            </span>
                         </Link>
                     </div>
                 </div>
@@ -89,7 +98,7 @@ function SlideProduct({ className }) {
                         <div className="w-100">
                             <Alert message="Lỗi" description={errorMessage} type="error" />
                         </div>
-                    ) : (
+                    ) : entityData && entityData.length > 0 ? (
                         <Swiper
                             style={{
                                 '--swiper-navigation-color': '#333',
@@ -111,6 +120,10 @@ function SlideProduct({ className }) {
                                 </SwiperSlide>
                             ))}
                         </Swiper>
+                    ) : (
+                        <div className="d-flex justify-content-center w-100 py-5">
+                            <Empty description="Không có sản phẩm nào để hiển thị." />
+                        </div>
                     )}
                 </div>
             </div>

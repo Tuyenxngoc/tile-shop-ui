@@ -3,7 +3,7 @@
     border-radius: 5px;
     padding: 16px 12px;
 
-    .title-popup {
+    .title {
         font-style: normal;
         font-weight: 500;
         font-size: 25px;
@@ -11,15 +11,16 @@
         text-transform: uppercase;
     }
 
-    .btn-brand {
-        & + .btn-brand {
-            margin-left: 10px;
-        }
-    }
-
     .btn-read-more {
-        display: inline-flex;
+        min-width: 100px;
+        height: 35px;
+        padding: 0 10px;
+        display: flex;
         align-items: center;
         justify-content: center;
+        background: white;
+        border-radius: 6px;
+        font-weight: bold;
+        text-align: center;
     }
 }

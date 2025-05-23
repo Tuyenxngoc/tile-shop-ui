@@ -3,7 +3,7 @@
     border-radius: 5px;
     padding: 12px 0;
 
-    .title-popup {
+    .title {
         font-style: normal;
         font-weight: 500;
         font-size: 25px;
@@ -18,8 +18,9 @@
     }
 
     .brand-placeholder {
-        width: 100px;
+        min-width: 100px;
         height: 35px;
+        padding: 0 10px;
         display: flex;
         align-items: center;
         justify-content: center;

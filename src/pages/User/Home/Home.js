@@ -6,6 +6,8 @@ import Carousel from '~/components/Carousel';
 import Policy from '~/components/Policy';
 import SlideNew from '~/components/SlideNew';
 import PopularCategories from '~/components/PopularCategories';
+import { getProducts } from '~/services/productService';
+import { getBrands } from '~/services/brandService';
 
 function Home() {
     const {
@@ -31,19 +33,39 @@ function Home() {
                 </div>
             </div>
 
-            <div style={{ backgroundColor: backgroundColor }}>
+            <div style={{ backgroundColor: backgroundColor, overflow: 'hidden' }}>
                 <div className="container">
                     <Policy className="mb-3" />
-
                     <PopularCategories className="mb-3" />
+                    <SlideProduct
+                        className="mb-3"
+                        title="Bồn Cầu"
+                        fetchProducts={getProducts}
+                        productFilterParams={{ searchBy: 'categorySlug', keyword: 'bon-cau', pageSize: 20 }}
+                        fetchBrands={getBrands}
+                        brandFilterParams={{ pageSize: 5 }}
+                        viewAllLink="/danh-muc/bon-cau"
+                    />
+                    <SlideProduct
+                        className="mb-3"
+                        title="Bồn Tắm"
+                        fetchProducts={getProducts}
+                        productFilterParams={{ searchBy: 'categorySlug', keyword: 'bon-tam', pageSize: 20 }}
+                        fetchBrands={getBrands}
+                        brandFilterParams={{ pageSize: 5 }}
+                        viewAllLink="/danh-muc/bon-tam"
+                    />
+                    <SlideProduct
+                        className="mb-3"
+                        title="Gạch Ốp Lát"
+                        fetchProducts={getProducts}
+                        productFilterParams={{ searchBy: 'categorySlug', keyword: 'gach-op-lat', pageSize: 20 }}
+                        fetchBrands={getBrands}
+                        brandFilterParams={{ pageSize: 5 }}
+                        viewAllLink="/danh-muc/gach-op-lat"
+                    />
 
-                    <SlideProduct className="mb-3" />
-
-                    <SlideProduct className="mb-3" />
-
-                    <SlideProduct className="mb-3" />
-
-                    <SlideNew />
+                    <SlideNew className="mb-3" />
                 </div>
             </div>
         </>

@@ -7,7 +7,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/grid';
 
-import { Alert, Spin } from 'antd';
+import { Alert, Empty, Spin } from 'antd';
 import { FaCaretRight } from 'react-icons/fa';
 
 import New from '../New';
@@ -15,6 +15,7 @@ import { getNews } from '~/services/newsService';
 
 import classNames from 'classnames/bind';
 import styles from './SlideNew.module.scss';
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -48,14 +49,17 @@ function SlideNew({ className }) {
         <div className={cx('wrapper', className)}>
             <div className="row mb-4">
                 <div className="col col-md-5 col-8">
-                    <h2 className={cx('title-popup')}>Tin tức</h2>
+                    <h2 className={cx('title')}>Tin tức</h2>
                 </div>
 
                 <div className="col col-md-7 col-4 text-end">
-                    <a className={cx('btn-brand', 'btn-read-more')} href="/tin-tuc">
-                        <span>Xem tất cả</span>
-                        <FaCaretRight />
-                    </a>
+                    <div className="d-flex align-items-center justify-content-end">
+                        <Link to="tin-tuc">
+                            <span className={cx('btn-read-more')}>
+                                Xem tất cả <FaCaretRight />
+                            </span>
+                        </Link>
+                    </div>
                 </div>
             </div>
 
@@ -69,7 +73,7 @@ function SlideNew({ className }) {
                         <div className="w-100">
                             <Alert message="Lỗi" description={errorMessage} type="error" />
                         </div>
-                    ) : (
+                    ) : entityData && entityData.length > 0 ? (
                         <Swiper
                             style={{
                                 '--swiper-navigation-color': '#333',
@@ -86,6 +90,10 @@ function SlideNew({ className }) {
                                 </SwiperSlide>
                             ))}
                         </Swiper>
+                    ) : (
+                        <div className="d-flex justify-content-center w-100 py-5">
+                            <Empty description="Không có tin tức nào để hiển thị." />
+                        </div>
                     )}
                 </div>
             </div>
