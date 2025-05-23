@@ -73,7 +73,7 @@ function NewsDetail() {
 
     const menuItems = categories.map((category) => ({
         key: category.id,
-        label: <Link to={`/tin-tuc?danh-muc=${category.id}`}>{category.name}</Link>,
+        label: <Link to={`/tin-tuc?danh-muc=${category.slug}`}>{category.name}</Link>,
     }));
 
     if (isLoading) {
