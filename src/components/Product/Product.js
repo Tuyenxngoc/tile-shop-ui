@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 
 import { Rate } from 'antd';
 import { FaSearch, FaShoppingCart } from 'react-icons/fa';
+import { FaSpinner } from 'react-icons/fa6';
 
 import { formatCurrency } from '~/utils/utils';
 
@@ -10,7 +11,7 @@ import styles from './Product.module.scss';
 
 const cx = classNames.bind(styles);
 
-function Product({ data, onAddToCart }) {
+function Product({ data, isAdding, onAddToCart }) {
     const productPath = '/san-pham/' + data.slug;
 
     return (
@@ -47,8 +48,8 @@ function Product({ data, onAddToCart }) {
                     <Rate value={data.averageRating} disabled />
                     <span>({data.averageRating})</span>
                 </div>
-                <div className={cx('cart')} onClick={onAddToCart}>
-                    <FaShoppingCart />
+                <div className={cx('cart', { disabled: isAdding })} onClick={!isAdding ? onAddToCart : null}>
+                    {isAdding ? <FaSpinner className={cx('spinner')} /> : <FaShoppingCart />}
                 </div>
             </div>
         </div>

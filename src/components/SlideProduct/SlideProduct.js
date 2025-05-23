@@ -7,7 +7,6 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/grid';
 
-import Swal from 'sweetalert2';
 import { FaCaretRight } from 'react-icons/fa';
 
 import classNames from 'classnames/bind';
@@ -16,44 +15,19 @@ import styles from './SlideProduct.module.scss';
 import Product from '../Product';
 import { getProducts } from '~/services/productService';
 import { Alert, Spin } from 'antd';
-import { addToCart } from '~/services/cartService';
 import { getBrands } from '~/services/brandService';
+import useCart from '~/hooks/useCart';
 
 const cx = classNames.bind(styles);
 
 function SlideProduct({ className }) {
+    const { handleAddToCart, isAdding } = useCart();
+
     const [brands, setBrands] = useState([]);
     const [entityData, setEntityData] = useState(null);
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
-
-    const handleAddToCart = async (productId) => {
-        try {
-            const payload = {
-                productId,
-                quantity: 1,
-            };
-
-            await addToCart(payload);
-
-            Swal.fire({
-                title: 'Thành công!',
-                text: 'Sản phẩm đã được thêm vào giỏ hàng.',
-                icon: 'success',
-                confirmButtonText: 'OK',
-            });
-        } catch (error) {
-            console.log(error);
-
-            Swal.fire({
-                title: 'Thất bại!',
-                text: error.response?.data?.message || 'Không thể thêm vào giỏ hàng.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-            });
-        }
-    };
 
     useEffect(() => {
         const fetchEntities = async () => {
@@ -129,7 +103,11 @@ function SlideProduct({ className }) {
                         >
                             {entityData.map((product, index) => (
                                 <SwiperSlide key={index}>
-                                    <Product data={product} onAddToCart={() => handleAddToCart(product.id)} />
+                                    <Product
+                                        data={product}
+                                        isAdding={isAdding}
+                                        onAddToCart={() => handleAddToCart(product.id)}
+                                    />
                                 </SwiperSlide>
                             ))}
                         </Swiper>

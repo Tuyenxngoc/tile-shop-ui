@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import Swal from 'sweetalert2';
 import { Alert, Breadcrumb, Empty, Pagination, Skeleton, Button, Dropdown, Space } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined, PercentageOutlined, EyeOutlined, StarOutlined } from '@ant-design/icons';
 
-import Product from '~/components/Product';
-import { addToCart } from '~/services/cartService';
-import { getProducts } from '~/services/productService';
-import { getCategoryBySlug } from '~/services/categoryService';
-
 import classNames from 'classnames/bind';
 import styles from './ProductByCategory.module.scss';
-import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
+
 import ReactQuill from 'react-quill';
+import Product from '~/components/Product';
+import { getProducts } from '~/services/productService';
+import { getCategoryBySlug } from '~/services/categoryService';
+import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
+import useCart from '~/hooks/useCart';
 
 const cx = classNames.bind(styles);
 
 function ProductByCategory() {
+    const { handleAddToCart, isAdding } = useCart();
+
     const { id } = useParams();
 
     const [meta, setMeta] = useState(INITIAL_META);
@@ -108,33 +109,6 @@ function ProductByCategory() {
             sortBy,
             isAscending,
         }));
-    };
-
-    const handleAddToCart = async (productId) => {
-        try {
-            const payload = {
-                productId,
-                quantity: 1,
-            };
-
-            await addToCart(payload);
-
-            Swal.fire({
-                title: 'Thành công!',
-                text: 'Sản phẩm đã được thêm vào giỏ hàng.',
-                icon: 'success',
-                confirmButtonText: 'OK',
-            });
-        } catch (error) {
-            console.log(error);
-
-            Swal.fire({
-                title: 'Thất bại!',
-                text: error.response?.data?.message || 'Không thể thêm vào giỏ hàng.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-            });
-        }
     };
 
     useEffect(() => {
@@ -255,7 +229,11 @@ function ProductByCategory() {
                             <div className={cx('product-wrapper')}>
                                 {products.map((product) => (
                                     <div key={product.id} className={cx('item-product')}>
-                                        <Product data={product} onAddToCart={() => handleAddToCart(product.id)} />
+                                        <Product
+                                            data={product}
+                                            isAdding={isAdding}
+                                            onAddToCart={() => handleAddToCart(product.id)}
+                                        />
                                     </div>
                                 ))}
                             </div>

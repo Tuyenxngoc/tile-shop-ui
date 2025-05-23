@@ -1,19 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Breadcrumb, Empty, Pagination, Skeleton, Alert } from 'antd';
-import Swal from 'sweetalert2';
 import Policy from '~/components/Policy';
 import Product from '~/components/Product';
 import { searchProducts } from '~/services/productService';
-import { addToCart } from '~/services/cartService';
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 
 import classNames from 'classnames/bind';
 import styles from './SearchProduct.module.scss';
+import useCart from '~/hooks/useCart';
 
 const cx = classNames.bind(styles);
 
 function SearchProduct() {
+    const { handleAddToCart, isAdding } = useCart();
+
     const location = useLocation();
     const navigate = useNavigate();
     const queryParams = new URLSearchParams(location.search);
@@ -37,33 +38,6 @@ function SearchProduct() {
             pageNum: 1,
             pageSize: size,
         }));
-    };
-
-    const handleAddToCart = async (productId) => {
-        try {
-            const payload = {
-                productId,
-                quantity: 1,
-            };
-
-            await addToCart(payload);
-
-            Swal.fire({
-                title: 'Thành công!',
-                text: 'Sản phẩm đã được thêm vào giỏ hàng.',
-                icon: 'success',
-                confirmButtonText: 'OK',
-            });
-        } catch (error) {
-            console.log(error);
-
-            Swal.fire({
-                title: 'Thất bại!',
-                text: error.response?.data?.message || 'Không thể thêm vào giỏ hàng.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-            });
-        }
     };
 
     useEffect(() => {
@@ -131,7 +105,11 @@ function SearchProduct() {
                         <div className={cx('product-wrapper')}>
                             {entityData.map((product) => (
                                 <div key={product.id} className={cx('item-product')}>
-                                    <Product data={product} onAddToCart={() => handleAddToCart(product.id)} />
+                                    <Product
+                                        data={product}
+                                        isAdding={isAdding}
+                                        onAddToCart={() => handleAddToCart(product.id)}
+                                    />
                                 </div>
                             ))}
                         </div>
