@@ -528,9 +528,7 @@ function ProductDetail() {
                 Tại sao lại chọn Hùng Hương
             </div>
 
-            <div className="row">
-                <Policy />
-            </div>
+            <Policy />
         </div>
     );
 }

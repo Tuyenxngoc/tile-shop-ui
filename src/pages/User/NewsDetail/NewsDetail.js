@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Alert, Breadcrumb, Menu, Spin } from 'antd';
-import dayjs from 'dayjs';
 import ReactQuill from 'react-quill';
 import { FaClock } from 'react-icons/fa6';
+
 import Policy from '~/components/Policy';
 import { getNewsCategories } from '~/services/newsCategoryService';
 import { getNews, getNewsBySlug } from '~/services/newsService';
+import { formatDate } from '~/utils';
 
 function NewsDetail() {
     const { id } = useParams();
@@ -93,7 +94,7 @@ function NewsDetail() {
     }
 
     return (
-        <>
+        <div className="bg-white">
             <div className="container">
                 <div className="row">
                     <Breadcrumb
@@ -118,60 +119,80 @@ function NewsDetail() {
                     <Menu mode="horizontal" selectable={false} style={{ borderBottom: 'none' }} items={menuItems} />
                 </div>
             </div>
-
-            <div className="row" style={{ position: 'relative' }}>
+            <div style={{ position: 'relative' }}>
                 <div
-                    className="col-12"
-                    style={{ backgroundColor: '#F4F4F4', height: 434, position: 'absolute', zIndex: 0 }}
+                    style={{
+                        backgroundColor: '#F4F4F4',
+                        height: 434,
+                        width: '100%',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        zIndex: 0,
+                    }}
                 />
             </div>
 
-            <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-                <div className="row">
-                    <div className="col-12" style={{ maxWidth: 700, marginRight: 'auto', marginLeft: 'auto' }}>
-                        <div className="text-center">
-                            <h1 className="mt-5">{entityData.title}</h1>
-                        </div>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+                <div className="container" style={{ overflow: 'hidden' }}>
+                    <div className="row">
+                        <div className="col-12" style={{ maxWidth: '700px', marginRight: 'auto', marginLeft: 'auto' }}>
+                            <div className="text-center">
+                                <h1 className="mt-5">{entityData.title}</h1>
+                            </div>
 
-                        <div className="small text-muted d-flex align-items-center justify-content-center gap-2">
-                            <FaClock />
-                            {dayjs(entityData.createdDate).format('DD/MM/YYYY')}
-                            &nbsp;&nbsp; Admin
-                        </div>
+                            <div className="small text-muted d-flex align-items-center justify-content-center gap-2">
+                                <FaClock />
+                                {formatDate(entityData.createdDate)}
+                                &nbsp;&nbsp; Admin
+                            </div>
 
-                        <img src={entityData.imageUrl} className="img-fluid rounded-3 my-3" alt={entityData.title} />
-                        <div>{entityData.description}</div>
-                        <ReactQuill value={entityData.content} readOnly={true} theme="bubble" />
-                    </div>
-                </div>
+                            <div className="text-center">
+                                <img
+                                    src={entityData.imageUrl}
+                                    className="img-fluid rounded-3 my-3"
+                                    alt={entityData.title}
+                                />
+                            </div>
 
-                <div className="row mb-3">
-                    <h4 className="mt-3 mb-4">Bài viết liên quan</h4>
-                    {relatedNews.map((news, index) => (
-                        <div key={index} className="col-md-3 mb-4">
-                            <Link to={`/tin-tuc/${news.slug}`}>
-                                <img src={news.imageUrl} alt={news.title} className="img-fluid rounded-3" />
+                            <div>{entityData.description}</div>
+
+                            <ReactQuill value={entityData.content} readOnly={true} theme="bubble" />
+
+                            <hr />
+                            <h6>Chủ đề</h6>
+                            <Link to={`/tin-tuc?danh-muc=${entityData.category.slug}`} class="link-black">
+                                {entityData.category.name}
                             </Link>
+                        </div>
+                    </div>
 
-                            <div>
-                                <Link to={`/tin-tuc/${news.slug}`} className="text-dark fs-5 text-decoration-none">
-                                    <h3 className="fw-semibold fs-6 mb-3">{news.title}</h3>
+                    <div className="row mb-3">
+                        <h4 className="mt-3 mb-4">Bài viết liên quan</h4>
+                        {relatedNews.map((news, index) => (
+                            <div key={index} className="col-md-3 mb-4">
+                                <Link to={`/tin-tuc/${news.slug}`}>
+                                    <img src={news.imageUrl} alt={news.title} className="img-fluid rounded-3" />
                                 </Link>
-                                <div className="small text-muted d-flex align-items-center gap-2">
-                                    <FaClock />
-                                    {dayjs(news.createdDate).format('DD/MM/YYYY')}
-                                    &nbsp;&nbsp; Admin
+
+                                <div>
+                                    <Link to={`/tin-tuc/${news.slug}`} className="text-dark fs-5 text-decoration-none">
+                                        <h3 className="fw-semibold fs-6 mb-3">{news.title}</h3>
+                                    </Link>
+                                    <div className="small text-muted d-flex align-items-center gap-2">
+                                        <FaClock />
+                                        {formatDate(news.createdDate)}
+                                        &nbsp;&nbsp; Admin
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
 
-                <div className="row">
-                    <Policy />
+                    <Policy className="mb-3" />
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 

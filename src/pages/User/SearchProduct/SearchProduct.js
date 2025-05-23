@@ -129,7 +129,7 @@ function SearchProduct() {
             )}
 
             <div className="mt-3">
-                <Policy />
+                <Policy className="mt-3" />
             </div>
         </div>
     );
