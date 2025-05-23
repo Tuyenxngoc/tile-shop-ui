@@ -18,6 +18,7 @@ import Register from './pages/User/Register';
 import SearchProduct from './pages/User/SearchProduct';
 import ProductDetail from './pages/User/ProductDetail';
 import ProductByCategory from './pages/User/ProductByCategory';
+import ProductByBrand from './pages/User/ProductByBrand';
 import Checkout from './pages/User/Checkout';
 import PaymentReturn from './pages/User/PaymentReturn';
 import UserProfile from './pages/User/UserProfile';
@@ -78,6 +79,7 @@ function App() {
                     <Route path="tim-kiem" element={<SearchProduct />} />
                     <Route path="san-pham/:id" element={<ProductDetail />} />
                     <Route path="danh-muc/:id" element={<ProductByCategory />} />
+                    <Route path="thuong-hieu/:id" element={<ProductByBrand />} />
 
                     <Route path="tin-tuc" element={<NewsList />} />
                     <Route path="tin-tuc/:id" element={<NewsDetail />} />

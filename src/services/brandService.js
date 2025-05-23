@@ -4,6 +4,10 @@ export const getBrandById = (id) => {
     return httpRequest.get(`brands/${id}`);
 };
 
+export const getBrandBySlug = (slug) => {
+    return httpRequest.get(`brands/slug/${slug}`);
+};
+
 export const getBrands = (params) => {
     return httpRequest.get('brands', { params });
 };

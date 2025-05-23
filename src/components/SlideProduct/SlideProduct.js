@@ -62,7 +62,7 @@ function SlideProduct({ className }) {
                 <div className="col-12 col-md-9">
                     <div className="d-flex align-items-center justify-content-end">
                         {brands.map((brand, index) => (
-                            <Link key={index} to={brand.slug} className={cx('btn-brand')}>
+                            <Link key={index} to={`thuong-hieu/${brand.slug}`} className={cx('btn-brand')}>
                                 {brand.logoUrl ? (
                                     <img src={brand.logoUrl} alt={brand.name} width={100} className="img-fluid" />
                                 ) : (
