@@ -1,9 +1,8 @@
-import { Breadcrumb, Menu } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Breadcrumb, Menu } from 'antd';
 import { getNewsCategories } from '~/services/newsCategoryService';
-import Dcs from './cc';
-import Search from 'antd/es/transfer/search';
+import NewsSection from './NewsSection';
 
 function NewsList() {
     const [categories, setCategories] = useState([]);
@@ -22,38 +21,48 @@ function NewsList() {
         fetchCategories();
     }, []);
 
-    const menuItems = categories.map((category) => ({
-        key: category.id,
-        label: <Link to={`/tin-tuc?danh-muc=${category.slug}`}>{category.name}</Link>,
-    }));
+    const menuItems = useMemo(
+        () =>
+            categories.map((category) => ({
+                key: category.id,
+                label: <Link to={`/tin-tuc?danh-muc=${category.slug}`}>{category.name}</Link>,
+            })),
+        [categories],
+    );
 
     return (
-        <div className="container">
-            <div className="row">
-                <Breadcrumb
-                    className="py-4"
-                    separator=">"
-                    itemRender={(route) => {
-                        if (route.to) {
-                            return <Link to={route.to}>{route.title}</Link>;
-                        }
-                        return <span>{route.title}</span>;
-                    }}
-                    items={[
-                        { title: 'Trang chủ', to: '/' },
-                        { title: 'Tin tức', to: '/tin-tuc' },
-                    ]}
-                />
+        <>
+            <div className="bg-white">
+                <div className="container">
+                    <Breadcrumb
+                        className="py-4"
+                        separator=">"
+                        itemRender={(route) => {
+                            if (route.to) {
+                                return <Link to={route.to}>{route.title}</Link>;
+                            }
+                            return <span>{route.title}</span>;
+                        }}
+                        items={[
+                            { title: 'Trang chủ', to: '/' },
+                            { title: 'Tin tức', to: '/tin-tuc' },
+                        ]}
+                    />
+
+                    <Menu mode="horizontal" selectable={false} style={{ borderBottom: 'none' }} items={menuItems} />
+                </div>
             </div>
 
-            <div className="row">
-                <Menu mode="horizontal" selectable={false} style={{ borderBottom: 'none' }} items={menuItems} />
+            <div className="container">
+                {categories.map((category, index) => (
+                    <NewsSection
+                        key={index}
+                        title={category.name}
+                        filter={{ searchBy: 'categorySlug', keyword: category.slug }}
+                    />
+                ))}
             </div>
-
-            {categories.map((category, index) => (
-                <Dcs key={index} title={category.name} filter={{ searchBy: 'categorySlug', keyword: category.slug }} />
-            ))}
-        </div>
+        </>
     );
 }
 

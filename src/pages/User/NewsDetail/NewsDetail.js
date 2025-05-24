@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Alert, Breadcrumb, Menu, Spin } from 'antd';
 import ReactQuill from 'react-quill';
 import { FaClock } from 'react-icons/fa6';
 
 import Policy from '~/components/Policy';
+import NewsCard from '~/components/New/NewsCard';
 import { getNewsCategories } from '~/services/newsCategoryService';
 import { getNews, getNewsBySlug } from '~/services/newsService';
 import { formatDate } from '~/utils';
@@ -72,10 +73,14 @@ function NewsDetail() {
         fetchRelated();
     }, [entityData, id]);
 
-    const menuItems = categories.map((category) => ({
-        key: category.id,
-        label: <Link to={`/tin-tuc?danh-muc=${category.slug}`}>{category.name}</Link>,
-    }));
+    const menuItems = useMemo(
+        () =>
+            categories.map((category) => ({
+                key: category.id,
+                label: <Link to={`/tin-tuc?danh-muc=${category.slug}`}>{category.name}</Link>,
+            })),
+        [categories],
+    );
 
     if (isLoading) {
         return (
@@ -96,29 +101,26 @@ function NewsDetail() {
     return (
         <div className="bg-white">
             <div className="container">
-                <div className="row">
-                    <Breadcrumb
-                        className="py-4"
-                        separator=">"
-                        itemRender={(route) => {
-                            if (route.to) {
-                                return <Link to={route.to}>{route.title}</Link>;
-                            }
-                            return <span>{route.title}</span>;
-                        }}
-                        items={[
-                            { title: 'Trang chủ', to: '/' },
-                            { title: 'Tin tức', to: '/tin-tuc' },
-                            { title: entityData.category.name, to: `/tin-tuc?danh-muc=${entityData.category.id}` },
-                            { title: entityData.title },
-                        ]}
-                    />
-                </div>
+                <Breadcrumb
+                    className="py-4"
+                    separator=">"
+                    itemRender={(route) => {
+                        if (route.to) {
+                            return <Link to={route.to}>{route.title}</Link>;
+                        }
+                        return <span>{route.title}</span>;
+                    }}
+                    items={[
+                        { title: 'Trang chủ', to: '/' },
+                        { title: 'Tin tức', to: '/tin-tuc' },
+                        { title: entityData.category.name, to: `/tin-tuc?danh-muc=${entityData.category.id}` },
+                        { title: entityData.title },
+                    ]}
+                />
 
-                <div className="row">
-                    <Menu mode="horizontal" selectable={false} style={{ borderBottom: 'none' }} items={menuItems} />
-                </div>
+                <Menu mode="horizontal" selectable={false} style={{ borderBottom: 'none' }} items={menuItems} />
             </div>
+
             <div style={{ position: 'relative' }}>
                 <div
                     style={{
@@ -170,22 +172,7 @@ function NewsDetail() {
                     <div className="row mb-3">
                         <h4 className="mt-3 mb-4">Bài viết liên quan</h4>
                         {relatedNews.map((news, index) => (
-                            <div key={index} className="col-md-3 mb-4">
-                                <Link to={`/tin-tuc/${news.slug}`}>
-                                    <img src={news.imageUrl} alt={news.title} className="img-fluid rounded-3" />
-                                </Link>
-
-                                <div>
-                                    <Link to={`/tin-tuc/${news.slug}`} className="text-dark fs-5 text-decoration-none">
-                                        <h3 className="fw-semibold fs-6 mb-3">{news.title}</h3>
-                                    </Link>
-                                    <div className="small text-muted d-flex align-items-center gap-2">
-                                        <FaClock />
-                                        {formatDate(news.createdDate)}
-                                        &nbsp;&nbsp; Admin
-                                    </div>
-                                </div>
-                            </div>
+                            <NewsCard key={index} news={news} className="col-md-3 mb-4" />
                         ))}
                     </div>
 
