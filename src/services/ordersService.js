@@ -25,6 +25,12 @@ export const exportOrderReport = (filter) => {
     });
 };
 
+export const printInvoice = (id) => {
+    return axiosPrivate.get(`admin/orders/${id}/invoice`, {
+        responseType: 'arraybuffer',
+    });
+};
+
 // ---------- USER ----------
 
 export const getAllOrdersForUser = (params) => {

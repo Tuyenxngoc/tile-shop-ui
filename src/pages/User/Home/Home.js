@@ -36,7 +36,9 @@ function Home() {
             <div style={{ backgroundColor: backgroundColor, overflow: 'hidden' }}>
                 <div className="container">
                     <Policy className="mb-3" />
+
                     <PopularCategories className="mb-3" />
+
                     <SlideProduct
                         className="mb-3"
                         title="Bồn Cầu"
@@ -46,6 +48,7 @@ function Home() {
                         brandFilterParams={{ pageSize: 5 }}
                         viewAllLink="/danh-muc/bon-cau"
                     />
+
                     <SlideProduct
                         className="mb-3"
                         title="Bồn Tắm"
@@ -55,6 +58,7 @@ function Home() {
                         brandFilterParams={{ pageSize: 5 }}
                         viewAllLink="/danh-muc/bon-tam"
                     />
+
                     <SlideProduct
                         className="mb-3"
                         title="Gạch Ốp Lát"

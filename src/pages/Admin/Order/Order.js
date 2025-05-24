@@ -7,26 +7,34 @@ import {
     DatePicker,
     Dropdown,
     Flex,
+    Form,
     Input,
     InputNumber,
     message,
+    Modal,
     Row,
     Select,
     Space,
     Table,
     Tabs,
-    Tooltip,
     Typography,
 } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
-import { DownOutlined, SearchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DownOutlined, PrinterOutlined, SearchOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { saveAs } from 'file-saver';
 
 import { formatCurrency } from '~/utils';
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { orderStatusTags } from '~/constants/order';
-import { exportOrderReport, getOrderCountByStatus, getOrders, updateOrderStatus } from '~/services/ordersService';
+import {
+    cancelOrder,
+    exportOrderReport,
+    getOrderCountByStatus,
+    getOrders,
+    printInvoice,
+    updateOrderStatus,
+} from '~/services/ordersService';
 
 const { RangePicker } = DatePicker;
 
@@ -44,13 +52,40 @@ const paymentOptions = [
 ];
 
 const allowedTransitions = {
-    PENDING: ['CONFIRMED', 'CANCELLED'],
-    CONFIRMED: ['DELIVERING', 'CANCELLED'],
+    PENDING: ['CONFIRMED'],
+    CONFIRMED: ['DELIVERING'],
     DELIVERING: ['DELIVERED', 'RETURNED'],
     DELIVERED: ['RETURNED'],
     CANCELLED: [],
     RETURNED: [],
 };
+
+const cancelReasonOptions = [
+    {
+        value: 'customerRequest',
+        label: 'Khách yêu cầu hủy đơn',
+    },
+    {
+        value: 'outOfStock',
+        label: 'Sản phẩm hết hàng',
+    },
+    {
+        value: 'invalidOrder',
+        label: 'Đơn hàng không hợp lệ',
+    },
+    {
+        value: 'fraudDetection',
+        label: 'Phát hiện gian lận / bất thường',
+    },
+    {
+        value: 'duplicateOrder',
+        label: 'Đơn hàng trùng lặp',
+    },
+    {
+        value: 'other',
+        label: 'Lý do khác',
+    },
+];
 
 const getAvailableStatuses = (currentStatus) => {
     return allowedTransitions[currentStatus] || [];
@@ -85,6 +120,11 @@ function Order() {
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
+
+    const [isCancelOrderModalOpen, setIsCancelOrderModalOpen] = useState(false);
+    const [cancelReason, setCancelReason] = useState('');
+    const [otherReason, setOtherReason] = useState('');
+    const [selectedOrderId, setSelectedOrderId] = useState(null);
 
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -147,6 +187,53 @@ function Order() {
         setFilters(INITIAL_FILTERS);
     };
 
+    const openCancelOrderModal = (orderId) => {
+        setSelectedOrderId(orderId);
+        setIsCancelOrderModalOpen(true);
+    };
+
+    const closeCancelOrderModal = () => {
+        setIsCancelOrderModalOpen(false);
+    };
+
+    const handleCancelReasonChange = (value) => {
+        setCancelReason(value);
+        if (value !== 'other') {
+            setOtherReason('');
+        }
+    };
+
+    const handleConfirmCancelOrder = async () => {
+        if (!cancelReason) {
+            messageApi.error('Vui lòng chọn một lý do hủy đơn hàng.');
+            return;
+        }
+
+        if (cancelReason === 'other' && !otherReason.trim()) {
+            messageApi.error('Vui lòng nhập lý do hủy đơn hàng.');
+            return;
+        }
+
+        const reasonToSend =
+            cancelReason === 'other'
+                ? otherReason
+                : cancelReasonOptions.find((option) => option.value === cancelReason)?.label || '';
+
+        try {
+            const response = await cancelOrder(selectedOrderId, reasonToSend);
+            if (response.status === 200) {
+                const { data, message } = response.data.data;
+                messageApi.success(message);
+
+                // Cập nhật lại danh sách đơn hàng
+                setEntityData((prevData) => prevData.map((item) => (item.id === selectedOrderId ? data : item)));
+                closeCancelOrderModal();
+            }
+        } catch (error) {
+            messageApi.error('Lỗi: ' + error.message);
+        }
+    };
+
     const handleChangeStatus = async (orderId, newStatus) => {
         try {
             const response = await updateOrderStatus(orderId, newStatus);
@@ -158,6 +245,17 @@ function Order() {
             }
         } catch (error) {
             messageApi.error('Lỗi: ' + error.message);
+        }
+    };
+
+    const handlePrintOrder = async (orderId) => {
+        try {
+            const response = await printInvoice(orderId);
+            const file = new Blob([response.data], { type: 'application/pdf' });
+            const fileURL = URL.createObjectURL(file);
+            window.open(fileURL, '_blank');
+        } catch (error) {
+            console.error('Lỗi khi in hóa đơn:', error);
         }
     };
 
@@ -259,41 +357,70 @@ function Order() {
             sorter: true,
             showSorterTooltip: false,
             align: 'center',
-            render: (status) => orderStatusTags[status],
+            render: (status, record) => {
+                const statusItems = getAvailableStatuses(record.status).map((statusKey) => ({
+                    key: statusKey,
+                    label: orderStatusTags[statusKey] || statusKey,
+                }));
+
+                if (statusItems.length === 0) {
+                    return orderStatusTags[status];
+                }
+
+                return (
+                    <Dropdown
+                        trigger={['click']}
+                        menu={{
+                            items: statusItems,
+                            onClick: ({ key }) => handleChangeStatus(record.id, key),
+                        }}
+                    >
+                        <Button size="small" type="text">
+                            {orderStatusTags[status]} <DownOutlined />
+                        </Button>
+                    </Dropdown>
+                );
+            },
         },
         {
             title: 'Thao tác',
             key: 'action',
             fixed: 'right',
-            render: (_, record) => {
-                const statusItems = getAvailableStatuses(record.status).map((status) => ({
-                    key: status,
-                    label: orderStatusTags[status]?.props?.children || status,
-                }));
-                return (
+            render: (_, record) => (
+                <Space direction="vertical">
                     <Space>
-                        <Dropdown
-                            trigger={['click']}
-                            menu={{
-                                items: statusItems,
-                                onClick: ({ key }) => handleChangeStatus(record.id, key),
-                            }}
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<MdOutlineModeEdit />}
+                            onClick={() => navigate(`edit/${record.id}`)}
                         >
-                            <Button type="default">
-                                Cập nhật <DownOutlined />
-                            </Button>
-                        </Dropdown>
+                            Chỉnh sửa
+                        </Button>
 
-                        <Tooltip title="Chỉnh sửa đơn hàng">
-                            <Button
-                                type="text"
-                                icon={<MdOutlineModeEdit />}
-                                onClick={() => navigate(`edit/${record.id}`)}
-                            />
-                        </Tooltip>
+                        <Button
+                            size="small"
+                            type="text"
+                            icon={<PrinterOutlined />}
+                            onClick={() => handlePrintOrder(record.id)}
+                        >
+                            In hóa đơn
+                        </Button>
                     </Space>
-                );
-            },
+
+                    {record.status !== 'CANCELLED' && (
+                        <Button
+                            danger
+                            size="small"
+                            type="text"
+                            icon={<DeleteOutlined />}
+                            onClick={() => openCancelOrderModal(record.id)}
+                        >
+                            Hủy đơn
+                        </Button>
+                    )}
+                </Space>
+            ),
         },
     ];
 
@@ -317,6 +444,41 @@ function Order() {
     return (
         <div>
             {contextHolder}
+
+            <Modal
+                title="Lý Do Hủy"
+                open={isCancelOrderModalOpen}
+                onOk={handleConfirmCancelOrder}
+                onCancel={closeCancelOrderModal}
+                cancelText="Không phải bây giờ"
+                okText="Hủy đơn hàng"
+            >
+                <p>
+                    Bạn sắp thực hiện thao tác hủy đơn hàng này. Vui lòng chọn lý do hủy để lưu lại lịch sử xử lý đơn
+                    hàng.
+                </p>
+                <Form>
+                    <Form.Item label="Lý do hủy">
+                        <Select
+                            id="cancelReason"
+                            value={cancelReason}
+                            onChange={handleCancelReasonChange}
+                            placeholder="Chọn lý do hủy"
+                            options={cancelReasonOptions}
+                        />
+                    </Form.Item>
+
+                    {cancelReason === 'other' && (
+                        <Form.Item label="Lý do khác">
+                            <Input
+                                value={otherReason}
+                                onChange={(e) => setOtherReason(e.target.value)}
+                                placeholder="Nhập lý do khác"
+                            />
+                        </Form.Item>
+                    )}
+                </Form>
+            </Modal>
 
             <Flex wrap justify="space-between" align="center">
                 <h2>Quản lý đơn hàng</h2>
