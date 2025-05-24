@@ -128,9 +128,7 @@ function SearchProduct() {
                 </div>
             )}
 
-            <div className="mt-3">
-                <Policy className="mt-3" />
-            </div>
+            <Policy className="py-3" />
         </div>
     );
 }

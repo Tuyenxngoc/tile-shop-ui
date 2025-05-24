@@ -175,9 +175,9 @@ function NewsDetail() {
                             <NewsCard key={index} news={news} className="col-md-3 mb-4" />
                         ))}
                     </div>
-
-                    <Policy className="mb-3" />
                 </div>
+
+                <Policy className="container" backgroundType="primary" />
             </div>
         </div>
     );

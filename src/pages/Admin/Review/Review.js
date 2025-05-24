@@ -307,7 +307,7 @@ function Review() {
                             cancelText="Hủy"
                         >
                             <Button type="text" danger icon={<FaRegTrashAlt />} />
-                        </Popconfirm>{' '}
+                        </Popconfirm>
                     </Tooltip>
                 </Space>
             ),

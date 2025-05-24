@@ -4,10 +4,10 @@ const images = {
     right: require('./images/right.svg').default,
     empty: require('./images/empty.svg').default,
 
-    group5: require('./images/Group 5.png'),
-    group6: require('./images/Group 6.png'),
-    group7: require('./images/Group 7.png'),
-    group8: require('./images/Group 8.png'),
+    group5: require('./images/Group5.png'),
+    group6: require('./images/Group6.png'),
+    group7: require('./images/Group7.png'),
+    group8: require('./images/Group8.png'),
 
     logoSaleNoti: require('./images/logoSaleNoti.png'),
 
