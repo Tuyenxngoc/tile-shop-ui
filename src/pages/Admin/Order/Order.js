@@ -230,7 +230,8 @@ function Order() {
                 closeCancelOrderModal();
             }
         } catch (error) {
-            messageApi.error('Lỗi: ' + error.message);
+            const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+            messageApi.error(errorMessage);
         }
     };
 
@@ -244,7 +245,8 @@ function Order() {
                 setEntityData((prevData) => prevData.map((item) => (item.id === orderId ? data : item)));
             }
         } catch (error) {
-            messageApi.error('Lỗi: ' + error.message);
+            const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+            messageApi.error(errorMessage);
         }
     };
 
@@ -255,7 +257,8 @@ function Order() {
             const fileURL = URL.createObjectURL(file);
             window.open(fileURL, '_blank');
         } catch (error) {
-            console.error('Lỗi khi in hóa đơn:', error);
+            const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+            messageApi.error(errorMessage);
         }
     };
 
@@ -278,7 +281,8 @@ function Order() {
                 saveAs(blob, fileName);
             }
         } catch (error) {
-            console.error('Lỗi khi xuất báo cáo:', error);
+            const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+            messageApi.error(errorMessage);
         }
     };
 
@@ -288,11 +292,15 @@ function Order() {
                 const response = await getOrderCountByStatus();
                 setOrderCounts(response.data.data);
             } catch (error) {
-                console.error('Lỗi khi lấy số lượng đơn hàng:', error);
+                const errorMessage =
+                    error.response?.data?.message || 'Lỗi khi lấy số lượng đơn hàng. Vui lòng thử lại.';
+                messageApi.error(errorMessage);
             }
         };
 
         fetchOrderCounts();
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -408,17 +416,15 @@ function Order() {
                         </Button>
                     </Space>
 
-                    {record.status !== 'CANCELLED' && (
-                        <Button
-                            danger
-                            size="small"
-                            type="text"
-                            icon={<DeleteOutlined />}
-                            onClick={() => openCancelOrderModal(record.id)}
-                        >
-                            Hủy đơn
-                        </Button>
-                    )}
+                    <Button
+                        danger
+                        size="small"
+                        type="text"
+                        icon={<DeleteOutlined />}
+                        onClick={() => openCancelOrderModal(record.id)}
+                    >
+                        Hủy đơn
+                    </Button>
                 </Space>
             ),
         },
