@@ -33,6 +33,7 @@ import AccessDenied from './pages/Common/AccessDenied';
 import NotFound from './pages/Common/NotFound';
 
 import Dashboard from './pages/Admin/Dashboard';
+import SalesOverview from './pages/Admin/SalesOverview';
 import AdminLogin from './pages/Admin/Login';
 import AdminForgotPassword from './pages/Admin/ForgotPassword';
 
@@ -109,6 +110,9 @@ function App() {
                         {/* Trang chủ */}
                         <Route index element={<Dashboard />} />
                         <Route path="home" element={<Dashboard />} />
+
+                        {/* Xem thống kê */}
+                        <Route path="statistics/overview" element={<SalesOverview />} />
 
                         {/* Quản lý danh mục */}
                         <Route path="categories">

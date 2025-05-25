@@ -56,7 +56,7 @@ const menuConfig = [
         label: 'Xem thống kê',
         key: '/admin/statistics',
         icon: <FaChartBar />,
-        children: [{ label: 'Báo cáo tổng hợp', key: '/admin/statistics/overview' }],
+        children: [{ label: 'Phân Tích Bán Hàng', key: '/admin/statistics/overview' }],
     },
     {
         label: 'Quản lý tin tức',
