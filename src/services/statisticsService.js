@@ -15,3 +15,7 @@ export const getTopCustomers = () => {
 export const getRecentOrders = () => {
     return axiosPrivate.get('statistics/recent-orders');
 };
+
+export const getRevenueStats = (params) => {
+    return axiosPrivate.get('statistics/revenue', { params });
+};

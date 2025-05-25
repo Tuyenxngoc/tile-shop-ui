@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { PlusOutlined } from '@ant-design/icons';
-import { Alert, Button, DatePicker, message, Spin, Table, Tag, Card } from 'antd';
+import { Alert, Button, DatePicker, message, Spin, Table, Tag, Card, Select } from 'antd';
 import dayjs from 'dayjs';
 
 import { BiSolidDollarCircle } from 'react-icons/bi';
 import { BsFillBagFill, BsPersonCircle } from 'react-icons/bs';
 import { AiFillProduct } from 'react-icons/ai';
 import { ResponsiveBar } from '@nivo/bar';
-import { ResponsivePie } from '@nivo/pie';
 
 import useAuth from '~/hooks/useAuth';
 import StatCard from '~/components/StatCard';
@@ -18,51 +17,31 @@ import {
     getTopSellingProducts,
     getTopCustomers,
     getRecentOrders,
+    getRevenueStats,
 } from '~/services/statisticsService';
 import { formatCurrency, formatDate } from '~/utils';
 import { orderStatusTags } from '~/constants/order';
 
-const { RangePicker } = DatePicker;
+const formatLabel = (timestamp, statType) => {
+    switch (statType) {
+        case 'day':
+            return dayjs.unix(timestamp).format('HH:mm'); // giờ phút trong ngày
+        case 'week':
+            return dayjs.unix(timestamp).format('DD/MM'); // ngày/tháng trong tuần
+        case 'month':
+            return dayjs.unix(timestamp).format('DD'); // ngày trong tháng
+        case 'year':
+            return dayjs.unix(timestamp).format('MM/YYYY'); // tháng/năm
+        default:
+            return dayjs.unix(timestamp).format('DD/MM');
+    }
+};
 
-const datatest = [
-    { date: '2024-05-01', revenue: 1500000 },
-    { date: '2024-05-02', revenue: 2200000 },
-    { date: '2024-05-03', revenue: 1800000 },
-    { date: '2024-05-04', revenue: 2000000 },
-    { date: '2024-05-05', revenue: 2400000 },
-];
-
-const orderStatusData = [
-    {
-        id: 'stylus',
-        label: 'stylus',
-        value: 584,
-        color: 'hsl(180, 70%, 50%)',
-    },
-    {
-        id: 'lisp',
-        label: 'lisp',
-        value: 353,
-        color: 'hsl(257, 70%, 50%)',
-    },
-    {
-        id: 'css',
-        label: 'css',
-        value: 170,
-        color: 'hsl(65, 70%, 50%)',
-    },
-    {
-        id: 'javascript',
-        label: 'javascript',
-        value: 538,
-        color: 'hsl(165, 70%, 50%)',
-    },
-    {
-        id: 'make',
-        label: 'make',
-        value: 78,
-        color: 'hsl(79, 70%, 50%)',
-    },
+const timePeriodOptions = [
+    { value: 'day', label: 'Ngày' },
+    { value: 'week', label: 'Tuần' },
+    { value: 'month', label: 'Tháng' },
+    { value: 'year', label: 'Năm' },
 ];
 
 function Dashboard() {
@@ -77,34 +56,14 @@ function Dashboard() {
     const [topCustomers, setTopCustomers] = useState([]);
     const [recentOrders, setRecentOrders] = useState([]);
 
-    const [dates, setDates] = useState([dayjs().startOf('month'), dayjs().endOf('month')]);
+    const [selectedDate, setSelectedDate] = useState(dayjs());
+    const [statType, setStatType] = useState('week');
+    const [revenueData, setRevenueData] = useState([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
 
     const [messageApi, contextHolder] = message.useMessage();
-
-    const handleAddProduct = () => {
-        navigate('/admin/products/new');
-    };
-
-    const handleDateChange = (selectedDates) => {
-        if (!selectedDates) {
-            messageApi.info('Đã reset khoảng thời gian');
-            return;
-        }
-
-        const [startDate, endDate] = selectedDates;
-
-        // Validate ngày bắt đầu không được quá ngày hiện tại
-        if (startDate.isAfter(dayjs(), 'day')) {
-            messageApi.error('Ngày bắt đầu không được vượt quá hôm nay');
-            return;
-        }
-
-        // Nếu hợp lệ thì set lại ngày
-        setDates([startDate, endDate]);
-    };
 
     useEffect(() => {
         const hour = dayjs().hour();
@@ -144,6 +103,30 @@ function Dashboard() {
 
         fetchEntities();
     }, []);
+
+    useEffect(() => {
+        const fetchRevenue = async () => {
+            try {
+                const response = await getRevenueStats({
+                    date: selectedDate.format('YYYY-MM-DD'),
+                    type: statType,
+                });
+                const rawData = response.data.data;
+                setRevenueData(
+                    rawData.map((item) => ({
+                        label: formatLabel(item.timestamp, statType),
+                        value: item.value,
+                    })),
+                );
+            } catch (error) {
+                const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+                messageApi.error(errorMessage);
+            }
+        };
+
+        fetchRevenue();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedDate, statType]);
 
     const productColumns = [
         {
@@ -233,23 +216,13 @@ function Dashboard() {
                             <p className="text-muted mb-0">Đây là tổng quan hoạt động cửa hàng của bạn hôm nay.</p>
                         </div>
                         <div className="mt-3 mt-lg-0">
-                            <div className="row g-3 mb-0 align-items-center">
-                                <div className="col-sm-auto">
-                                    <RangePicker
-                                        name="date-picker"
-                                        value={dates}
-                                        onChange={handleDateChange}
-                                        format="DD/MM/YYYY"
-                                        allowClear
-                                    />
-                                </div>
-
-                                <div className="col-auto">
-                                    <Button type="primary" icon={<PlusOutlined />} onClick={handleAddProduct}>
-                                        Thêm sản phẩm
-                                    </Button>
-                                </div>
-                            </div>
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={() => navigate('/admin/products/new')}
+                            >
+                                Thêm sản phẩm
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -308,74 +281,69 @@ function Dashboard() {
             </div>
 
             <div className="row">
-                <div className="col-md-8" style={{ height: '400px' }}>
-                    <h5>Doanh thu</h5>
-                    <ResponsiveBar
-                        data={datatest}
-                        keys={['revenue']}
-                        indexBy="date"
-                        margin={{ top: 20, right: 100, bottom: 100, left: 70 }}
-                        padding={0.3}
-                        axisBottom={{
-                            tickRotation: -45,
-                            legend: 'Ngày',
-                            legendPosition: 'middle',
-                            legendOffset: 40,
-                        }}
-                        axisLeft={{
-                            format: (value) => `${(value / 1000000).toFixed(1)}tr`,
-                            legend: 'Doanh thu (VNĐ)',
-                            legendPosition: 'middle',
-                            legendOffset: -60,
-                        }}
-                        labelSkipWidth={12}
-                        labelSkipHeight={12}
-                        labelTextColor="#fff"
-                        colors="#4ade80"
-                        legends={[
-                            {
-                                dataFrom: 'keys',
-                                anchor: 'top-right',
-                                direction: 'column',
-                                justify: false,
-                                translateX: 120,
-                                translateY: 0,
-                                itemsSpacing: 2,
-                                itemWidth: 100,
-                                itemHeight: 20,
-                                itemDirection: 'left-to-right',
-                                itemOpacity: 0.85,
-                                symbolSize: 20,
-                            },
-                        ]}
-                    />
+                <div className="col-md-8">
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                        <h5 className="mb-0">Doanh thu</h5>
+                        <div className="d-flex gap-2">
+                            <Select
+                                value={statType}
+                                onChange={(value) => setStatType(value)}
+                                options={timePeriodOptions}
+                                style={{ width: 120 }}
+                            />
+                            <DatePicker
+                                picker={statType}
+                                value={selectedDate}
+                                onChange={(date) => setSelectedDate(date)}
+                                format={statType === 'year' ? 'YYYY' : statType === 'month' ? 'MM/YYYY' : 'DD/MM/YYYY'}
+                            />
+                        </div>
+                    </div>
+
+                    <div style={{ height: '500px' }}>
+                        <ResponsiveBar
+                            data={revenueData}
+                            keys={['value']}
+                            indexBy="label"
+                            margin={{ top: 50, right: 30, bottom: 60, left: 80 }}
+                            padding={0.25}
+                            axisBottom={{
+                                tickSize: 5,
+                                tickPadding: 5,
+                                tickRotation: revenueData.length > 8 ? -45 : 0,
+                                legend:
+                                    statType === 'day'
+                                        ? 'Giờ'
+                                        : statType === 'week'
+                                        ? 'Ngày'
+                                        : statType === 'month'
+                                        ? 'Ngày'
+                                        : 'Tháng',
+                                legendPosition: 'middle',
+                                legendOffset: 50,
+                            }}
+                            axisLeft={{
+                                tickSize: 5,
+                                tickPadding: 5,
+                                tickRotation: 0,
+                                format: (value) => `${(value / 1000000).toFixed(1)}tr`,
+                                legend: 'Doanh thu (VNĐ)',
+                                legendPosition: 'middle',
+                                legendOffset: -60,
+                            }}
+                            labelSkipWidth={12}
+                            labelSkipHeight={12}
+                            labelTextColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
+                            animate={true}
+                            tooltip={({ id, value, indexValue }) => (
+                                <div style={{ padding: '6px 9px', background: '#fff', border: '1px solid #ddd' }}>
+                                    <strong>{indexValue}</strong>: {value.toLocaleString()} VNĐ
+                                </div>
+                            )}
+                        />
+                    </div>
                 </div>
-                <div className="col-md-4">
-                    <ResponsivePie /* or Pie for fixed dimensions */
-                        data={orderStatusData}
-                        margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
-                        innerRadius={0.5}
-                        padAngle={0.6}
-                        cornerRadius={2}
-                        activeOuterRadiusOffset={8}
-                        arcLinkLabelsSkipAngle={10}
-                        arcLinkLabelsTextColor="#333333"
-                        arcLinkLabelsThickness={2}
-                        arcLinkLabelsColor={{ from: 'color' }}
-                        arcLabelsSkipAngle={10}
-                        arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
-                        legends={[
-                            {
-                                anchor: 'bottom',
-                                direction: 'row',
-                                translateY: 56,
-                                itemWidth: 100,
-                                itemHeight: 18,
-                                symbolShape: 'circle',
-                            },
-                        ]}
-                    />
-                </div>
+                <div className="col-md-4"></div>
             </div>
 
             <div className="row">
