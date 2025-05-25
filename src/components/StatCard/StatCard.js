@@ -4,7 +4,18 @@ import CountUp from 'react-countup';
 
 import './StatCard.scss';
 
-function StatCard({ title, amount, unit, percentage, link, linkLabel, iconBg, iconColor, iconComponent: Icon }) {
+function StatCard({
+    title,
+    amount,
+    decimals = 0,
+    unit,
+    percentage,
+    link,
+    linkLabel,
+    iconBg,
+    iconColor,
+    iconComponent: Icon,
+}) {
     return (
         <div className="card card-animate">
             <div className="card-body">
@@ -33,7 +44,7 @@ function StatCard({ title, amount, unit, percentage, link, linkLabel, iconBg, ic
                     <div>
                         <h4 className="fs-22 fw-semibold ff-secondary mb-4">
                             {unit} &nbsp;
-                            <CountUp end={amount} decimals={2} duration={1} />
+                            <CountUp end={amount} decimals={decimals} duration={1} />
                         </h4>
                         <Link to={link} className="text-decoration-underline">
                             {linkLabel}

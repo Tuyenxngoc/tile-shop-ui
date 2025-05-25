@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import { BiSolidDollarCircle } from 'react-icons/bi';
 import { BsFillBagFill, BsPersonCircle } from 'react-icons/bs';
 import { AiFillProduct } from 'react-icons/ai';
+import { ResponsivePie } from '@nivo/pie';
 import { ResponsiveBar } from '@nivo/bar';
 
 import useAuth from '~/hooks/useAuth';
@@ -18,6 +19,7 @@ import {
     getTopCustomers,
     getRecentOrders,
     getRevenueStats,
+    getRevenueByCategory,
 } from '~/services/statisticsService';
 import { formatCurrency, formatDate } from '~/utils';
 import { orderStatusTags } from '~/constants/order';
@@ -60,6 +62,7 @@ function Dashboard() {
     const [chartDate, setChartDate] = useState(dayjs());
     const [statType, setStatType] = useState('week');
     const [revenueData, setRevenueData] = useState([]);
+    const [revenueByCategoryData, setRevenueByCategoryData] = useState([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -94,18 +97,27 @@ function Dashboard() {
 
     useEffect(() => {
         const fetchRevenue = async () => {
+            const params = {
+                date: chartDate.format('YYYY-MM-DD'),
+                type: statType,
+            };
+
             try {
-                const response = await getRevenueStats({
-                    date: chartDate.format('YYYY-MM-DD'),
-                    type: statType,
-                });
-                const { data } = response.data;
+                const [revenueResponse, categoryResponse] = await Promise.all([
+                    getRevenueStats(params),
+                    getRevenueByCategory(params),
+                ]);
+
+                const revenueStatsData = revenueResponse.data.data;
                 setRevenueData(
-                    data.map((item) => ({
+                    revenueStatsData.map((item) => ({
                         label: formatLabel(item.timestamp, statType),
                         value: item.value,
                     })),
                 );
+
+                const revenueByCategoryStats = categoryResponse.data.data;
+                setRevenueByCategoryData(revenueByCategoryStats);
             } catch (error) {
                 const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
                 messageApi.error(errorMessage);
@@ -262,6 +274,7 @@ function Dashboard() {
                     <StatCard
                         title="Tổng doanh thu"
                         amount={stats?.revenueStat?.totalRevenue || 0}
+                        decimals={2}
                         unit={stats?.revenueStat?.currency || 'VND'}
                         percentage={stats?.revenueStat?.percentageChange || 0}
                         link="/"
@@ -374,10 +387,54 @@ function Dashboard() {
                         />
                     </div>
                 </div>
-                <div className="col-md-4"></div>
+                <div className="col-md-4">
+                    <h5 className="mb-3">Theo danh mục</h5>
+                    <div style={{ height: '500px' }}>
+                        <ResponsivePie
+                            data={revenueByCategoryData}
+                            margin={{ top: 40, right: 120, bottom: 40, left: 20 }}
+                            innerRadius={0.5}
+                            padAngle={0.7}
+                            cornerRadius={3}
+                            activeOuterRadiusOffset={10}
+                            colors={{ scheme: 'nivo' }}
+                            borderWidth={1}
+                            borderColor={{ from: 'color', modifiers: [['darker', 0.6]] }}
+                            enableArcLinkLabels={false}
+                            arcLabelsSkipAngle={8}
+                            arcLabelsTextColor={{ from: 'color', modifiers: [['darker', 2]] }}
+                            legends={[
+                                {
+                                    anchor: 'right',
+                                    direction: 'column',
+                                    translateX: 120,
+                                    itemWidth: 100,
+                                    itemHeight: 20,
+                                    itemsSpacing: 4,
+                                    symbolSize: 10,
+                                    symbolShape: 'circle',
+                                    effects: [
+                                        {
+                                            on: 'hover',
+                                            style: {
+                                                itemTextColor: '#000',
+                                                itemBackground: '#f0f0f0',
+                                            },
+                                        },
+                                    ],
+                                },
+                            ]}
+                            tooltip={({ datum }) => (
+                                <div style={{ padding: '6px 9px', background: '#fff', border: '1px solid #ddd' }}>
+                                    <strong>{datum.label}</strong>: {datum.value.toLocaleString()} VNĐ
+                                </div>
+                            )}
+                        />
+                    </div>
+                </div>
             </div>
 
-            <div className="row">
+            <div className="row g-3">
                 <div className="col-md-6">
                     <Card title="Top sản phẩm bán chạy">
                         <Table
@@ -386,9 +443,11 @@ function Dashboard() {
                             columns={productColumns}
                             dataSource={topProducts}
                             pagination={false}
+                            scroll={{ x: '100%' }}
                         />
                     </Card>
                 </div>
+
                 <div className="col-md-6">
                     <Card title="Top khách hàng mua nhiều">
                         <Table
@@ -397,12 +456,11 @@ function Dashboard() {
                             columns={customerColumns}
                             dataSource={topCustomers}
                             pagination={false}
+                            scroll={{ x: '100%' }}
                         />
                     </Card>
                 </div>
-            </div>
 
-            <div className="row mt-4">
                 <div className="col-12">
                     <Card title="Đơn hàng gần đây">
                         <Table
@@ -411,6 +469,7 @@ function Dashboard() {
                             columns={recentOrdersColumns}
                             dataSource={recentOrders}
                             pagination={false}
+                            scroll={{ x: '100%' }}
                         />
                     </Card>
                 </div>
