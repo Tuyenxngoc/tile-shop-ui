@@ -51,12 +51,13 @@ function Dashboard() {
     const navigate = useNavigate();
 
     const [greeting, setGreeting] = useState('');
-    const [stats, setStats] = useState(null);
+    const [stats, setStats] = useState({});
     const [topProducts, setTopProducts] = useState([]);
     const [topCustomers, setTopCustomers] = useState([]);
     const [recentOrders, setRecentOrders] = useState([]);
 
-    const [selectedDate, setSelectedDate] = useState(dayjs());
+    const [overviewDate, setOverviewDate] = useState(dayjs());
+    const [chartDate, setChartDate] = useState(dayjs());
     const [statType, setStatType] = useState('week');
     const [revenueData, setRevenueData] = useState([]);
 
@@ -77,43 +78,30 @@ function Dashboard() {
     }, []);
 
     useEffect(() => {
-        const fetchEntities = async () => {
-            setIsLoading(true);
-            setErrorMessage(null);
+        const fetchOverviewStats = async () => {
             try {
-                const [dashboardRes, productsRes, customersRes, ordersRes] = await Promise.all([
-                    getDashboardStatistics(),
-                    getTopSellingProducts(),
-                    getTopCustomers(),
-                    getRecentOrders(),
-                ]);
-
-                setStats(dashboardRes.data.data);
-                setTopProducts(productsRes.data.data);
-                setTopCustomers(customersRes.data.data);
-                setRecentOrders(ordersRes.data.data);
+                const response = await getDashboardStatistics({ date: overviewDate.format('YYYY-MM-DD') });
+                setStats(response.data.data);
             } catch (error) {
-                const errorMessage =
-                    error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
-                setErrorMessage(errorMessage);
-            } finally {
-                setIsLoading(false);
+                const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+                messageApi.error(errorMessage);
             }
         };
 
-        fetchEntities();
-    }, []);
+        fetchOverviewStats();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [overviewDate]);
 
     useEffect(() => {
         const fetchRevenue = async () => {
             try {
                 const response = await getRevenueStats({
-                    date: selectedDate.format('YYYY-MM-DD'),
+                    date: chartDate.format('YYYY-MM-DD'),
                     type: statType,
                 });
-                const rawData = response.data.data;
+                const { data } = response.data;
                 setRevenueData(
-                    rawData.map((item) => ({
+                    data.map((item) => ({
                         label: formatLabel(item.timestamp, statType),
                         value: item.value,
                     })),
@@ -126,7 +114,33 @@ function Dashboard() {
 
         fetchRevenue();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedDate, statType]);
+    }, [chartDate, statType]);
+
+    useEffect(() => {
+        const fetchTopData = async () => {
+            setIsLoading(true);
+            setErrorMessage(null);
+            try {
+                const [productsRes, customersRes, ordersRes] = await Promise.all([
+                    getTopSellingProducts(),
+                    getTopCustomers(),
+                    getRecentOrders(),
+                ]);
+
+                setTopProducts(productsRes.data.data);
+                setTopCustomers(customersRes.data.data);
+                setRecentOrders(ordersRes.data.data);
+            } catch (error) {
+                const errorMessage =
+                    error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+                setErrorMessage(errorMessage);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchTopData();
+    }, []);
 
     const productColumns = [
         {
@@ -215,14 +229,29 @@ function Dashboard() {
                             </h4>
                             <p className="text-muted mb-0">Đây là tổng quan hoạt động cửa hàng của bạn hôm nay.</p>
                         </div>
+
                         <div className="mt-3 mt-lg-0">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => navigate('/admin/products/new')}
-                            >
-                                Thêm sản phẩm
-                            </Button>
+                            <div className="row g-3 mb-0 align-items-center">
+                                <div className="col-sm-auto">
+                                    <DatePicker
+                                        name="overviewDate"
+                                        value={overviewDate}
+                                        onChange={(date) => setOverviewDate(date)}
+                                        format="DD/MM/YYYY"
+                                        allowClear={false}
+                                    />
+                                </div>
+
+                                <div className="col-auto">
+                                    <Button
+                                        type="primary"
+                                        icon={<PlusOutlined />}
+                                        onClick={() => navigate('/admin/products/new')}
+                                    >
+                                        Thêm sản phẩm
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -292,10 +321,12 @@ function Dashboard() {
                                 style={{ width: 120 }}
                             />
                             <DatePicker
+                                name="chartDate"
                                 picker={statType}
-                                value={selectedDate}
-                                onChange={(date) => setSelectedDate(date)}
+                                value={chartDate}
+                                onChange={(date) => setChartDate(date)}
                                 format={statType === 'year' ? 'YYYY' : statType === 'month' ? 'MM/YYYY' : 'DD/MM/YYYY'}
+                                allowClear={false}
                             />
                         </div>
                     </div>
@@ -349,12 +380,24 @@ function Dashboard() {
             <div className="row">
                 <div className="col-md-6">
                     <Card title="Top sản phẩm bán chạy">
-                        <Table columns={productColumns} dataSource={topProducts} pagination={false} size="small" />
+                        <Table
+                            rowKey="id"
+                            size="small"
+                            columns={productColumns}
+                            dataSource={topProducts}
+                            pagination={false}
+                        />
                     </Card>
                 </div>
                 <div className="col-md-6">
                     <Card title="Top khách hàng mua nhiều">
-                        <Table columns={customerColumns} dataSource={topCustomers} pagination={false} size="small" />
+                        <Table
+                            rowKey="id"
+                            size="small"
+                            columns={customerColumns}
+                            dataSource={topCustomers}
+                            pagination={false}
+                        />
                     </Card>
                 </div>
             </div>
@@ -363,10 +406,11 @@ function Dashboard() {
                 <div className="col-12">
                     <Card title="Đơn hàng gần đây">
                         <Table
+                            rowKey="id"
+                            size="small"
                             columns={recentOrdersColumns}
                             dataSource={recentOrders}
                             pagination={false}
-                            size="small"
                         />
                     </Card>
                 </div>

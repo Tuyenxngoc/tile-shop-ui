@@ -1,7 +1,7 @@
 import { axiosPrivate } from '~/utils/httpRequest';
 
-export const getDashboardStatistics = () => {
-    return axiosPrivate.get('statistics/dashboard');
+export const getDashboardStatistics = (params) => {
+    return axiosPrivate.get('statistics/dashboard', { params });
 };
 
 export const getTopSellingProducts = () => {
