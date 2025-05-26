@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import useStore from '~/hooks/useStore';
@@ -8,11 +9,21 @@ import SlideNew from '~/components/SlideNew';
 import PopularCategories from '~/components/PopularCategories';
 import { getProducts } from '~/services/productService';
 import { getBrands } from '~/services/brandService';
+import { trackVisit } from '~/services/visitTrackingService';
 
 function Home() {
     const {
         storeInfo: { bannerLink, bannerImage, backgroundImage, backgroundColor },
     } = useStore();
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            trackVisit({ url: '/' }).catch((error) => console.error('Track visit failed:', error));
+        }, 10000); // Gọi sau 10 giây
+
+        // Xoá timer nếu người dùng rời trang trước 10s
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <>

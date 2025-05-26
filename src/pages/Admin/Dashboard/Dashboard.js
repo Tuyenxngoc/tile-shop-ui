@@ -251,6 +251,10 @@ function Dashboard() {
                                         onChange={(date) => setOverviewDate(date)}
                                         format="DD/MM/YYYY"
                                         allowClear={false}
+                                        disabledDate={(current) => {
+                                            // Không cho chọn ngày sau hôm nay
+                                            return current && current > dayjs().endOf('day');
+                                        }}
                                     />
                                 </div>
 
