@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ResponsiveLine } from '@nivo/line';
 import { DatePicker, message, Select } from 'antd';
 import dayjs from 'dayjs';
@@ -19,7 +19,6 @@ const timePeriodOptions = [
 const titleMap = {
     revenue: 'Doanh số',
     orders: 'Đơn hàng',
-    canceled: 'Đơn huỷ',
     conversion: 'Tỷ lệ chuyển đổi',
     visits: 'Lượt truy cập',
     pageviews: 'Lượt xem trang',
@@ -28,7 +27,6 @@ const titleMap = {
 const colorMap = {
     revenue: '#2673dd',
     orders: '#ff6b45',
-    canceled: '#d62728',
     conversion: '#26aa99',
     visits: '#58b7f1',
     pageviews: '#945fb9',
@@ -47,7 +45,8 @@ const salesMetrics = [
         title: 'Doanh số',
         value: 0,
         percent: 0,
-        tooltip: 'Tổng giá trị của các đơn hàng đã đã giao.',
+        tooltip: 'Tổng giá trị của các đơn hàng đã giao trong khoảng thời gian đã chọn.',
+        unit: 'currency',
     },
     {
         key: 'orders',
@@ -55,14 +54,7 @@ const salesMetrics = [
         value: 0,
         percent: 0,
         tooltip:
-            'Tổng số đơn đặt hàng đã xác nhận trong khoảng thời gian đã chọn, bao gồm cả đơn đặt hàng đã hủy và trả lại / hoàn tiền.',
-    },
-    {
-        key: 'canceled',
-        title: 'Đơn đã huỷ',
-        value: 0,
-        percent: 0,
-        tooltip: 'Tổng số đơn đặt hàng đã hủy trong khoảng thời gian đã chọn',
+            'Tổng số đơn đặt hàng đã xác nhận trong khoảng thời gian đã chọn, bao gồm cả đơn đặt hàng đã hủy và trả lại.',
     },
     {
         key: 'conversion',
@@ -71,6 +63,7 @@ const salesMetrics = [
         percent: 0,
         tooltip:
             'Tổng số khách truy cập và có đơn đã xác nhận chia tổng số khách truy cập trong khoảng thời gian đã chọn',
+        unit: 'percent',
     },
     {
         key: 'visits',
@@ -85,8 +78,7 @@ const salesMetrics = [
         title: 'Lượt xem trang',
         value: 0,
         percent: 0,
-        tooltip:
-            'Tổng số lượt xem trang chủ hoặc trang sản phẩm của Shop trong khoảng thời gian được chọn (từ Máy tính và Ứng dụng)',
+        tooltip: 'Tổng số lượt xem trang chủ hoặc trang sản phẩm của Shop trong khoảng thời gian được chọn.',
     },
 ];
 
@@ -110,7 +102,7 @@ const formatValue = (key, value) => {
         case 'revenue':
             return formatCurrency(value);
         case 'conversion':
-            return `${(value * 100).toFixed(2)}%`;
+            return `${value}%`;
         default:
             return Math.round(value);
     }
@@ -119,6 +111,7 @@ const formatValue = (key, value) => {
 function SalesOverview() {
     const [activeKeys, setActiveKeys] = useState(['revenue']);
     const [metricsData, setMetricsData] = useState([]);
+    const [metricCardsData, setMetricCardsData] = useState(salesMetrics);
     const [messageApi, contextHolder] = message.useMessage();
 
     const [chartDate, setChartDate] = useState(dayjs());
@@ -152,7 +145,6 @@ function SalesOverview() {
                 const response = await getChartDataByKeys({
                     date: chartDate.format('YYYY-MM-DD'),
                     type: statType,
-                    keys: activeKeys,
                 });
                 const chart = response.data.data;
 
@@ -168,7 +160,20 @@ function SalesOverview() {
                     };
                 });
 
+                const updatedMetrics = salesMetrics.map((item) => {
+                    const metric = chart[item.key];
+                    if (metric) {
+                        return {
+                            ...item,
+                            value: metric.value,
+                            percent: metric.chainRatio,
+                        };
+                    }
+                    return item;
+                });
+
                 setMetricsData(formatted);
+                setMetricCardsData(updatedMetrics);
             } catch (error) {
                 const errorMessage =
                     error.response?.data?.message || error.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
@@ -178,7 +183,11 @@ function SalesOverview() {
 
         fetchChartData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeKeys, chartDate, statType]);
+    }, [chartDate, statType]);
+
+    const filteredMetricsData = useMemo(() => {
+        return metricsData.filter((line) => activeKeys.includes(line.id));
+    }, [metricsData, activeKeys]);
 
     return (
         <div>
@@ -205,11 +214,12 @@ function SalesOverview() {
             </div>
 
             <div className="row g-3 mb-3">
-                {salesMetrics.map((item) => (
-                    <div className="col-2" key={item.key}>
+                {metricCardsData.map((item) => (
+                    <div className="col" style={{ flex: '0 0 20%', maxWidth: '20%' }} key={item.key}>
                         <DashboardCard
                             title={item.title}
                             value={item.value}
+                            unit={item.unit}
                             percent={item.percent}
                             borderColor={colorMap[item.key] || '#000'}
                             isActive={activeKeys.includes(item.key)}
@@ -226,9 +236,9 @@ function SalesOverview() {
                 <small>Đã chọn {activeKeys.length} / 4</small>
             </div>
 
-            <div style={{ height: '500px' }}>
+            <div style={{ height: '400px' }}>
                 <ResponsiveLine
-                    data={metricsData}
+                    data={filteredMetricsData}
                     colors={({ id }) => colorMap[id] || '#000'}
                     margin={{ top: 50, right: 140, bottom: 50, left: 60 }}
                     yScale={{ type: 'linear', min: 0, max: 1, reverse: false }}
@@ -249,7 +259,7 @@ function SalesOverview() {
                             itemWidth: 100,
                             itemHeight: 24,
                             symbolShape: 'circle',
-                            data: metricsData.map((line) => ({
+                            data: filteredMetricsData.map((line) => ({
                                 id: line.id,
                                 label: titleMap[line.id] || line.id,
                                 color: colorMap[line.id] || '#000',
@@ -259,7 +269,7 @@ function SalesOverview() {
                     tooltip={({ point }) => {
                         const { x } = point.data;
 
-                        const valuesAtX = metricsData.map((series) => {
+                        const valuesAtX = filteredMetricsData.map((series) => {
                             const pointAtX = series.data.find((d) => d.x === x);
                             return {
                                 id: series.id,
