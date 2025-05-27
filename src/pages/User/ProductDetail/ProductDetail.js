@@ -24,11 +24,13 @@ import styles from './ProductDetail.module.scss';
 import images from '~/assets';
 import Policy from '~/components/Policy';
 import { addToCart } from '~/services/cartService';
+import { getNews } from '~/services/newsService';
 import { getProductBySlug, getProducts } from '~/services/productService';
 import { formatCurrency } from '~/utils/utils';
 import ReviewSection from './ReviewSection';
 import Product from '~/components/Product';
 import useStore from '~/hooks/useStore';
+import useCart from '~/hooks/useCart';
 import usePageTracking from '~/hooks/usePageTracking';
 
 const cx = classNames.bind(styles);
@@ -38,12 +40,14 @@ function ProductDetail() {
         storeInfo: { phoneSupport, openingHours },
     } = useStore();
     usePageTracking();
+    const { handleAddToCart, isAdding } = useCart();
 
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const [entityData, setEntityData] = useState(null);
+    const [productDetail, setProductDetail] = useState(null);
     const [relatedProducts, setRelatedProducts] = useState([]);
+    const [highlightNews, setHighlightNews] = useState([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -55,33 +59,6 @@ function ProductDetail() {
     const [showMore, setShowMore] = useState(false);
     const [isOverflowing, setIsOverflowing] = useState(false);
     const contentRef = useRef(null);
-
-    const handleAddToCart = async (productId) => {
-        try {
-            const payload = {
-                productId,
-                quantity: 1,
-            };
-
-            await addToCart(payload);
-
-            Swal.fire({
-                title: 'Thành công!',
-                text: 'Sản phẩm đã được thêm vào giỏ hàng.',
-                icon: 'success',
-                confirmButtonText: 'OK',
-            });
-        } catch (error) {
-            console.log(error);
-
-            Swal.fire({
-                title: 'Thất bại!',
-                text: error.response?.data?.message || 'Không thể thêm vào giỏ hàng.',
-                icon: 'error',
-                confirmButtonText: 'OK',
-            });
-        }
-    };
 
     const handleBuyNow = async (productId) => {
         try {
@@ -104,7 +81,7 @@ function ProductDetail() {
     };
 
     useEffect(() => {
-        if (contentRef.current && entityData) {
+        if (contentRef.current && productDetail) {
             const checkOverflow = () => {
                 setIsOverflowing(contentRef.current?.scrollHeight > 600);
             };
@@ -112,16 +89,16 @@ function ProductDetail() {
             // Đảm bảo DOM đã render xong
             setTimeout(checkOverflow, 0);
         }
-    }, [entityData]);
+    }, [productDetail]);
 
     useEffect(() => {
-        const fetchEntities = async () => {
+        const fetchProductDetail = async () => {
             setIsLoading(true);
             setErrorMessage(null);
             try {
                 const response = await getProductBySlug(id);
                 const { data } = response.data;
-                setEntityData(data);
+                setProductDetail(data);
             } catch (error) {
                 const errorMessage = error.response?.data?.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
                 setErrorMessage(errorMessage);
@@ -130,18 +107,18 @@ function ProductDetail() {
             }
         };
 
-        fetchEntities();
+        fetchProductDetail();
     }, [id]);
 
     useEffect(() => {
         const fetchRelated = async () => {
-            if (entityData && entityData.categoryPath?.length > 0) {
+            if (productDetail && productDetail.categoryPath?.length > 0) {
                 try {
-                    const keyword = entityData.categoryPath[entityData.categoryPath.length - 1]?.slug;
+                    const keyword = productDetail.categoryPath[productDetail.categoryPath.length - 1]?.slug;
                     if (!keyword) return;
 
                     const response = await getProducts({
-                        excludeId: entityData.id,
+                        excludeId: productDetail.id,
                         searchBy: 'categorySlug',
                         keyword: keyword,
                     });
@@ -154,7 +131,21 @@ function ProductDetail() {
         };
 
         fetchRelated();
-    }, [entityData, id]);
+    }, [productDetail, id]);
+
+    useEffect(() => {
+        const fetchHighlightNews = async () => {
+            try {
+                const response = await getNews({ pageNum: 1, pageSize: 1, sortBy: 'viewCount' });
+                const { items } = response.data.data;
+                setHighlightNews(items);
+            } catch (error) {
+                console.error('Lỗi tải tin tức nổi bật:', error);
+            }
+        };
+
+        fetchHighlightNews();
+    }, []);
 
     if (isLoading) {
         return (
@@ -188,7 +179,7 @@ function ProductDetail() {
                     }}
                     items={[
                         { title: 'Trang chủ', to: '/' },
-                        ...entityData.categoryPath.map((cat) => ({
+                        ...productDetail.categoryPath.map((cat) => ({
                             title: cat.name,
                             to: `/danh-muc/${cat.id}`,
                         })),
@@ -210,7 +201,7 @@ function ProductDetail() {
                                     modules={[FreeMode, Navigation, Thumbs]}
                                     className="mySwiper2"
                                 >
-                                    {entityData.images.map((src, index) => (
+                                    {productDetail.images.map((src, index) => (
                                         <SwiperSlide key={index}>
                                             <img src={src} alt={`Slide ${index + 1}`} />
                                         </SwiperSlide>
@@ -225,7 +216,7 @@ function ProductDetail() {
                                     modules={[FreeMode, Navigation, Thumbs]}
                                     className="mySwiper"
                                 >
-                                    {entityData.images.map((src, index) => (
+                                    {productDetail.images.map((src, index) => (
                                         <SwiperSlide key={index}>
                                             <img src={src} alt={`Thumbnail ${index + 1}`} />
                                         </SwiperSlide>
@@ -247,15 +238,15 @@ function ProductDetail() {
                         <div className="col-12 col-md-6">
                             <div className="row mb-3">
                                 <div className="col-12">
-                                    <h1 className={cx('title')}>{entityData.name}</h1>
+                                    <h1 className={cx('title')}>{productDetail.name}</h1>
                                 </div>
                                 <div className="col-12 mb-2">
-                                    {entityData.brand && (
+                                    {productDetail.brand && (
                                         <span className={cx('meta')}>
                                             Thương hiệu: &nbsp;
                                             <strong className="text-danger">
-                                                <Link to={`/thuong-hieu/${entityData.brand.id}`}>
-                                                    {entityData.brand.name}
+                                                <Link to={`/thuong-hieu/${productDetail.brand.slug}`}>
+                                                    {productDetail.brand.name}
                                                 </Link>
                                             </strong>
                                         </span>
@@ -268,8 +259,8 @@ function ProductDetail() {
                                     </span>
                                 </div>
                                 <div className="col-12">
-                                    <Rate value={entityData.averageRating} disabled />
-                                    <span>({entityData.averageRating})</span>
+                                    <Rate value={productDetail.averageRating} disabled />
+                                    <span>({productDetail.averageRating})</span>
                                     <a className={cx('comment-link')} href="#review">
                                         (Xem đánh giá)
                                     </a>
@@ -279,14 +270,14 @@ function ProductDetail() {
                             <div className="row mb-3">
                                 <div className="col-12">
                                     <span className={cx('sale-cost-detail')}>
-                                        {formatCurrency(entityData.salePrice)}
+                                        {formatCurrency(productDetail.salePrice)}
                                     </span>
                                     &nbsp; &nbsp; &nbsp;
                                     <span className={cx('sale-public-cost-detail')}>
-                                        {formatCurrency(entityData.price)}
+                                        {formatCurrency(productDetail.price)}
                                     </span>
                                     &nbsp; &nbsp; &nbsp;
-                                    <span className={cx('meta')}>-{entityData.discountPercentage}%</span>
+                                    <span className={cx('meta')}>-{productDetail.discountPercentage}%</span>
                                 </div>
                             </div>
 
@@ -294,7 +285,7 @@ function ProductDetail() {
                                 <div className="col col-6 text-center">
                                     <button
                                         className={cx('btn', 'btn-custom', 'btn-buy-now', 'p-1')}
-                                        onClick={() => handleBuyNow(entityData.id)}
+                                        onClick={() => handleBuyNow(productDetail.id)}
                                     >
                                         MUA NGAY
                                         <p className="mb-0">Giao hàng tận nơi</p>
@@ -303,7 +294,8 @@ function ProductDetail() {
                                 <div className="col col-6 text-center">
                                     <button
                                         className={cx('btn', 'btn-custom', 'btn-add-to-cart', 'p-1')}
-                                        onClick={() => handleAddToCart(entityData.id)}
+                                        disabled={isAdding}
+                                        onClick={() => handleAddToCart(productDetail.id)}
                                     >
                                         THÊM VÀO GIỎ HÀNG
                                         <p className="mb-0">Giao hàng tận nơi</p>
@@ -469,34 +461,28 @@ function ProductDetail() {
                 >
                     <div className="row mx-0">
                         <div className="col-12 col-md-7 order-2 order-md-1">
-                            <ReactQuill value={entityData.description} readOnly={true} theme="bubble" />
+                            <ReactQuill value={productDetail.description} readOnly={true} theme="bubble" />
                         </div>
                         <div className="col-12 col-md-5 order-1 order-md-2">
                             <h3>Thông số kỹ thuật</h3>
-                            <div>
-                                <a
-                                    href="https://nshpos.com/Web/Resources/Uploaded/18/images/bon%20cau/SPEC/3933800H.pdf"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    <img src={images.pdf0} width={20} alt="icon file" />
-                                </a>
-                                <a
-                                    href="https://nshpos.com/Web/Resources/Uploaded/18/images/bon%20cau/SPEC/3933800H.pdf"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    Bản vẽ kỹ thuật
-                                </a>
-                            </div>
+                            {productDetail.technicalDrawingPdf && (
+                                <div>
+                                    <a href={productDetail.technicalDrawingPdf} target="_blank" rel="noreferrer">
+                                        <img src={images.pdf0} width={20} alt="icon file" />
+                                    </a>
+                                    <a href={productDetail.technicalDrawingPdf} target="_blank" rel="noreferrer">
+                                        Bản vẽ kỹ thuật
+                                    </a>
+                                </div>
+                            )}
 
                             <div className={cx('spec-title', 'text-danger', 'mt-3')}>
-                                <strong>{entityData.name}</strong>
+                                <strong>{productDetail.name}</strong>
                             </div>
 
                             <table className={cx('spec-table', 'table', 'table-striped')}>
                                 <tbody>
-                                    {entityData.attributes.map((attr, index) => (
+                                    {productDetail.attributes.map((attr, index) => (
                                         <tr key={index}>
                                             <td>
                                                 <strong>{attr.name}</strong>
@@ -558,34 +544,32 @@ function ProductDetail() {
 
                 <div className="row mb-3">
                     <div className="col-12 col-md-8">
-                        <ReviewSection id="review" productId={entityData.id} message={messageApi} />
+                        <ReviewSection id="review" productId={productDetail.id} message={messageApi} />
                     </div>
                     <div className="col-12 col-md-4">
                         <div className={cx('section-title')}>Video nổi bật</div>
-                        <div className="inner-video mb-3">
-                            <div className="ratio ratio-16x9 rounded overflow-hidden">
-                                <iframe
-                                    width="100%"
-                                    height="100%"
-                                    src="https://www.youtube.com/embed/SwVyUBz6YRI?si=bYfUGgH3OOFe2c4G"
-                                    title="YouTube video player"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    allowFullScreen
-                                    style={{ border: 'none' }}
-                                ></iframe>
-                            </div>
+                        <div className="ratio ratio-16x9 rounded overflow-hidden mb-3">
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                src="https://www.youtube.com/embed/K5wZ3Px3fuY"
+                                title="YouTube video player"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                                style={{ border: 'none' }}
+                            ></iframe>
                         </div>
 
                         <div className={cx('section-title')}>Tin tức nổi bật</div>
-                        <div className="inner-image mb-3">
-                            <a href="https://shome.vn/tin-tuc/tung-bung-khai-truong-showroom-bac-ninh-s-home-tang-vang-9999">
-                                <img
-                                    src="https://nshpos.com/Web/Resources/Uploaded/18/images/Main.jpg"
-                                    alt="TƯNG BỪNG KHAI TRƯƠNG - TẶNG VÀNG 9999  🎊"
-                                    className="img-fluid rounded"
-                                />
-                            </a>
-                        </div>
+                        {highlightNews.length > 0 ? (
+                            highlightNews.map((item) => (
+                                <Link key={item.id} to={`/tin-tuc/${item.slug}`}>
+                                    <img src={item.imageUrl} alt={item.title} className="img-fluid rounded" />
+                                </Link>
+                            ))
+                        ) : (
+                            <div>Chưa có tin tức nổi bật.</div>
+                        )}
                     </div>
                 </div>
 

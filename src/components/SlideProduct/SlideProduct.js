@@ -59,6 +59,8 @@ function SlideProduct({
         };
 
         fetchEntities();
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
