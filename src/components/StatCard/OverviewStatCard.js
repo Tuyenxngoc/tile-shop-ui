@@ -1,12 +1,15 @@
 import { Tooltip } from 'antd';
 import { FaCaretDown, FaCaretUp } from 'react-icons/fa';
 import { FaCircleInfo } from 'react-icons/fa6';
+
 import classNames from 'classnames/bind';
-import styles from './DashboardCard.module.scss';
+import styles from './OverviewStatCard.module.scss';
+
 import { formatCurrency } from '~/utils';
+
 const cx = classNames.bind(styles);
 
-function DashboardCard({
+function OverviewStatCard({
     title,
     value,
     unit,
@@ -60,4 +63,4 @@ function DashboardCard({
     );
 }
 
-export default DashboardCard;
+export default OverviewStatCard;

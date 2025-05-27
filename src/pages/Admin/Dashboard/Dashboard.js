@@ -12,7 +12,6 @@ import { ResponsivePie } from '@nivo/pie';
 import { ResponsiveBar } from '@nivo/bar';
 
 import useAuth from '~/hooks/useAuth';
-import StatCard from '~/components/StatCard';
 import {
     getDashboardStatistics,
     getTopSellingProducts,
@@ -23,6 +22,7 @@ import {
 } from '~/services/statisticsService';
 import { formatCurrency, formatDate } from '~/utils';
 import { orderStatusTags } from '~/constants/order';
+import { StatCard } from '~/components/StatCard';
 
 const formatLabel = (timestamp, statType) => {
     switch (statType) {
@@ -281,7 +281,7 @@ function Dashboard() {
                         decimals={2}
                         unit={stats?.revenueStat?.currency || 'VND'}
                         percentage={stats?.revenueStat?.percentageChange || 0}
-                        link="/"
+                        link="/admin/statistics/overview"
                         linkLabel="Xem doanh thu chi tiết"
                         iconComponent={BiSolidDollarCircle}
                         iconBg="bg-success-subtle"

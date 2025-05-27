@@ -2,7 +2,10 @@ import { Link } from 'react-router-dom';
 import { FiArrowUpRight, FiArrowDownRight } from 'react-icons/fi';
 import CountUp from 'react-countup';
 
-import './StatCard.scss';
+import classNames from 'classnames/bind';
+import styles from './StatCard.module.scss';
+
+const cx = classNames.bind(styles);
 
 function StatCard({
     title,
@@ -17,7 +20,7 @@ function StatCard({
     iconComponent: Icon,
 }) {
     return (
-        <div className="card card-animate">
+        <div className={cx('card', 'card-animate')}>
             <div className="card-body">
                 <div className="d-flex align-items-center">
                     <div className="flex-grow-1 overflow-hidden">
@@ -50,8 +53,8 @@ function StatCard({
                             {linkLabel}
                         </Link>
                     </div>
-                    <div className="avatar-sm flex-shrink-0">
-                        <span className={`avatar-title rounded fs-3 ${iconBg}`}>
+                    <div className={cx('avatar-sm', 'flex-shrink-0')}>
+                        <span className={cx('avatar-title', 'rounded', 'fs-3', iconBg)}>
                             <Icon className={iconColor} />
                         </span>
                     </div>

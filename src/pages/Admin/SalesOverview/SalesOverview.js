@@ -3,9 +3,9 @@ import { ResponsiveLine } from '@nivo/line';
 import { DatePicker, message, Select } from 'antd';
 import dayjs from 'dayjs';
 
-import DashboardCard from './DashboardCard';
-import { getChartDataByKeys } from '~/services/statisticsService';
 import { formatCurrency } from '~/utils';
+import { getChartDataByKeys } from '~/services/statisticsService';
+import { OverviewStatCard } from '~/components/StatCard';
 
 const MAX_ACTIVE_KEYS = 4;
 
@@ -53,16 +53,14 @@ const salesMetrics = [
         title: 'Đơn hàng',
         value: 0,
         percent: 0,
-        tooltip:
-            'Tổng số đơn đặt hàng đã xác nhận trong khoảng thời gian đã chọn, bao gồm cả đơn đặt hàng đã hủy và trả lại.',
+        tooltip: 'Tổng số đơn đặt hàng trong khoảng thời gian đã chọn, bao gồm cả đơn đặt hàng đã hủy và trả lại.',
     },
     {
         key: 'conversion',
         title: 'Tỷ lệ chuyển đổi',
         value: 0,
         percent: 0,
-        tooltip:
-            'Tổng số khách truy cập và có đơn đã xác nhận chia tổng số khách truy cập trong khoảng thời gian đã chọn',
+        tooltip: 'Tổng số khách truy cập và có đơn chia tổng số khách truy cập trong khoảng thời gian đã chọn',
         unit: 'percent',
     },
     {
@@ -220,7 +218,7 @@ function SalesOverview() {
             <div className="row g-3 mb-3">
                 {metricCardsData.map((item) => (
                     <div className="col" style={{ flex: '0 0 20%', maxWidth: '20%' }} key={item.key}>
-                        <DashboardCard
+                        <OverviewStatCard
                             title={item.title}
                             value={item.value}
                             unit={item.unit}
