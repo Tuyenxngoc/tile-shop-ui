@@ -53,10 +53,10 @@ function OverviewStatCard({
 
                 <div className="fs-4 fw-bold mb-1">{formatValue()}</div>
 
-                <div className="d-flex align-items-center">
+                <div className="d-flex align-items-center" style={{ fontSize: '12px' }}>
                     <span>{timeComparisonText}</span>
                     {renderPercentIcon()}
-                    <span className="ms-1">{percent}%</span>
+                    <span className="ms-1 fw-semibold">{percent}%</span>
                 </div>
             </div>
         </div>

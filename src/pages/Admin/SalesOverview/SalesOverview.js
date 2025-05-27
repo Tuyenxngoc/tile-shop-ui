@@ -215,21 +215,23 @@ function SalesOverview() {
                 </div>
             </div>
 
-            <div className="row g-3 mb-3">
+            <div
+                className="d-grid"
+                style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}
+            >
                 {metricCardsData.map((item) => (
-                    <div className="col" style={{ flex: '0 0 20%', maxWidth: '20%' }} key={item.key}>
-                        <OverviewStatCard
-                            title={item.title}
-                            value={item.value}
-                            unit={item.unit}
-                            percent={item.percent}
-                            borderColor={colorMap[item.key] || '#000'}
-                            isActive={activeKeys.includes(item.key)}
-                            onClick={() => toggleActive(item.key)}
-                            timeComparisonText={timeComparisonMap[statType] || ''}
-                            tooltipText={item.tooltip}
-                        />
-                    </div>
+                    <OverviewStatCard
+                        key={item.key}
+                        title={item.title}
+                        value={item.value}
+                        unit={item.unit}
+                        percent={item.percent}
+                        borderColor={colorMap[item.key] || '#000'}
+                        isActive={activeKeys.includes(item.key)}
+                        onClick={() => toggleActive(item.key)}
+                        timeComparisonText={timeComparisonMap[statType] || ''}
+                        tooltipText={item.tooltip}
+                    />
                 ))}
             </div>
 
