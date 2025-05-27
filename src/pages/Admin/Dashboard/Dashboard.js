@@ -379,9 +379,7 @@ function Dashboard() {
                                 legendPosition: 'middle',
                                 legendOffset: -60,
                             }}
-                            labelSkipWidth={12}
-                            labelSkipHeight={12}
-                            labelTextColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
+                            enableLabel={false}
                             animate={true}
                             tooltip={({ id, value, indexValue }) => (
                                 <div style={{ padding: '6px 9px', background: '#fff', border: '1px solid #ddd' }}>
@@ -396,7 +394,7 @@ function Dashboard() {
                     <div style={{ height: '500px' }}>
                         <ResponsivePie
                             data={revenueByCategoryData}
-                            margin={{ top: 40, right: 120, bottom: 40, left: 20 }}
+                            margin={{ top: 40, right: 220, bottom: 40, left: 20 }}
                             innerRadius={0.5}
                             padAngle={0.7}
                             cornerRadius={3}
