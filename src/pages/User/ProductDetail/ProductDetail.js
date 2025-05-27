@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { Alert, Breadcrumb, Button, message, Rate, Spin } from 'antd';
+import { Alert, Breadcrumb, Button, Empty, message, Rate, Spin } from 'antd';
 
 import Swal from 'sweetalert2';
 
@@ -24,9 +24,10 @@ import styles from './ProductDetail.module.scss';
 import images from '~/assets';
 import Policy from '~/components/Policy';
 import { addToCart } from '~/services/cartService';
-import { getProductBySlug } from '~/services/productService';
+import { getProductBySlug, getProducts } from '~/services/productService';
 import { formatCurrency } from '~/utils/utils';
 import ReviewSection from './ReviewSection';
+import Product from '~/components/Product';
 import useStore from '~/hooks/useStore';
 import usePageTracking from '~/hooks/usePageTracking';
 
@@ -42,6 +43,7 @@ function ProductDetail() {
     const navigate = useNavigate();
 
     const [entityData, setEntityData] = useState(null);
+    const [relatedProducts, setRelatedProducts] = useState([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -130,6 +132,29 @@ function ProductDetail() {
 
         fetchEntities();
     }, [id]);
+
+    useEffect(() => {
+        const fetchRelated = async () => {
+            if (entityData && entityData.categoryPath?.length > 0) {
+                try {
+                    const keyword = entityData.categoryPath[entityData.categoryPath.length - 1]?.slug;
+                    if (!keyword) return;
+
+                    const response = await getProducts({
+                        excludeId: entityData.id,
+                        searchBy: 'categorySlug',
+                        keyword: keyword,
+                    });
+                    const { items } = response.data.data;
+                    setRelatedProducts(items);
+                } catch (error) {
+                    console.error('Lỗi tải sản phẩm liên quan:', error);
+                }
+            }
+        };
+
+        fetchRelated();
+    }, [entityData, id]);
 
     if (isLoading) {
         return (
@@ -502,8 +527,33 @@ function ProductDetail() {
                 )}
 
                 <div className="row mb-3">
-                    <div className="col-12">Sản phẩm tương tự</div>
-                    <div className="col-12">cc</div>
+                    <div className="col-12">
+                        <div className={cx('section-title')}>Sản phẩm tương tự</div>
+                    </div>
+                    <div className="col-12">
+                        {relatedProducts && relatedProducts.length > 0 ? (
+                            <Swiper
+                                style={{
+                                    '--swiper-navigation-color': '#333',
+                                    '--swiper-pagination-color': '#333',
+                                }}
+                                slidesPerView={5}
+                                spaceBetween={10}
+                                navigation
+                                modules={[Navigation]}
+                            >
+                                {relatedProducts.map((news, index) => (
+                                    <SwiperSlide key={index}>
+                                        <Product data={news} />
+                                    </SwiperSlide>
+                                ))}
+                            </Swiper>
+                        ) : (
+                            <div className="d-flex justify-content-center w-100 py-5">
+                                <Empty description="Không có sản phẩm nào để hiển thị." />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="row mb-3">
