@@ -149,12 +149,16 @@ function SalesOverview() {
                 const chart = response.data.data;
 
                 const formatted = Object.entries(chart).map(([key, metric]) => {
-                    const total = metric.value === 0 ? 1 : metric.value;
+                    const values = metric.points.map((p) => p.value);
+                    const min = Math.min(...values);
+                    const max = Math.max(...values);
+                    const range = max - min || 1;
+
                     return {
                         id: key,
                         data: metric.points.map((p) => ({
                             x: formatLabel(p.timestamp, statType),
-                            y: p.value / total, // chuẩn hóa theo phần trăm của tổng
+                            y: (p.value - min) / range,
                             originalValue: p.value,
                         })),
                     };
@@ -242,7 +246,7 @@ function SalesOverview() {
                     colors={({ id }) => colorMap[id] || '#000'}
                     margin={{ top: 50, right: 140, bottom: 50, left: 60 }}
                     yScale={{ type: 'linear', min: 0, max: 1, reverse: false }}
-                    axisLeft={{ legend: 'Tỉ lệ', legendOffset: -40 }}
+                    axisLeft={null}
                     pointSize={10}
                     pointColor={{ theme: 'background' }}
                     pointBorderWidth={2}
@@ -281,30 +285,42 @@ function SalesOverview() {
                         return (
                             <div
                                 style={{
-                                    background: 'white',
-                                    padding: 10,
-                                    minWidth: '200px',
-                                    border: '1px solid #ccc',
+                                    background: '#fff',
+                                    border: '1px solid #d9d9d9',
+                                    borderRadius: 6,
+                                    minWidth: 180,
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                                    fontSize: 13,
                                 }}
                             >
-                                <div>
-                                    <strong>{x}</strong>
+                                <div
+                                    style={{
+                                        color: '#333',
+                                        backgroundColor: '#f6f6f6',
+                                        padding: '4px 6px',
+                                        fontWeight: 500,
+                                    }}
+                                >
+                                    {x}
                                 </div>
-                                {valuesAtX.map(({ id, color, value }) => (
-                                    <div key={id} style={{ display: 'flex', alignItems: 'center', marginTop: 4 }}>
-                                        <span
-                                            style={{
-                                                width: 10,
-                                                height: 10,
-                                                background: color,
-                                                borderRadius: '50%',
-                                                marginRight: 6,
-                                            }}
-                                        />
-                                        <span style={{ flex: 1 }}>{titleMap[id] || id}</span>
-                                        <span style={{ marginLeft: 8 }}>{formatValue(id, value)}</span>
-                                    </div>
-                                ))}
+
+                                <div style={{ padding: '6px' }}>
+                                    {valuesAtX.map(({ id, color, value }) => (
+                                        <div key={id} style={{ display: 'flex', alignItems: 'center', marginTop: 4 }}>
+                                            <span
+                                                style={{
+                                                    width: 10,
+                                                    height: 10,
+                                                    background: color,
+                                                    borderRadius: '50%',
+                                                    marginRight: 6,
+                                                }}
+                                            />
+                                            <span style={{ flex: 1 }}>{titleMap[id] || id}</span>
+                                            <span style={{ marginLeft: 8 }}>{formatValue(id, value)}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         );
                     }}

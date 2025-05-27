@@ -28,6 +28,7 @@ import { getProductBySlug } from '~/services/productService';
 import { formatCurrency } from '~/utils/utils';
 import ReviewSection from './ReviewSection';
 import useStore from '~/hooks/useStore';
+import usePageTracking from '~/hooks/usePageTracking';
 
 const cx = classNames.bind(styles);
 
@@ -35,6 +36,7 @@ function ProductDetail() {
     const {
         storeInfo: { phoneSupport, openingHours },
     } = useStore();
+    usePageTracking();
 
     const { id } = useParams();
     const navigate = useNavigate();

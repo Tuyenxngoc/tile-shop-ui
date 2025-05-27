@@ -9,8 +9,10 @@ import NewsCard from '~/components/New/NewsCard';
 import { getNewsCategories } from '~/services/newsCategoryService';
 import { getNews, getNewsBySlug } from '~/services/newsService';
 import { formatDate } from '~/utils';
+import usePageTracking from '~/hooks/usePageTracking';
 
 function NewsDetail() {
+    usePageTracking();
     const { id } = useParams();
 
     const [entityData, setEntityData] = useState(null);

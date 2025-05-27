@@ -12,11 +12,13 @@ import { getProducts } from '~/services/productService';
 import { getBrandBySlug } from '~/services/brandService';
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import useCart from '~/hooks/useCart';
+import usePageTracking from '~/hooks/usePageTracking';
 
 const cx = classNames.bind(styles);
 
 function ProductByBrand() {
     const { handleAddToCart, isAdding } = useCart();
+    usePageTracking();
 
     const { id } = useParams();
 
