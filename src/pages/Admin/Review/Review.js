@@ -24,9 +24,9 @@ import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { approveReview, deleteReview, getReviews, rejectReview } from '~/services/reviewService';
 
 const options = [
-    { value: 'id', label: 'ID sản phẩm' },
-    { value: 'name', label: 'Tên sản phẩm' },
-    { value: 'category', label: 'Danh mục' },
+    { value: 'productId', label: 'ID sản phẩm' },
+    { value: 'productName', label: 'Tên sản phẩm' },
+    { value: 'productCategoryName', label: 'Tên danh mục' },
 ];
 
 const statusOptions = [
@@ -352,7 +352,7 @@ function Review() {
                                 disabled={isLoading}
                                 value={activeFilterOption}
                                 onChange={(value) => setActiveFilterOption(value)}
-                                style={{ width: 200 }}
+                                style={{ minWidth: 200 }}
                             />
                             <Input
                                 allowClear

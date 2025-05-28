@@ -12,8 +12,9 @@ import { formatCurrency, formatDate } from '~/utils';
 
 const options = [
     { value: 'id', label: 'ID' },
-    { value: 'title', label: 'Tiêu đề' },
-    { value: 'category', label: 'Danh mục' },
+    { value: 'name', label: 'Tên sản phẩm' },
+    { value: 'categoryName', label: 'Tên danh mục' },
+    { value: 'brandName', label: 'Tên thương hiệu' },
 ];
 
 function Product() {
@@ -197,7 +198,7 @@ function Product() {
                             type="text"
                             icon={<PiListStarBold />}
                             onClick={() =>
-                                navigate('/admin/reviews', { state: { searchBy: 'id', keyword: record.id } })
+                                navigate('/admin/reviews', { state: { searchBy: 'productId', keyword: record.id } })
                             }
                         >
                             Xem đánh giá
@@ -237,7 +238,7 @@ function Product() {
                             disabled={isLoading}
                             value={activeFilterOption}
                             onChange={(value) => setActiveFilterOption(value)}
-                            style={{ width: 200 }}
+                            style={{ minWidth: 200 }}
                         />
                         <Input
                             allowClear

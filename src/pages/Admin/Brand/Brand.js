@@ -226,7 +226,7 @@ function Brand() {
                             disabled={isLoading}
                             value={activeFilterOption}
                             onChange={(value) => setActiveFilterOption(value)}
-                            style={{ width: 200 }}
+                            style={{ minWidth: 200 }}
                         />
                         <Input
                             allowClear

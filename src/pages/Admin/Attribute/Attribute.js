@@ -25,6 +25,8 @@ import { formatDate } from '~/utils';
 const options = [
     { value: 'id', label: 'ID' },
     { value: 'name', label: 'Tên' },
+    { value: 'isRequired', label: 'Bắt buộc nhập (true/false)' },
+    { value: 'defaultValue', label: 'Giá trị mặc định' },
 ];
 
 function Attribute() {
@@ -294,7 +296,7 @@ function Attribute() {
                             disabled={isLoading}
                             value={activeFilterOption}
                             onChange={(value) => setActiveFilterOption(value)}
-                            style={{ width: 200 }}
+                            style={{ minWidth: 200 }}
                         />
                         <Input
                             allowClear

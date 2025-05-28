@@ -11,6 +11,7 @@ import { formatDate } from '~/utils';
 const options = [
     { value: 'id', label: 'ID' },
     { value: 'name', label: 'Tên' },
+    { value: 'parentName', label: 'Tên danh mục cha' },
 ];
 
 function Category() {
@@ -150,11 +151,9 @@ function Category() {
             title: 'Danh mục cha',
             dataIndex: 'parent',
             key: 'parent',
-            sorter: true,
-            showSorterTooltip: false,
             render: (text) => {
                 if (text) {
-                    return <Link to={text.id}>{text.name}</Link>;
+                    return text.name;
                 }
                 return 'Không có';
             },
@@ -246,7 +245,7 @@ function Category() {
                             disabled={isLoading}
                             value={activeFilterOption}
                             onChange={(value) => setActiveFilterOption(value)}
-                            style={{ width: 200 }}
+                            style={{ minWidth: 200 }}
                         />
                         <Input
                             allowClear

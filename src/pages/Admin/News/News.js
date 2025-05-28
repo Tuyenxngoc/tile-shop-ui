@@ -11,7 +11,7 @@ import { formatDate } from '~/utils';
 const options = [
     { value: 'id', label: 'ID' },
     { value: 'title', label: 'Tiêu đề' },
-    { value: 'category', label: 'Danh mục' },
+    { value: 'categoryName', label: 'Tên danh mục' },
 ];
 
 function News() {
@@ -178,6 +178,14 @@ function News() {
             ),
         },
         {
+            title: 'Lượt xem',
+            dataIndex: 'viewCount',
+            key: 'viewCount',
+            align: 'center',
+            sorter: true,
+            showSorterTooltip: false,
+        },
+        {
             title: 'Danh mục',
             dataIndex: 'category',
             key: 'category',
@@ -232,7 +240,7 @@ function News() {
                             disabled={isLoading}
                             value={activeFilterOption}
                             onChange={(value) => setActiveFilterOption(value)}
-                            style={{ width: 200 }}
+                            style={{ minWidth: 200 }}
                         />
                         <Input
                             allowClear
