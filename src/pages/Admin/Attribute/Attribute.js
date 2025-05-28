@@ -114,7 +114,8 @@ function Attribute() {
                 closeAddModal();
             }
         } catch (error) {
-            messageApi.error('Lỗi: ' + error.message);
+            const errorMessage = error.response?.data?.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+            messageApi.error(errorMessage);
         }
     };
 
@@ -130,7 +131,8 @@ function Attribute() {
                 closeEditModal();
             }
         } catch (error) {
-            messageApi.error('Lỗi: ' + error.message);
+            const errorMessage = error.response?.data?.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+            messageApi.error(errorMessage);
         }
     };
 
@@ -143,7 +145,8 @@ function Attribute() {
                 messageApi.success(response.data.data.message);
             }
         } catch (error) {
-            messageApi.error('Lỗi: ' + error.message);
+            const errorMessage = error.response?.data?.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau.';
+            messageApi.error(errorMessage);
         }
     };
 

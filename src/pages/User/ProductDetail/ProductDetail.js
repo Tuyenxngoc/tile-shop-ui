@@ -210,7 +210,7 @@ function ProductDetail() {
                                 <Swiper
                                     onSwiper={setThumbsSwiper}
                                     spaceBetween={10}
-                                    slidesPerView={4}
+                                    slidesPerView={6}
                                     freeMode={true}
                                     watchSlidesProgress={true}
                                     modules={[FreeMode, Navigation, Thumbs]}

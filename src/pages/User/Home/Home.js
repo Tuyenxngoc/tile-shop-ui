@@ -64,12 +64,12 @@ function Home() {
 
                     <SlideProduct
                         className="mb-3"
-                        title="Gạch Ốp Lát"
+                        title="Gạch Lát Nền"
                         fetchProducts={getProducts}
-                        productFilterParams={{ searchBy: 'categorySlug', keyword: 'gach-op-lat', pageSize: 20 }}
+                        productFilterParams={{ searchBy: 'categorySlug', keyword: 'gach-lat-nen', pageSize: 20 }}
                         fetchBrands={getBrands}
                         brandFilterParams={{ pageSize: 5 }}
-                        viewAllLink="/danh-muc/gach-op-lat"
+                        viewAllLink="/danh-muc/gach-lat-nen"
                     />
 
                     <SlideNew className="mb-3" />
