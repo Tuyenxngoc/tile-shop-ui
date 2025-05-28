@@ -7,12 +7,15 @@ import { FaRegTrashAlt } from 'react-icons/fa';
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { genderTags } from '~/constants/gender';
 import { deleteUser, getUsers, toggleUserActive } from '~/services/userService';
+import { formatDate } from '~/utils';
 
 const options = [
+    { value: 'id', label: 'ID' },
     { value: 'username', label: 'Tên đăng nhập' },
     { value: 'email', label: 'Địa chỉ email' },
     { value: 'fullName', label: 'Họ tên' },
     { value: 'phoneNumber', label: 'Số điện thoại' },
+    { value: 'roleName', label: 'Quyền' },
 ];
 
 function User() {
@@ -114,6 +117,22 @@ function User() {
 
     const columns = [
         {
+            title: 'Ngày tạo',
+            dataIndex: 'createdDate',
+            key: 'createdDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
+            title: 'Ngày chỉnh sửa',
+            dataIndex: 'lastModifiedDate',
+            key: 'lastModifiedDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
             title: 'Tên đăng nhập',
             dataIndex: 'username',
             key: 'username',
@@ -159,6 +178,7 @@ function User() {
             title: 'Giới tính',
             dataIndex: 'gender',
             key: 'gender',
+            align: 'center',
             sorter: true,
             showSorterTooltip: false,
             render: (gender) => genderTags[gender] || null,
@@ -167,13 +187,13 @@ function User() {
             title: 'Vai trò',
             dataIndex: ['role', 'name'],
             key: 'role',
-            sorter: true,
-            showSorterTooltip: false,
         },
         {
             title: 'Trạng thái',
             dataIndex: 'activeFlag',
             key: 'activeFlag',
+            sorter: true,
+            showSorterTooltip: false,
             render: (text, record) => (
                 <Space>
                     {text ? 'Đang hoạt động' : 'Ngừng hoạt động'}
@@ -227,6 +247,7 @@ function User() {
                             disabled={isLoading}
                             value={activeFilterOption}
                             onChange={(value) => setActiveFilterOption(value)}
+                            style={{ width: 200 }}
                         />
                         <Input
                             allowClear

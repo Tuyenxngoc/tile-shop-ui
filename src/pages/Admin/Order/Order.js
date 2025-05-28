@@ -503,6 +503,7 @@ function Order() {
                             disabled={isLoading}
                             value={activeFilterOption}
                             onChange={(value) => setActiveFilterOption(value)}
+                            style={{ width: 200 }}
                         />
                         <Input
                             allowClear
