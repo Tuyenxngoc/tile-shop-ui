@@ -235,12 +235,12 @@ function BrandForm() {
                     />
 
                     {/* Mũi tên ngang: chỉ hiện khi md trở lên */}
-                    <div className="col-12 col-md-2 d-none d-md-flex justify-description-center align-items-center">
+                    <div className="col-12 col-md-2 d-none d-md-flex justify-content-center align-items-center">
                         <ArrowRightOutlined size={24} />
                     </div>
 
                     {/* Mũi tên xuống: chỉ hiện khi nhỏ hơn md */}
-                    <div className="col-12 d-flex d-md-none justify-description-center align-items-center my-2">
+                    <div className="col-12 d-flex d-md-none justify-content-center align-items-center my-2">
                         <ArrowDownOutlined size={24} />
                     </div>
 
@@ -259,7 +259,6 @@ function BrandForm() {
 
                     <RichTextInput
                         id="description"
-                        required
                         className="col-12"
                         label="Mô tả"
                         placeholder="Nhập mô tả thương hiệu"

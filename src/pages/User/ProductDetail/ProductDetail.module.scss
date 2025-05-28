@@ -87,6 +87,14 @@
     }
 }
 
+.service-option {
+    color: #007bff;
+
+    &:hover {
+        color: #fdca5b;
+    }
+}
+
 .why-buy {
     position: relative;
     height: 35px;

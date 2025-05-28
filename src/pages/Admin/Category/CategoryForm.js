@@ -79,6 +79,7 @@ function CategoryForm() {
     const debouncedCategorySearch = useDebounce(categorySearchTerm, 300);
     const [isCategoryLoading, setIsCategoryLoading] = useState(false);
 
+    const [categoryAttributes, setCategoryAttributes] = useState([]); // List để merge danh sách
     const [attributeList, setAttributeList] = useState([]);
     const [attributeSearchTerm, setAttributeSearchTerm] = useState('');
     const debouncedAttributeSearch = useDebounce(attributeSearchTerm, 300);
@@ -193,13 +194,21 @@ function CategoryForm() {
             try {
                 const response = await getAttributes({ keyword: debouncedAttributeSearch, searchBy: 'name' });
                 const { items } = response.data.data;
-                setAttributeList(
-                    items.map((attr) => ({
-                        key: attr.id,
-                        id: attr.id,
-                        name: attr.name,
-                    })),
-                );
+
+                // Tạo map id tránh trùng
+                const existingIds = new Set(items.map((attr) => attr.id));
+
+                // Lấy attribute của category mà chưa có trong kết quả search
+                const missingAttributes = categoryAttributes.filter((attr) => !existingIds.has(attr.id));
+
+                // Hợp nhất danh sách
+                const mergedAttributes = [...missingAttributes, ...items].map((attr) => ({
+                    key: attr.id,
+                    id: attr.id,
+                    name: attr.name,
+                }));
+
+                setAttributeList(mergedAttributes);
             } catch (error) {
                 messageApi.error('Lỗi: ' + error.message);
             } finally {
@@ -209,7 +218,7 @@ function CategoryForm() {
 
         fetchAttributes();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [debouncedAttributeSearch]);
+    }, [debouncedAttributeSearch, categoryAttributes]);
 
     //Tải dữ liệu
     useEffect(() => {
@@ -223,9 +232,12 @@ function CategoryForm() {
         const fetchEntity = async () => {
             try {
                 const response = await getCategoryById(id);
-                const { name, slug, description, imageUrl, parent, attributeIds } = response.data.data;
+                const { name, slug, description, imageUrl, parent, attributes } = response.data.data;
                 const parentId = parent?.id;
+                const attributeIds = attributes ? attributes.map((attr) => attr.id) : [];
+
                 formik.setValues({ name, slug, description, parentId, attributeIds });
+                setCategoryAttributes(attributes || []);
 
                 if (imageUrl) {
                     const mappedImages = [
@@ -367,7 +379,8 @@ function CategoryForm() {
                             showSearch
                             showSelectAll={false}
                             onChange={(nextTargetKeys) => formik.setFieldValue('attributeIds', nextTargetKeys)}
-                            filterOption={setAttributeSearchTerm}
+                            onSearch={(dir, value) => setAttributeSearchTerm(value)}
+                            filterOption={() => true}
                             leftColumns={columns}
                             rightColumns={columns}
                         />

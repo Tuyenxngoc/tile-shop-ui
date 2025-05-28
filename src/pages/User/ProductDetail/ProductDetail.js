@@ -319,7 +319,9 @@ function ProductDetail() {
                                                 fill="#333333"
                                             />
                                         </svg>
-                                        <Link to="/he-thong-cua-hang">Xem hệ thống Showroom</Link>
+                                        <Link to="/he-thong-cua-hang" className={cx('service-option')}>
+                                            Xem hệ thống Showroom
+                                        </Link>
                                     </div>
                                 </div>
                                 <div className="col-12">
@@ -387,7 +389,11 @@ function ProductDetail() {
                                                 fill="black"
                                             />
                                         </svg>
-                                        Hotline: <Link to={`tel:${phoneSupport}`}>{phoneSupport}</Link> ({openingHours})
+                                        Hotline:
+                                        <Link to={`tel:${phoneSupport}`} className={cx('service-option')}>
+                                            &nbsp;{phoneSupport}&nbsp;
+                                        </Link>
+                                        ({openingHours})
                                     </div>
                                 </div>
                             </div>
