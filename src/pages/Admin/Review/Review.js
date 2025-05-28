@@ -331,7 +331,7 @@ function Review() {
                     marginBottom: 16,
                 }}
             >
-                <h2>Đánh giá sản phẩm</h2>
+                <h2>Quản lý đánh giá sản phẩm</h2>
                 <Tabs defaultActiveKey="all" items={ratingTabs} onChange={handleRatingFilter} />
             </div>
 

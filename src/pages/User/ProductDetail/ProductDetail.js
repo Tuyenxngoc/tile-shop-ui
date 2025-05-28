@@ -26,7 +26,7 @@ import Policy from '~/components/Policy';
 import { addToCart } from '~/services/cartService';
 import { getNews } from '~/services/newsService';
 import { getProductBySlug, getProducts } from '~/services/productService';
-import { formatCurrency } from '~/utils/utils';
+import { formatCurrency } from '~/utils';
 import ReviewSection from './ReviewSection';
 import Product from '~/components/Product';
 import useStore from '~/hooks/useStore';

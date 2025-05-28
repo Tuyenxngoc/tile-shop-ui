@@ -224,7 +224,7 @@ function News() {
             {contextHolder}
 
             <Flex wrap justify="space-between" align="center">
-                <h2>Tin tức</h2>
+                <h2>Quản lý tin tức</h2>
                 <Space>
                     <Space.Compact className="my-2">
                         <Select

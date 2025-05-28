@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import classNames from 'classnames/bind';
 import styles from './Cart.module.scss';
 import { Alert, Button, Empty, Spin, Typography } from 'antd';
-import { formatCurrency } from '~/utils/utils';
+import { formatCurrency } from '~/utils';
 import { getCartItems, removeCartItem, updateCartItem } from '~/services/cartService';
 import images from '~/assets';
 

@@ -303,7 +303,7 @@ function NewsCategory() {
             </Modal>
 
             <Flex wrap justify="space-between" align="center">
-                <h2>Loại tin tức</h2>
+                <h2>Quản lý loại tin tức</h2>
                 <Space>
                     <Space.Compact className="my-2">
                         <Select

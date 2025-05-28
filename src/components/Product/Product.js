@@ -4,7 +4,7 @@ import { Rate } from 'antd';
 import { FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { FaSpinner } from 'react-icons/fa6';
 
-import { formatCurrency } from '~/utils/utils';
+import { formatCurrency } from '~/utils';
 
 import classNames from 'classnames/bind';
 import styles from './Product.module.scss';

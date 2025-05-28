@@ -238,7 +238,7 @@ function Category() {
             {contextHolder}
 
             <Flex wrap justify="space-between" align="center">
-                <h2>Danh mục</h2>
+                <h2>Quản lý danh mục</h2>
                 <Space>
                     <Space.Compact className="my-2">
                         <Select

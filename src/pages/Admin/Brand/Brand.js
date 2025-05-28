@@ -218,7 +218,7 @@ function Brand() {
             {contextHolder}
 
             <Flex wrap justify="space-between" align="center">
-                <h2>Thương hiệu</h2>
+                <h2>Quản lý thương hiệu</h2>
                 <Space>
                     <Space.Compact className="my-2">
                         <Select

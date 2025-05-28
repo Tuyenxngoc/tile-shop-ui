@@ -286,7 +286,7 @@ function Attribute() {
             </Modal>
 
             <Flex wrap justify="space-between" align="center">
-                <h2>Thuộc tính</h2>
+                <h2>Quản lý thuộc tính</h2>
                 <Space>
                     <Space.Compact className="my-2">
                         <Select

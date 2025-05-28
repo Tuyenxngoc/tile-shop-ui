@@ -2,7 +2,7 @@ import classNames from 'classnames/bind';
 import styles from './CartItem.module.scss';
 
 import { NumberInput } from '../FormInput';
-import { formatCurrency } from '~/utils/utils';
+import { formatCurrency } from '~/utils';
 import { Button, Space } from 'antd';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 

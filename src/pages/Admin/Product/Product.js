@@ -8,7 +8,7 @@ import { PiListStarBold } from 'react-icons/pi';
 
 import { INITIAL_FILTERS, INITIAL_META } from '~/constants';
 import { deleteProduct, getProducts } from '~/services/productService';
-import { formatCurrency } from '~/utils/utils';
+import { formatCurrency, formatDate } from '~/utils';
 
 const options = [
     { value: 'id', label: 'ID' },
@@ -104,6 +104,22 @@ function Product() {
             key: 'id',
             sorter: true,
             showSorterTooltip: false,
+        },
+        {
+            title: 'Ngày tạo',
+            dataIndex: 'createdDate',
+            key: 'createdDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
+        },
+        {
+            title: 'Ngày chỉnh sửa',
+            dataIndex: 'lastModifiedDate',
+            key: 'lastModifiedDate',
+            sorter: true,
+            showSorterTooltip: false,
+            render: (text) => formatDate(text),
         },
         {
             title: 'Tên sản phẩm',
