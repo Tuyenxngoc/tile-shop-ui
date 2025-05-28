@@ -165,7 +165,7 @@ function NewsDetail() {
 
                             <hr />
                             <h6>Chủ đề</h6>
-                            <Link to={`/tin-tuc?danh-muc=${entityData.category.slug}`} class="link-black">
+                            <Link to={`/tin-tuc?danh-muc=${entityData.category.slug}`} className="link-black">
                                 {entityData.category.name}
                             </Link>
                         </div>

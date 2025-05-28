@@ -352,7 +352,7 @@ function Review() {
                                 disabled={isLoading}
                                 value={activeFilterOption}
                                 onChange={(value) => setActiveFilterOption(value)}
-                                style={{ minWidth: 200 }}
+                                style={{ width: 200 }}
                             />
                             <Input
                                 allowClear
