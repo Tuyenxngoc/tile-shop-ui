@@ -24,6 +24,12 @@ export const getRevenueByCategory = (params) => {
     return axiosPrivate.get('statistics/revenue-by-category', { params });
 };
 
-export const getChartDataByKeys = (values) => {
+export const getChartData = (values) => {
     return axiosPrivate.post('statistics/chart-data', values);
+};
+
+export const exportChartData = (values) => {
+    return axiosPrivate.post('statistics/export-chart-data', values, {
+        responseType: 'arraybuffer',
+    });
 };

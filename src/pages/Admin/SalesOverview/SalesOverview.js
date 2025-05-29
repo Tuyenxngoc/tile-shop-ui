@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ResponsiveLine } from '@nivo/line';
-import { DatePicker, message, Select } from 'antd';
+import { Button, DatePicker, message, Select } from 'antd';
+import { DownloadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { saveAs } from 'file-saver';
 
 import { formatCurrency } from '~/utils';
-import { getChartDataByKeys } from '~/services/statisticsService';
+import { exportChartData, getChartData } from '~/services/statisticsService';
 import { OverviewStatCard } from '~/components/StatCard';
 
 const MAX_ACTIVE_KEYS = 4;
@@ -137,10 +139,37 @@ function SalesOverview() {
         });
     };
 
+    const handleExportReport = async () => {
+        try {
+            const response = await exportChartData({
+                date: chartDate.format('YYYY-MM-DD'),
+                type: statType,
+            });
+            if (response.status === 200) {
+                const blob = new Blob([response.data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                });
+
+                const contentDisposition = response.headers['content-disposition'];
+                let fileName = 'shop-stats.xlsx';
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+                    if (fileNameMatch && fileNameMatch.length > 1) {
+                        fileName = fileNameMatch[1];
+                    }
+                }
+                saveAs(blob, fileName);
+            }
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+            messageApi.error(errorMessage);
+        }
+    };
+
     useEffect(() => {
         const fetchChartData = async () => {
             try {
-                const response = await getChartDataByKeys({
+                const response = await getChartData({
                     date: chartDate.format('YYYY-MM-DD'),
                     type: statType,
                 });
@@ -212,6 +241,10 @@ function SalesOverview() {
                         format={statType === 'year' ? 'YYYY' : statType === 'month' ? 'MM/YYYY' : 'DD/MM/YYYY'}
                         allowClear={false}
                     />
+
+                    <Button icon={<DownloadOutlined />} onClick={handleExportReport}>
+                        Tải dữ liệu
+                    </Button>
                 </div>
             </div>
 
