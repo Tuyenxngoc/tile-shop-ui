@@ -40,6 +40,7 @@ const images = {
     error: require('./images/close.png'),
 
     categoryDefault: require('./images/category-default.png'),
+    storeSystemBanner: require('./images/he-thong.jpg'),
 };
 
 export const backgrounds = {};

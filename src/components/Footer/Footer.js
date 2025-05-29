@@ -22,7 +22,7 @@ const supportLinks = [
         label: 'Thông tin về điều kiện giao dịch chung',
         link: '/ho-tro-khach-hang/thong-tin-ve-dieu-kien-giao-dich-chung',
     },
-    { label: 'Quy định bảo mật', link: '/ho-tro-khach-hang/quy-dinh-bao-mat-tai-shome-solution' },
+    { label: 'Quy định bảo mật', link: '/ho-tro-khach-hang/quy-dinh-bao-mat-tai-hung-huong-solution' },
     { label: 'Quy định hình thức thanh toán', link: '/ho-tro-khach-hang/quy-dinh-hinh-thuc-thanh-toan' },
     { label: 'Chính sách bảo hành sản phẩm', link: '/ho-tro-khach-hang/chinh-sach-bao-hanh-san-pham' },
     { label: 'Điều khoản mua bán hàng hóa', link: '/ho-tro-khach-hang/dieu-khoan-mua-ban-hang-hoa' },
@@ -39,9 +39,9 @@ function Footer() {
             <div className="container pt-3 pb-5">
                 <div className="row">
                     <div className="col col-12">
-                        <a href="/">
+                        <Link to="/">
                             <img src={images.logo} width={252} className="img-fluid" alt="logo" />
-                        </a>
+                        </Link>
                     </div>
                 </div>
 
@@ -104,10 +104,10 @@ function Footer() {
                                 <strong>Thông tin công ty</strong>
                             </div>
                             <div className="col col-12">
-                                <a href="/he-thong-cua-hang">Xem hệ thống cửa hàng</a>
+                                <Link to="/he-thong-cua-hang">Xem hệ thống cửa hàng</Link>
                             </div>
                             <div className="col col-12">
-                                <a href="/thong-tin-cong-ty/gioi-thieu-cong-ty">Giới thiệu công ty</a>
+                                <Link to="/thong-tin-cong-ty/gioi-thieu-cong-ty">Giới thiệu công ty</Link>
                             </div>
                         </div>
                     </div>
@@ -131,7 +131,7 @@ function Footer() {
 
                             {supportLinks.map((item, index) => (
                                 <div className="col col-12" key={index}>
-                                    <a href={item.link}>{item.label}</a>
+                                    <Link to={item.link}>{item.label}</Link>
                                 </div>
                             ))}
                         </div>

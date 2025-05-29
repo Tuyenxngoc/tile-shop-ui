@@ -118,7 +118,7 @@ const PaymentReturn = () => {
                                     biết thêm chi tiết.
                                     <br />
                                     Cảm ơn bạn đã tin tưởng và giao dịch tại
-                                    <a href="https://www.hunghuong.vn">www.hunghuong.vn</a>
+                                    <Link to="/">www.hunghuong.vn</Link>
                                 </p>
                                 <p>
                                     <strong>Ban quản trị</strong>
@@ -163,7 +163,7 @@ const PaymentReturn = () => {
                                     Nếu bạn nghĩ đây là sự nhầm lẫn, vui lòng liên hệ với chúng tôi qua fanpage hoặc
                                     hotline để được hỗ trợ.
                                     <br />
-                                    <a href="https://www.hunghuong.vn">www.hunghuong.vn</a>
+                                    <Link to="/">www.hunghuong.vn</Link>
                                 </p>
                             </div>
                             <div className="d-flex justify-content-center mt-4">

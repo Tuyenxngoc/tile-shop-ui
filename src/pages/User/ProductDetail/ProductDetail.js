@@ -197,7 +197,7 @@ function ProductDetail() {
                                     }}
                                     spaceBetween={10}
                                     navigation={true}
-                                    thumbs={{ swiper: thumbsSwiper }}
+                                    thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
                                     modules={[FreeMode, Navigation, Thumbs]}
                                     className="mySwiper2"
                                 >
@@ -225,14 +225,13 @@ function ProductDetail() {
                             </div>
 
                             <div>
-                                <a href="https://shome.vn/he-thong-cua-hang">
+                                <Link to="/he-thong-cua-hang">
                                     <img
-                                        src="https://nshpos.com/Web/Resources/Uploaded/18/images/Promotion/2024/T7/he-thong.jpg"
-                                        title=""
+                                        src={images.storeSystemBanner}
                                         className="img-fluid rounded"
                                         alt="Banner dưới sản phẩm"
                                     />
-                                </a>
+                                </Link>
                             </div>
                         </div>
                         <div className="col-12 col-md-6">
