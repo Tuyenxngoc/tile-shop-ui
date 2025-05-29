@@ -6,12 +6,12 @@ import * as yup from 'yup';
 
 import { Button, message, Space, Table } from 'antd';
 
-import { formatCurrency, formatDate } from '~/utils';
 import { handleError } from '~/utils/errorHandler';
+import { formatCurrency, formatDate } from '~/utils';
 import { SelectInput, TextInput } from '~/components/FormInput';
 import { getOrderById, updateOrder } from '~/services/ordersService';
 import { REGEXP_FULL_NAME, REGEXP_PHONE_NUMBER } from '~/constants';
-import { orderStatusTags, paymentMethodLabelMap } from '~/constants/order';
+import { orderStatusTags, paymentMethodLabelMap, paymentStatusTags } from '~/constants/order';
 
 const entityListPage = '/admin/orders';
 
@@ -192,12 +192,12 @@ function OrderEdit() {
                     </div>
 
                     <div className="col-md-6">
-                        <span>Tên tài khoản đặt hàng</span>
+                        <span>Tên tài khoản đặt hàng:</span>
                         <p>{orderData.user?.username || ''}</p>
                     </div>
 
                     <div className="col-md-6">
-                        <span>Email tài khoản đặt hàng</span>
+                        <span>Email tài khoản đặt hàng:</span>
                         <p>{orderData.user?.email || ''}</p>
                     </div>
 
@@ -269,23 +269,33 @@ function OrderEdit() {
                     </div>
 
                     <div className="col-md-6">
-                        <span>Mã đơn hàng</span>
+                        <span>Mã đơn hàng:</span>
                         <p>{orderData.id}</p>
                     </div>
 
                     <div className="col-md-6">
-                        <span>Tổng tiền</span>
+                        <span>Tổng tiền:</span>
                         <p>{formatCurrency(orderData.totalAmount)}</p>
                     </div>
 
                     <div className="col-md-6">
-                        <span>Trạng thái</span>
+                        <span>Trạng thái:</span>
                         <p>{orderStatusTags[orderData.status]}</p>
                     </div>
 
                     <div className="col-md-6">
-                        <span>Phương thức thanh toán</span>
+                        <span>Phương thức thanh toán:</span>
                         <p>{paymentMethodLabelMap[orderData.paymentMethod]}</p>
+                    </div>
+
+                    <div className="col-md-6">
+                        <span>Thời gian thanh toán:</span>
+                        <p>{formatDate(orderData.paymentTime)}</p>
+                    </div>
+
+                    <div className="col-md-6">
+                        <span>Trạng thái thanh toán:</span>
+                        <p>{paymentStatusTags[orderData.paymentStatus] || '-'}</p>
                     </div>
 
                     <div className="col-md-6">
@@ -294,7 +304,7 @@ function OrderEdit() {
                     </div>
 
                     <div className="col-md-6">
-                        <span>Ngày cập nhật</span>
+                        <span>Ngày cập nhật:</span>
                         <p>{formatDate(orderData.lastModifiedDate)}</p>
                     </div>
 
