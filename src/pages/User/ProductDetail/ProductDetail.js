@@ -533,9 +533,13 @@ function ProductDetail() {
                                 navigation
                                 modules={[Navigation]}
                             >
-                                {relatedProducts.map((news, index) => (
+                                {relatedProducts.map((product, index) => (
                                     <SwiperSlide key={index}>
-                                        <Product data={news} />
+                                        <Product
+                                            data={product}
+                                            isAdding={isAdding}
+                                            onAddToCart={() => handleAddToCart(product.id)}
+                                        />
                                     </SwiperSlide>
                                 ))}
                             </Swiper>
