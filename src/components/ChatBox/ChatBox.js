@@ -118,7 +118,12 @@ function ChatBox() {
                             >
                                 <div
                                     className={cx('p-2 rounded', msg.role === 'user' ? 'user-message' : 'bot-message')}
-                                    style={{ maxWidth: '75%' }}
+                                    style={{
+                                        maxWidth: '75%',
+                                        wordBreak: 'break-word',
+                                        overflowWrap: 'break-word',
+                                        whiteSpace: 'pre-wrap',
+                                    }}
                                     dangerouslySetInnerHTML={{ __html: msg.content }}
                                 />
                             </div>
