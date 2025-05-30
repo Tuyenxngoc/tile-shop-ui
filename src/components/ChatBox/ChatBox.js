@@ -11,6 +11,8 @@ import styles from './ChatBox.module.scss';
 
 const cx = classNames.bind(styles);
 
+const sampleQuestions = ['Làm thế nào để đặt hàng?', 'Thông tin cửa hàng?', 'Các sản phẩm bán chạy?'];
+
 function ChatBox() {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [chatMessages, setChatMessages] = useState([]);
@@ -109,25 +111,45 @@ function ChatBox() {
 
                     {/* Message list */}
                     <div className="flex-grow-1 p-2 overflow-auto bg-light">
-                        {chatMessages.map((msg, index) => (
-                            <div
-                                key={index}
-                                className={`d-flex mb-2 ${
-                                    msg.role === 'user' ? 'justify-content-end' : 'justify-content-start'
-                                }`}
-                            >
-                                <div
-                                    className={cx('p-2 rounded', msg.role === 'user' ? 'user-message' : 'bot-message')}
-                                    style={{
-                                        maxWidth: '75%',
-                                        wordBreak: 'break-word',
-                                        overflowWrap: 'break-word',
-                                        whiteSpace: 'pre-wrap',
-                                    }}
-                                    dangerouslySetInnerHTML={{ __html: msg.content }}
-                                />
+                        {chatMessages.length === 0 ? (
+                            <div className="text-muted mb-3">
+                                <div className="mb-2">Bạn có thể thử các câu hỏi sau:</div>
+                                {sampleQuestions.map((q, i) => (
+                                    <Button
+                                        key={i}
+                                        size="small"
+                                        type="default"
+                                        className="me-1 mb-1"
+                                        onClick={() => setMessageInput(q)}
+                                    >
+                                        {q}
+                                    </Button>
+                                ))}
                             </div>
-                        ))}
+                        ) : (
+                            chatMessages.map((msg, index) => (
+                                <div
+                                    key={index}
+                                    className={`d-flex mb-2 ${
+                                        msg.role === 'user' ? 'justify-content-end' : 'justify-content-start'
+                                    }`}
+                                >
+                                    <div
+                                        className={cx(
+                                            'p-2',
+                                            'rounded',
+                                            msg.role === 'user' ? 'user-message' : 'bot-message',
+                                        )}
+                                        style={{
+                                            maxWidth: '75%',
+                                            wordBreak: 'break-word',
+                                            overflowWrap: 'break-word',
+                                        }}
+                                        dangerouslySetInnerHTML={{ __html: msg.content }}
+                                    />
+                                </div>
+                            ))
+                        )}
                         <div ref={messageEndRef} />
                     </div>
 
