@@ -23,25 +23,30 @@ function ChatBox() {
     const handleSendMessage = async () => {
         if (messageInput.trim() === '') return;
 
-        const userMessage = { text: messageInput, from: 'user' };
+        const userMessage = { role: 'user', content: messageInput };
+        const conversation = chatMessages.map((msg) => ({
+            role: msg.role,
+            content: msg.role === 'model' ? msg.raw : msg.content,
+        }));
+
         setChatMessages((prev) => [...prev, userMessage]);
         setMessageInput('');
-
         setIsLoading(true);
         try {
-            const response = await createChatAI({ message: messageInput });
+            const response = await createChatAI({ message: messageInput, conversation });
             if (response.status === 200) {
                 const markdownText = response.data.data;
                 const htmlText = marked.parse(markdownText);
 
-                setChatMessages((prev) => [...prev, { text: htmlText, from: 'ai' }]);
+                const aiMessage = { role: 'model', content: htmlText, raw: markdownText };
+                setChatMessages((prev) => [...prev, aiMessage]);
             }
         } catch (error) {
             setChatMessages((prev) => [
                 ...prev,
                 {
-                    text: 'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.',
-                    from: 'ai',
+                    role: 'model',
+                    content: 'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.',
                 },
             ]);
         } finally {
@@ -108,13 +113,13 @@ function ChatBox() {
                             <div
                                 key={index}
                                 className={`d-flex mb-2 ${
-                                    msg.from === 'user' ? 'justify-content-end' : 'justify-content-start'
+                                    msg.role === 'user' ? 'justify-content-end' : 'justify-content-start'
                                 }`}
                             >
                                 <div
-                                    className={cx('p-2 rounded', msg.from === 'user' ? 'user-message' : 'bot-message')}
+                                    className={cx('p-2 rounded', msg.role === 'user' ? 'user-message' : 'bot-message')}
                                     style={{ maxWidth: '75%' }}
-                                    dangerouslySetInnerHTML={{ __html: msg.text }}
+                                    dangerouslySetInnerHTML={{ __html: msg.content }}
                                 />
                             </div>
                         ))}
