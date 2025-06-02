@@ -28,6 +28,7 @@ const PaymentReturn = () => {
     const { user } = useAuth();
     const location = useLocation();
 
+    const [isSuccess, setIsSuccess] = useState(false);
     const [result, setResult] = useState(null);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -47,12 +48,25 @@ const PaymentReturn = () => {
                         orderId,
                         paymentMethod,
                         paymentStatus: 'PENDING',
-                        totalAmount: totalAmount,
+                        totalAmount,
                     });
+                    setIsSuccess(true); // COD luôn coi là success
+                } else if (paymentMethod === 'PAYOS') {
+                    const orderId = queryParams.get('orderId');
+                    const totalAmount = queryParams.get('totalAmount');
+                    const paymentStatus = queryParams.get('status');
+                    setResult({
+                        orderId,
+                        paymentMethod,
+                        paymentStatus,
+                        totalAmount,
+                    });
+                    setIsSuccess(paymentStatus === 'PAID');
                 } else {
                     const response = await handleVnpayReturn(queryParams);
                     const { data } = response.data;
                     setResult(data);
+                    setIsSuccess(data.paymentStatus === 'PAID');
                 }
             } catch (error) {
                 const errorMessage =
@@ -85,7 +99,7 @@ const PaymentReturn = () => {
     return (
         <div className="container text-center">
             <div className="mx-auto col-md-8">
-                {result.paymentMethod === 'COD' || result.paymentStatus === 'PAID' ? (
+                {isSuccess ? (
                     <>
                         <img src={images.success} width={64} alt="order status" className="mt-5 mb-3" />
                         <h4 className="mb-4">Đặt hàng thành công</h4>

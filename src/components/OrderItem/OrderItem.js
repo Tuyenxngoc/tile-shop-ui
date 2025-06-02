@@ -28,7 +28,7 @@ const renderActions = (status, onCancelOrder, onReviewOrder, onReorder) => {
     }
 };
 
-function OrderItem({ data, onCancelOrder }) {
+function OrderItem({ data, onCancelOrder, onRetryPayment }) {
     const { phone, phoneSupport } = useStore();
     const navigate = useNavigate();
 
@@ -89,6 +89,11 @@ function OrderItem({ data, onCancelOrder }) {
                 </div>
                 <Space wrap>
                     {renderActions(data.status, onCancelOrder, handleReviewOrder, handleReorder)}
+                    {data.status === 'PENDING' && data.paymentMethod !== 'COD' && data.paymentStatus !== 'PAID' && (
+                        <Button key="retry" type="primary" onClick={onRetryPayment}>
+                            Thanh toán lại
+                        </Button>
+                    )}
                     <Button type="default" onClick={handleViewDetails}>
                         Xem chi tiết
                     </Button>

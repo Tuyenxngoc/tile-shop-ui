@@ -13,7 +13,7 @@ import useAuth from '~/hooks/useAuth';
 import useStore from '~/hooks/useStore';
 import { getCartItems } from '~/services/cartService';
 import { createOrder } from '~/services/ordersService';
-import { createVnpayPaymentUrl } from '~/services/paymentService';
+import { createPayosPayment, createVnpayPaymentUrl } from '~/services/paymentService';
 import { REGEXP_FULL_NAME, REGEXP_PHONE_NUMBER } from '~/constants';
 
 const deliveryMethodOptions = [
@@ -24,6 +24,7 @@ const deliveryMethodOptions = [
 const paymentMethodOptions = [
     { value: 'COD', label: 'Thanh toán khi nhận hàng (COD)' },
     { value: 'VNPAY', label: 'Thanh toán qua VNPAY' },
+    { value: 'PAYOS', label: 'Thanh toán qua PayOS (QR Code)' },
 ];
 
 const genderOptions = [
@@ -135,14 +136,43 @@ function Checkout() {
             if (values.paymentMethod === 'VNPAY') {
                 try {
                     const response = await createVnpayPaymentUrl({ orderId: orderId });
-                    const { url } = response.data.data;
-
-                    // Redirect người dùng đến trang thanh toán VNPAY
-                    window.location.href = url;
+                    const { status, message, url } = response.data.data;
+                    if (status === 'ok') {
+                        // Redirect người dùng đến trang thanh toán
+                        window.location.href = url;
+                    } else {
+                        api.error({
+                            message: 'Lỗi thanh toán VNPAY',
+                            description: message,
+                        });
+                    }
                 } catch (error) {
                     api.error({
                         message: 'Lỗi thanh toán VNPAY',
                         description: error.response?.data?.message || 'Lỗi thanh toán qua VNPAY. Vui lòng thử lại sau.',
+                    });
+                }
+            } else if (values.paymentMethod === 'PAYOS') {
+                try {
+                    const response = await createPayosPayment({
+                        orderId: orderId,
+                        cancelUrl: `${window.location.origin}/thanh-toan/ket-qua?orderId=${orderId}&paymentMethod=PAYOS&totalAmount=${totalPrice}`,
+                        returnUrl: `${window.location.origin}/thanh-toan/ket-qua?orderId=${orderId}&paymentMethod=PAYOS&totalAmount=${totalPrice}`,
+                    });
+                    const { status, message, url } = response.data.data;
+                    if (status === 'ok') {
+                        // Redirect người dùng đến trang thanh toán
+                        window.location.href = url;
+                    } else {
+                        api.error({
+                            message: 'Lỗi thanh toán PayOS',
+                            description: message,
+                        });
+                    }
+                } catch (error) {
+                    api.error({
+                        message: 'Lỗi thanh toán PayOS',
+                        description: error.response?.data?.message || 'Lỗi thanh toán qua PayOS. Vui lòng thử lại sau.',
                     });
                 }
             } else {

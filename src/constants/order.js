@@ -33,4 +33,5 @@ export const deliveryMethodLabelMap = {
 export const paymentMethodLabelMap = {
     COD: 'Thanh toán khi nhận hàng (COD)',
     VNPAY: 'Thanh toán qua VNPAY',
+    PAYOS: 'Thanh toán qua PayOS (QR Code)',
 };

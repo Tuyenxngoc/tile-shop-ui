@@ -5,6 +5,7 @@ import useDebounce from '~/hooks/useDebounce';
 import { getAllOrdersForUser, cancelOrder } from '~/services/ordersService';
 import { orderStatusOptions } from '~/constants/order';
 import OrderItem from '~/components/OrderItem';
+import { createPayosPayment, createVnpayPaymentUrl } from '~/services/paymentService';
 
 const cancelReasonOptions = [
     {
@@ -92,6 +93,40 @@ function Orders() {
             }
         } catch (error) {
             messageApi.error('Lỗi: ' + error.message);
+        }
+    };
+
+    const handleRetryPayment = async (order) => {
+        if (order.paymentMethod === 'VNPAY') {
+            try {
+                const response = await createVnpayPaymentUrl({ orderId: order.id });
+                const { status, message, url } = response.data.data;
+                if (status === 'ok') {
+                    // Redirect người dùng đến trang thanh toán
+                    window.location.href = url;
+                } else {
+                    messageApi.error(message);
+                }
+            } catch (error) {
+                messageApi.error(error.response?.data?.message || 'Lỗi thanh toán qua VNPAY. Vui lòng thử lại sau.');
+            }
+        } else if (order.paymentMethod === 'PAYOS') {
+            try {
+                const response = await createPayosPayment({
+                    orderId: order.id,
+                    cancelUrl: `${window.location.origin}/thanh-toan/ket-qua?orderId=${order.id}&paymentMethod=PAYOS&totalAmount=${order.totalAmount}`,
+                    returnUrl: `${window.location.origin}/thanh-toan/ket-qua?orderId=${order.id}&paymentMethod=PAYOS&totalAmount=${order.totalAmount}`,
+                });
+                const { status, message, url } = response.data.data;
+                if (status === 'ok') {
+                    // Redirect người dùng đến trang thanh toán
+                    window.location.href = url;
+                } else {
+                    messageApi.error(message);
+                }
+            } catch (error) {
+                messageApi.error(error.response?.data?.message || 'Lỗi thanh toán qua PayOS. Vui lòng thử lại sau.');
+            }
         }
     };
 
@@ -205,7 +240,11 @@ function Orders() {
                 <div className="row g-3">
                     {entityData.map((order) => (
                         <div key={order.id} className="col-12">
-                            <OrderItem data={order} onCancelOrder={() => openCancelOrderModal(order.id)} />
+                            <OrderItem
+                                data={order}
+                                onCancelOrder={() => openCancelOrderModal(order.id)}
+                                onRetryPayment={() => handleRetryPayment(order)}
+                            />
                         </div>
                     ))}
                 </div>

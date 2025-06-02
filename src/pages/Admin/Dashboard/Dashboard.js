@@ -298,6 +298,11 @@ function Dashboard() {
                         iconComponent={BsFillBagFill}
                         iconBg="bg-info-subtle"
                         iconColor="text-info"
+                        extraStats={[
+                            { label: 'Đã hoàn thành', value: stats?.orderStat?.completedOrders || 0 },
+                            { label: 'Chờ xử lý', value: stats?.orderStat?.pendingOrders || 0 },
+                            { label: 'Đã hủy', value: stats?.orderStat?.cancelledOrders || 0 },
+                        ]}
                     />
                 </div>
                 <div className="col-xl-3 col-md-6">
@@ -322,6 +327,10 @@ function Dashboard() {
                         iconComponent={AiFillProduct}
                         iconBg="bg-primary-subtle"
                         iconColor="text-primary"
+                        extraStats={[
+                            { label: 'Hết hàng', value: stats?.productStat?.outOfStockProducts || 0 },
+                            { label: 'Sắp hết', value: stats?.productStat?.lowStockProducts || 0 },
+                        ]}
                     />
                 </div>
             </div>
