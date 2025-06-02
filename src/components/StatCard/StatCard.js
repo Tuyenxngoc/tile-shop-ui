@@ -4,6 +4,7 @@ import CountUp from 'react-countup';
 
 import classNames from 'classnames/bind';
 import styles from './StatCard.module.scss';
+import { useState } from 'react';
 
 const cx = classNames.bind(styles);
 
@@ -18,7 +19,12 @@ function StatCard({
     iconBg,
     iconColor,
     iconComponent: Icon,
+    extraStats = [],
 }) {
+    const [showAllStats, setShowAllStats] = useState(false);
+
+    const toggleStats = () => setShowAllStats((prev) => !prev);
+
     return (
         <div className={cx('card', 'card-animate')}>
             <div className="card-body">
@@ -46,9 +52,30 @@ function StatCard({
                 <div className="d-flex align-items-end justify-content-between mt-4">
                     <div>
                         <h4 className="fs-22 fw-semibold ff-secondary mb-4">
-                            {unit} &nbsp;
+                            {unit}
+                            &nbsp;
                             <CountUp end={amount} decimals={decimals} duration={1} />
+                            &nbsp;
+                            {extraStats.length > 0 && (
+                                <button
+                                    onClick={toggleStats}
+                                    className="btn btn-sm btn-link p-0 text-decoration-underline"
+                                >
+                                    {showAllStats ? 'Ẩn bớt' : 'Xem thêm'}
+                                </button>
+                            )}
                         </h4>
+
+                        {showAllStats && (
+                            <ul className="list-unstyled mb-2">
+                                {extraStats.map((item, idx) => (
+                                    <li key={idx} className="small text-muted">
+                                        {item.label}: <strong>{item.value}</strong>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
                         <Link to={link} className="text-decoration-underline">
                             {linkLabel}
                         </Link>
