@@ -8,21 +8,9 @@ import useAuth from '~/hooks/useAuth';
 import { Alert, Spin } from 'antd';
 import { formatCurrency } from '~/utils';
 import images from '~/assets';
+import { paymentMethodLabelMap, paymentStatusLabelMap } from '~/constants/order';
 
 const cx = classNames.bind(styles);
-
-const paymentMethodLabels = {
-    COD: 'Thanh toán khi nhận hàng',
-    VNPAY: 'Thanh toán qua VNPAY',
-    MOMO: 'Thanh toán qua MOMO',
-    ZALOPAY: 'Thanh toán qua ZaloPay',
-};
-
-const paymentStatusLabels = {
-    PENDING: 'Chờ thanh toán',
-    PAID: 'Đã thanh toán',
-    FAILED: 'Thanh toán thất bại',
-};
 
 const PaymentReturn = () => {
     const { user } = useAuth();
@@ -44,6 +32,7 @@ const PaymentReturn = () => {
                 if (paymentMethod === 'COD') {
                     const totalAmount = queryParams.get('totalAmount');
                     const orderId = queryParams.get('orderId');
+
                     setResult({
                         orderId,
                         paymentMethod,
@@ -55,6 +44,7 @@ const PaymentReturn = () => {
                     const orderId = queryParams.get('orderId');
                     const totalAmount = queryParams.get('totalAmount');
                     const paymentStatus = queryParams.get('status');
+
                     setResult({
                         orderId,
                         paymentMethod,
@@ -65,6 +55,7 @@ const PaymentReturn = () => {
                 } else {
                     const response = await handleVnpayReturn(queryParams);
                     const { data } = response.data;
+
                     setResult(data);
                     setIsSuccess(data.paymentStatus === 'PAID');
                 }
@@ -116,7 +107,7 @@ const PaymentReturn = () => {
                                     <strong> Mã đơn hàng: </strong> {result.orderId || 'Không xác định'}
                                     <br />
                                     <strong> Phương thức thanh toán: </strong>
-                                    {paymentMethodLabels[result.paymentMethod] || 'Không xác định'}
+                                    {paymentMethodLabelMap[result.paymentMethod] || 'Không xác định'}
                                     <br />
                                     <strong> Thời gian dự kiến giao hàng: </strong> 2 - 3 ngày
                                     <br />
@@ -124,7 +115,7 @@ const PaymentReturn = () => {
                                     <span className={cx('total-price')}>{formatCurrency(result.totalAmount)}</span>
                                     <br />
                                     <strong> Tình trạng: </strong>
-                                    <span className="text-danger">{paymentStatusLabels[result.paymentStatus]}</span>
+                                    <span className="text-danger">{paymentStatusLabelMap[result.paymentStatus]}</span>
                                 </p>
                                 <hr />
                                 <p>
@@ -164,13 +155,13 @@ const PaymentReturn = () => {
                                     <strong> Mã đơn hàng: </strong> {result.orderId || 'Không xác định'}
                                     <br />
                                     <strong> Phương thức thanh toán: </strong>
-                                    {paymentMethodLabels[result.paymentMethod] || 'Không xác định'}
+                                    {paymentMethodLabelMap[result.paymentMethod] || 'Không xác định'}
                                     <br />
                                     <strong> Tổng thanh toán: </strong>
                                     {result.totalAmount ? formatCurrency(result.totalAmount) : 'Không xác định'}
                                     <br />
                                     <strong> Tình trạng: </strong>
-                                    <span className="text-danger">{paymentStatusLabels[result.paymentStatus]}</span>
+                                    <span className="text-danger">{paymentStatusLabelMap[result.paymentStatus]}</span>
                                 </p>
                                 <hr />
                                 <p>

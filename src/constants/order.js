@@ -33,5 +33,16 @@ export const deliveryMethodLabelMap = {
 export const paymentMethodLabelMap = {
     COD: 'Thanh toán khi nhận hàng (COD)',
     VNPAY: 'Thanh toán qua VNPAY',
+    MOMO: 'Thanh toán qua MOMO',
+    ZALOPAY: 'Thanh toán qua ZaloPay',
     PAYOS: 'Thanh toán qua PayOS (QR Code)',
+};
+
+export const paymentStatusLabelMap = {
+    PENDING: 'Chờ thanh toán',
+    PAID: 'Đã thanh toán',
+    FAILED: 'Thanh toán thất bại',
+
+    PROCESSING: 'Đang xử lý',
+    CANCELLED: 'Đã hủy',
 };

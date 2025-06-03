@@ -49,6 +49,7 @@ const paymentOptions = [
     { value: 'VNPAY', label: 'Thanh toán qua VNPAY' },
     { value: 'MOMO', label: 'Thanh toán qua MOMO' },
     { value: 'ZALOPAY', label: 'Thanh toán qua ZALOPAY' },
+    { value: 'PAYOS', label: 'Thanh toán qua PayOS (QR Code)' },
 ];
 
 const allowedTransitions = {

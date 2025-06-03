@@ -7,7 +7,12 @@ import { getOrderById } from '~/services/ordersService';
 import { formatCurrency, formatDate } from '~/utils';
 import { checkIdIsNumber } from '~/utils/helper';
 import { genderTags } from '~/constants/gender';
-import { deliveryMethodLabelMap, orderStatusTags, paymentMethodLabelMap } from '~/constants/order';
+import {
+    deliveryMethodLabelMap,
+    orderStatusTags,
+    paymentMethodLabelMap,
+    paymentStatusLabelMap,
+} from '~/constants/order';
 
 function OrdersDetail() {
     const { id } = useParams();
@@ -119,24 +124,30 @@ function OrdersDetail() {
             <Card title="Thông tin đơn hàng" className="mb-4">
                 <Descriptions column={1} bordered>
                     <Descriptions.Item label="Ngày tạo">{formatDate(order.createdDate)}</Descriptions.Item>
-                    <Descriptions.Item label="Trạng thái">{orderStatusTags[order.status]}</Descriptions.Item>
+                    <Descriptions.Item label="Trạng thái">
+                        {orderStatusTags[order.status] || order.status}
+                    </Descriptions.Item>
 
                     <Descriptions.Item label="Người nhận">{order.recipientName}</Descriptions.Item>
-                    <Descriptions.Item label="Giới tính">{genderTags[order.recipientGender]}</Descriptions.Item>
+                    <Descriptions.Item label="Giới tính">
+                        {genderTags[order.recipientGender] || order.recipientGender}
+                    </Descriptions.Item>
                     <Descriptions.Item label="Số điện thoại">{order.recipientPhone}</Descriptions.Item>
                     <Descriptions.Item label="Email">{order.recipientEmail}</Descriptions.Item>
 
                     <Descriptions.Item label="Phương thức giao hàng">
-                        {deliveryMethodLabelMap[order.deliveryMethod]}
+                        {deliveryMethodLabelMap[order.deliveryMethod] || order.deliveryMethod}
                     </Descriptions.Item>
                     {order.deliveryMethod === 'HOME_DELIVERY' && (
                         <Descriptions.Item label="Địa chỉ giao">{order.shippingAddress}</Descriptions.Item>
                     )}
 
                     <Descriptions.Item label="Phương thức thanh toán">
-                        {paymentMethodLabelMap[order.paymentMethod]}
+                        {paymentMethodLabelMap[order.paymentMethod] || order.paymentMethod}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Trạng thái thanh toán">{order.paymentStatus}</Descriptions.Item>
+                    <Descriptions.Item label="Trạng thái thanh toán">
+                        {paymentStatusLabelMap[order.paymentStatus] || order.paymentStatus}
+                    </Descriptions.Item>
                     {order.paymentTime && (
                         <Descriptions.Item label="Thời gian thanh toán">
                             {formatDate(order.paymentTime)}
